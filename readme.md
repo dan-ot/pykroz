@@ -1,0 +1,2 @@
+# Pykroz
+This is my attempt to port the classic Kroz games from Apogee Software into Python - both for my edification and my education. Please pay close attention to the various readme.txt files in the project - they are the legal matter coming from Apogee.
