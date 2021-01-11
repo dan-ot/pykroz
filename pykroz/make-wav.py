@@ -12,7 +12,7 @@ def sine(frequency = 440.0, duration = 1.0) -> bytes:
     times = cast(recarray, linspace(0, duration, points, endpoint=False))
     x = times * frequency * 2 * nppi
     s = npsin(x) + 1.0
-    m = s * 127.5
+    m = (s * 120.0) + 8.0
     a = array(m, dtype = int8)
     data = cast(recarray, a)
     return data.tobytes()
