@@ -3,5 +3,5 @@ GPATH
 GRTAGS
 GTAGS
 *.exe
-.vscode
 **/*.wav
+__pycache__

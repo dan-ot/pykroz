@@ -371,7 +371,7 @@ procedure Flash(XPos,YPos:byte;Message:Str80);
    col(Counter,15);
    delay(20);
    print(XPos,YPos,Message);
-  until keypressed;
+  until eypressed;
   Restore_Border;
  end;
 

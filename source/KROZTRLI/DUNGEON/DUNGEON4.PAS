@@ -50,7 +50,7 @@ procedure Screen;
   Color := true;
   bak(0,0);
   clrscr;
-  bor(3);
+  Bor(3);
   cur(3);
   col(9,9);
   gotoxy(31,2);

@@ -32,5 +32,5 @@ def wav(filename: str, instructions: List[Tuple[float, float]]):
             wfile.setsampwidth(1)
             wfile.writeframes(frames)
 
-wav('pykroz/sound/title-prompt.wav', [(200, 0.1)])
-wav('pykroz/sound/resume-game.wav', [(500, 0.1), *[(f, 1/30) for f in range(200, 100, -1)], (100, 0.1)])
+wav('sound/dungeon/title-prompt.wav', [(200, 0.1)])
+wav('sound/dungeon/resume-game.wav', [(500, 0.1), *[(f, 1/30) for f in range(200, 100, -1)], (100, 0.1)])
