@@ -1,13 +1,13 @@
 # Usable level bounds
+from tiles import Tiles
+from crt import Crt
 from typing import List
-from random import randrange
+from random import randint, randrange
 from time import sleep
-import tcod
-from tcod.tileset import CHARMAP_CP437
+import sounds
 
-# Tiles
-class Tiles:
-    Block = CHARMAP_CP437[178]
+class GameTiles:
+    Block = Tiles.Code[178]
 
 # Constants
 TOTOBJECTS = 83
@@ -25,16 +25,17 @@ PMOVE = True
 
 # Unit-level State
 class Level:
+    def __init__(self):
     # StrVal: str = ""
-    Score: int = 0
-    WhipPower: int = 0
-    Level: int = 0
-    Gems: int = 0
-    Whips: int = 0
-    Teleports: int = 0
-    Keys: int = 0
-    BC: int = 0
-    BB: int = 0
+        self.Score: int = 0
+        self.WhipPower: int = 0
+        self.Level: int = 0
+        self.Gems: int = 0
+        self.Whips: int = 0
+        self.Teleports: int = 0
+        self.Keys: int = 0
+        self.Bc: int = 0
+        self.Bb: int = 0
 
 # Types
 class HSType:
@@ -59,106 +60,96 @@ class SaveType:
         self.S_MixUp = mixUp
 
 # Procedures
-def Print(XPos: int, YPos: int, Message: str, fgColor: int, bgColor: int, console: tcod.Console):
-    console.print(XPos - 1, YPos - 1, Message, color_of(fgColor), color_of(bgColor))
+def Print(XPos: int, YPos: int, Message: str, console: Crt):
+    console.write(XPos - 1, YPos - 1, Message)
 
-def PrintNum(YPos: int, Num: int, fgColor: int, bgColor: int, console: tcod.Console):
-    # console.print(70, YPos, "       ")
+def PrintNum(YPos: int, Num: int, level: Level, console: Crt):
+    # console.write(70, YPos, "       ")
     strVal = str(Num)
-    if (YPos == 2 and Level.Score > 0):
+    if (YPos == 2 and level.Score > 0):
         strVal += "0"
     if (YPos == 11):
-        if (Level.WhipPower >= 3):
-            strVal = strVal + "+" + str(Level.WhipPower)
+        if (level.WhipPower >= 3):
+            strVal = strVal + "+" + str(level.WhipPower)
     strVal = f"{strVal:^7}"
-    console.print(69, YPos - 1, strVal, color_of(fgColor), color_of(bgColor))
+    console.write(69, YPos - 1, strVal)
 
-def Update_Info(console: tcod.Console):
+def Update_Info(level: Level, console: Crt):
     Bak(7, 0, console)
     Col(4, 7, console)
-    PrintNum(2, Level.Score, 4, 7, console)
-    PrintNum(5, Level.Level, 4, 7, console)
-    if Level.Gems > 9:
-        PrintNum(8, Level.Gems, 7, 7, console)
+    PrintNum(2, level.Score, 4, 7, console)
+    PrintNum(5, level.Level, 4, 7, console)
+    if level.Gems > 9:
+        PrintNum(8, level.Gems, 7, 7, console)
     else:
         Col(7, 23, console)
-        PrintNum(8, Level.Gems, 15, 4, console)
+        PrintNum(8, level.Gems, 15, 4, console)
         Col(4, 7, console)
-    PrintNum(11, Level.Whips, 4, 7, console)
-    PrintNum(14, Level.Teleports, 4, 7, console)
-    PrintNum(17, Level.Keys, 4, 7, console)
+    PrintNum(11, level.Whips, 4, 7, console)
+    PrintNum(14, level.Teleports, 4, 7, console)
+    PrintNum(17, level.Keys, 4, 7, console)
     Bak(0, 0, console)
 
-def Border(console: tcod.Console):
-    Level.BC = randrange(8, 15)
-    Level.BB = randrange(1, 8)
-    Col(Level.BC, 0, console)
-    Bak(Level.BB, 7, console)
+def Border(level: Level, console: Crt):
+    level.Bc = randrange(8, 15)
+    level.Bb = randrange(1, 8)
+    Col(level.Bc, 0, console)
+    Bak(level.Bb, 7, console)
     for x in range(XBOT - 1, XTOP + 2):
-        console.put_char(x, YTOP + 1, Tiles.Block)
-        console.put_char(x, YBOT - 1, Tiles.Block)
+        console.gotoxy(x, 25)
+        console.write(GameTiles.Block)
+        console.gotoxy(x, 1)
+        console.write(GameTiles.Block)
     for y in range(YBOT - 1, YTOP + 2):
-        console.put_char(XBOT - 1, y, Tiles.Block)
-        console.put_char(XTOP + 1, y, Tiles.Block)
+        console.gotoxy(1, y)
+        console.write(GameTiles.Block)
+        console.gotoxy(66, y)
+        console.write(GameTiles.Block)
     Bak(0, 0, console)
 
-def RestoreBorder(console: tcod.Console):
-    Col(Level.BC, 0)
-    Bak(Level.BB, 7)
+def RestoreBorder(level: Level, console: Crt):
+    console.gotoxy(2, 25)
+    Col(level.Bc, 0)
+    Bak(level.Bb, 7)
     for x in range(XBOT - 1, XTOP + 2):
-        console.put_char(x, YTOP + 1, Tiles.Block)
+        console.write(GameTiles.Block)
     Bak(0, 0)
 
-def Flash(XPos: int, YPos: int, Message: str, console: tcod.Console):
+def Flash(XPos: int, YPos: int, Message: str, level: Level, console: Crt):
     counter = 14
-    keypressed = False
-    while not keypressed:
+    ClearKeys(console)
+    while not console.keypressed():
         counter += 1
         if counter > 15:
             counter = 13
         Col(counter, 15)
         delay(20)
-        console.print(XPos - 1, YPos - 1, Message)
+        Print(XPos, YPos, Message, console)
+    RestoreBorder(level, console)
+
+def ClearKeys(console: Crt):
+    console.keyboard.clear()
+
+def FootStep(console: Crt):
+    console.sounds(sounds.FootStep())
+
+def GrabSound(console: Crt):
+    console.sounds(sounds.GrabSound())
+
+def BlockSound(console: Crt):
+    console.sounds(sounds.BlockSound())
+
+def NoneSound(console: Crt):
+    console.sounds(sounds.NoneSound())
+
+def Static(console: Crt):
+    console.sounds(sounds.Static())
 
 def delay(ms: int):
     sleep(ms / 1000)
 
-def color_of(color: int):
-    if color == 0:
-        return tcod.black
-    elif color == 1:
-        return tcod.blue
-    elif color == 2:
-        return tcod.green
-    elif color == 3:
-        return tcod.cyan
-    elif color == 4:
-        return tcod.red
-    elif color == 5:
-        return tcod.magenta
-    elif color == 6:
-        return tcod.amber
-    elif color == 7:
-        return tcod.light_gray
-    elif color == 8:
-        return tcod.dark_gray
-    elif color == 9:
-        return tcod.light_blue
-    elif color == 10:
-        return tcod.light_green
-    elif color == 11:
-        return tcod.light_cyan
-    elif color == 12:
-        return tcod.light_red
-    elif color == 13:
-        return tcod.light_magenta
-    elif color == 14:
-        return tcod.yellow
-    elif color == 15:
-        return tcod.white
+def Col(color: int, _: int, console: Crt):
+    console.textcolor(color)
 
-def Col(color: int, _: int, console: tcod.Console):
-    console.default_fg = color_of(color)
-
-def Bak(color: int, _: int, console: tcod.Console):
-    console.default_bg = color_of(color)
+def Bak(color: int, _: int, console: Crt):
+    console.textbackground(color)

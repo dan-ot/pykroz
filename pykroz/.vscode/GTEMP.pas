@@ -318,7 +318,7 @@ procedure PrintNum(YPos:byte; Num:longint);
 
 procedure Update_Info;
  begin
-  bak(7,0);col(4,7);
+  ak(7,0);col(4,7);
   printnum(2,Score);
   printnum(5,Level);
   if Gems > 9 then printnum(8,Gems)
@@ -370,8 +370,8 @@ procedure Flash(XPos,YPos:byte;Message:Str80);
    if Counter > 15 then Counter := 13;
    col(Counter,15);
    delay(20);
-   print(XPos,YPos,Message);
-  until eypressed;
+   Print(XPos,YPos,Message);
+  until keypressed;
   Restore_Border;
  end;
 
