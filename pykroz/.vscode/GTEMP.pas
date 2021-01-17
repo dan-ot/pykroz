@@ -21,999 +21,485 @@
 {Prepared for public release: 03/19/09 - Joe Siegler, Apogee Software, Ltd. }
 {*/                                                                         }
 {//-------------------------------------------------------------------------}
-{*** DUNGEONS OF KROZ II levels.  By Scott Miller 08/31/89 ***}
+{*** DUNGEONS OF KROZ II level layouts.  By Scott Miller 11/12/89 ***}
 
-unit DUNGEON1;
+unit DUNGEON2;
 
 interface
 
-uses Turbo3, CRT, DOS;
+procedure Level1;
+procedure Level3;
+procedure Level5;
+procedure Level7;
+procedure Level9;
+procedure Level11;
+procedure Level13;
+procedure Level15;
+procedure Level17;
+procedure Level19;
+procedure Level21;
+procedure Level23;
+procedure Level25;
+procedure Level27;
+procedure Level29;
+procedure Level30;
 
-const
-
-     {0}  Null      = 0;
-{X}  {4}  Block     = #178;  
-{W}  {5}  Whip      = #244;  
-{L}  {6}  Stairs    = #240;  
-{C}  {7}  Chest     = #67;   
-{S}  {8}  SlowTime  = #232;
-{+}  {9}  Gem       = #4;    
-{I}  {10} Invisible = #173;   
-{T}  {11} Teleport  = #24;   
-{K}  {12} Key       = #140; 
-{D}  {13} Door      = #236;  
-{#}  {14} Wall      = #219;
-{F}  {15} SpeedTime = #233;
-{.}  {16} Trap      = #249;  
-{R}  {17} River     = #247;
-{Q}  {18} Power     = #9;    
-{/}  {19} Forest    = #219;
-{\}  {20} Tree      = #5;
-{B}  {21} Bomb      = #157;  
-{V}  {22} Lava      = #178;  
-{=}  {23} Pit       = #176;
-{A}  {24} Tome      = #245;
-{U}  {25} Tunnel    = #239;
-{Z}  {26} Freeze    = #159;
-{*}  {27} Nugget    = #15;
-{E}  {28} Quake     = #0;
-{;}  {29} IBlock    = #30;
-{:}  {30} IWall     = #0;
-{`}  {31} IDoor     = #0;
-{-}  {32} Stop      = #0;
-{@}  {33} Trap2     = #0;
-{%}  {34} Zap       = #30;  
-{]}  {35} Create    = #31;
-{G}  {36} Generator = #6;
-{)}  {37} Trap3     = #0;   
-{M}  {38} MBlock    = #178; 
-{(}  {39} Trap4     = #0;  
-{P}  {40} Player    = #2;  
-{&}  {41} ShowGems  = #0;
-{O}  {43} ZBlock    = #178;
-{H}  {44} BlockSpell= #0;
-{?}  {45} Chance    = #63;
-{>}  {46} Statue    = #1;
-{N}  {47} WallVanish= #0;
-{<}  {48}  { K }
-{[}  {49}  { R }
-{|}  {50}  { O }
-{"}  {51}  { Z }
-{4}  {52} OWall1    = #219;
-{5}  {53} OWall2    = #219;
-{6}  {54} OWall3    = #219; { grey }
-{7}  {55} CWall1    = #0;
-{8}  {56} CWall2    = #0;
-{9}  {57} CWall3    = #0;
-{�}  {58} OSpell1   = #127; {ALT-241}
-{�}  {59} OSpell2   = #127; {ALT-242}
-{�}  {60} OSpell3   = #127; {ALT-243}
-{�}  {61} CSpell1   = #0;   {ALT-244}
-{�}  {62} CSpell2   = #0;   {ALT-245}
-{�}  {63} CSpell3   = #0;   {ALT-246}
-{Y}  {64} GBlock    = #178;
-{0}  {65} Rock      = #79;
-{~}  {66} EWall     = #88;
-{ }  {67} Trap5     = #0;   {represented by a $}
-{�}  {68} TBlock    = #0;   {ALT-145}
-{�}  {69} TRock     = #0;   {ALT-146}
-{�}  {70} TGem      = #0;   {ALT-147}
-{�}  {71} TBlind    = #0;   {ALT-148}
-{�}  {72} TWhip     = #0;   {ALT-149}
-{�}  {73} TGold     = #0;   {ALT-150}
-{�}  {74} TTree     = #0;   {ALT-151}
-{�}  {75} Rope      = #179; {ALT-179}
-{�}  {76} DropRope  = #25;  {ALT-185}
-{�}  {77}{DropRope}         {ALT-186}
-{�}  {78}{DropRope}         {ALT-187}
-{�}  {79}{DropRope}         {ALT-188}
-{�}  {80}{DropRope}         {ALT-189}
-{�}  {81} Amulet    = #12;  {ALT-131}
-{�}  {82} ShootRight= #26;  {ALT-175}
-{�}  {83} ShootLeft = #27;  {ALT-174}
-
-{�}  {224}Trap6     = #0;   {ALT-224}
-{�}  {225}Trap7     = #0;   {ALT-225}
-{�}  {226}Trap8     = #0;   {ALT-226}
-{�}  {227}Trap9     = #0;   {ALT-227}
-{�}  {228}Trap10    = #0;   {ALT-228}
-{�}  {229}Trap11    = #0;   {ALT-229}
-{�}  {230}Trap12    = #0;   {ALT-230}
-{�}  {231}Trap13    = #0;   {ALT-231}
-
-{�}  {252}Message   = #5;   {ALT-252}
-
-
-      TotObjects    = 83;
-      Bottom        = 30;  {1472 objects max. / play field }
-      XBot          = 2;
-      XTop          = 65;
-      YBot          = 2;
-      YTop          = 24;
-      YSize         = 23;
-      XSize         = 64;
-      TMax          = 9;
-      GMove         = false;
-      PMove         = true;
-
-
-type
-        Field     = string[150];   { not set for the Rope }
-        StrXSize  = string[XSize];
-        Str80     = string[80];
-        NameStr   = string[15];
-        HSType    = record
-                     Name        : NameStr;
-                     HighScore,
-                     HighLevel   : longint;
-                    end;
-        SaveType  = record
-                     S_Level,
-                     S_Score,
-                     S_Gems,
-                     S_Whips,
-                     S_Teleports,
-                     S_Keys,
-                     S_WhipPower,
-                     S_Difficulty,
-                     S_PX, S_PY  : longint;
-                     S_FoundSet  : set of 0..ToTObjects;
-                     S_MixUp     : boolean;
-                    end;
-
-var
-        Parsed    : array [1..ToTObjects] of integer;
-        Gems,
-        Whips,
-        Teleports,
-        Keys,
-        Difficulty,
-        Level,
-        PXOld, PYOld,
-        SkipTime,
-        BTime, STime, MTime, FTime,
-        XDir, YDir,
-        loop,
-        width,
-        xl,xr,
-        yl,yr,
-        Replacement,
-        Bonus,
-        GenFactor,
-        CF1, CF2, BF1, BF2,
-        x,y,i,a,b : integer;
-        xb, yb    : byte;
-        Result    : Registers;
-        MixUp,
-        Done,
-        Restart   : boolean;
-        FoundSet  : set of 0..ToTObjects;
-        I_Score,
-        I_Gems,
-        I_Whips,
-        I_Teleports,
-        I_Keys,
-        I_WhipPower,
-        I_Difficulty,
-        I_PX, I_PY  : longint;
-        I_FoundSet  : set of 1..ToTObjects;
-        SaveStuff   : SaveType;
-        SaveFile    : file of SaveType;
-        HSList      : array [1..15] of HSType;
-        HSFile      : file of HSType;
-        FileName    : file;
-
-
-
-var   DF       : array [1..Bottom] of Field;
-      PF       : array [1..66,1..25] of byte;
-      FP       : array [1..YSize] of StrXSize;
-      BX, BY   : array [1..1300] of byte;
-      SX, SY,
-      MX, MY,
-      FX, FY   : array [1..1000] of byte;
-      T        : array [1..TMax] of integer; { 1=Slow, 2=Medium, 3=Fast }
-      ch,                                    { 4=SlowTime, 5=invisible  }
-      Slow,                                  { 6=SpeedTime, 7=Freeze    }
-      Medium,                                { 8=MBlock, 9=Statue       }
-      Fast,
-      Tile     : char; 
-      Score    : longint;
-      StrVal   : Field;
-      WhipPower,
-      PX, PY,
-      BC, BB,
-      RX, RY,
-      GenNum,
-      BNum,
-      SNum,
-      MNum,
-      FNum,
-      EvapoRate,
-      GravRate,     { 0=fast, 2=slow }
-      GravCounter,
-      TreeRate,
-      LavaRate,     { 10=slow, 90=fast }
-      GemColor   : integer;
-      FastPC,
-      LavaFlow,
-      HideTrap,
-      HideRock,
-      HideStairs,
-      HideOpenWall,
-      HideCreate,
-      HideMBlock,
-      HideLevel,
-      HideGems,
-      GravOn,
-      Sideways,
-      OneMove,
-      FloorPattern,
-      MagicEWalls,
-      Color    : boolean;
-
-procedure MakeFloor(TilePattern: char; A,B,C,D: byte);
-procedure Flash(XPos,YPos:byte;Message:Str80);
-procedure PrintNum(YPos:byte; Num:longint);
-procedure Print(XPos,YPos:byte; Message:Str80);
-procedure Restore_Border;
-procedure ClearKeys;
-procedure Cur(Num:byte);
-procedure Sign_Off;
-procedure Col(Num1,Num2:byte);
-procedure Bak(Num1,Num2:byte);
-procedure Update_Info;
-procedure Bor(Num:byte);
-procedure Shareware(Wait: boolean);
-procedure New_Gem_Color;
-procedure Define_Levels;
-procedure Won;
-procedure FootStep;
-procedure GrabSound;
-procedure NoneSound;
-procedure BlockSound;
-procedure Static;
-procedure End_Routine;
-procedure Convert_Format;
-procedure Trigger_Trap(Place:boolean; i:integer; ch:char);
-procedure Go(var XWay,YWay:integer; Human:boolean);
-procedure MoveRock(var XWay,YWay:integer);
-procedure Dead(DeadDot: boolean);
-procedure High_Score(PlayAgain:boolean);
-procedure AddScore(What:integer);
-procedure Play(Start,Stop,Speed:integer);
-procedure Border;
 
 implementation { ---------------------------------------------------------- }
 
-procedure MakeFloor(TilePattern: char; A,B,C,D: byte);
+uses Turbo3, CRT, DOS, DUNGEON1;
+
+
+procedure Level1;
  begin
- end; { MakeFloor }
+  FP[1]:= '        1    1     1  1     1     1   1      1        1         ';
+  FP[2]:= '   ---#######   1        1     1          1      1#######---   1';
+  FP[3]:= '   #        #1      1     1        1    1      1  #+ + + + #    ';
+  FP[4]:= '1  #   TT   #     1   1      1   1          1     # + + + +#1   ';
+  FP[5]:= '   #        #  1        1       1     1         1 #+ + + + #    ';
+  FP[6]:= '   ##########       1     1         1     1   1   ##########  1 ';
+  FP[7]:= '1   1       1     1    1      1         1       1      1       1';
+  FP[8]:= '  1      1      1                         1       1     1    1  ';
+  FP[9]:= '   1    1   1      1   XXXXXXXXXXXXXXX     1   1     1        1 ';
+  FP[10]:='      1      1   1     XXXXX  I  XXXXX   1      1   1    1      ';
+  FP[11]:='1   1    1    1    1   XXXX+     +XXXX    1   1       1        1';
+  FP[12]:=' 1      1  1    1      XXXX+  P  +XXXX   1      1      1    1   ';
+  FP[13]:='    1     1  1     1   XXXX+     +XXXX     1      1  1    1    1';
+  FP[14]:=' 1   1     1     1     XXXXX  S  XXXXX   1    1       1      1  ';
+  FP[15]:='1      1 1    1        XXXXXXXXXXXXXXX      1   1       1     1 ';
+  FP[16]:='  1     1  1      1                      1     1    1      1    ';
+  FP[17]:='    1       1    1     1     1     1    1     1       1 1      1';
+  FP[18]:='1  ##########1    1   1    1    1     1      1   1########## 1  ';
+  FP[19]:=' 1 # W W W W# 1        1    1     1      1 1      #        #    ';
+  FP[20]:='1  #W W W W #   1   1    1     1     1         1  #   LL   #  1 ';
+  FP[21]:='   # W W W W#1       1    1        1   1     1    #        #    ';
+  FP[22]:='1  ---#######    1     1    1 1     1     1     1 #######---    ';
+  FP[23]:='        1    1     1            1  1     1     1        1      1';
+  Convert_Format;
+ end; { Level1 }
 
 
-procedure Print(XPos,YPos:byte; Message:Str80);
+procedure Level3;
  begin
-  gotoxy(XPos,YPos);
-  write(Message);
- end;
+  FP[1]:= '+++##############RRRRRRR###         ##sm######TVVVVT##K-        ';
+  FP[2]:= '+C+D       +    K#RRRRRRR##    C    ##was#### VVVVVV ###      # ';
+  FP[3]:= '+++######## ####1#RRRRRRR##         ##here## VVV++VVV ##333333# ';
+  FP[4]:= '########### #####1#RRRRRRR#####T########### VVV++++VVV1######## ';
+  FP[5]:= '         +# #2####1#RRRRRRR######+# #K# #3#1VVV++++VVV       2KC';
+  FP[6]:= ' # ######## ##+####+#RRRRRRR###....# # # ### VVV++VVVV #X###### ';
+  FP[7]:= '3# #######  ###+#####RRRRRRR## ############## VVVVVVV ##X##C### ';
+  FP[8]:= ' # ###### # ####+#####RRRRRRR##  ##+:   :+#### VVVVV ###X##X### ';
+  FP[9]:= '.# #T### ## #####+####XRRRRRRRX## #   :  :#####     ###TTT#X### ';
+  FP[10]:='.# # ##+### ######+###XXXXXXXXX# ## ::::: ####### # #######X### ';
+  FP[11]:='.# # # ###                          :+K+:         # #XXXXXXX###+';
+  FP[12]:='.# # C###   P  ###### ###XXXXXXXXX# ::;:: ####### # #XXXXXX####D';
+  FP[13]:='.# #3#### ////####### ###XRRRRRRRX#:: :   ###VW## # #XXXXX##WWWW';
+  FP[14]:='.# ###////\\\//###### ####RRRRRRR##+ :  :+###TV## # #XXXX##KWWWW';
+  FP[15]:='.# ##//\\\\C\//////## ##T##RRRRRRR###########V+## #     ####WWWW';
+  FP[16]:='.# ##///\\\1\////###+ #+-+##RRRRRRR##cavern## V## ###///########';
+  FP[17]:=' # ###///\\\//#####+# #---###RRRRRRR##of#####V ## #222222222\###';
+  FP[18]:=' #  Q###//// #####+## #-C-#Z#RRRRRRR#tunnels# V## #222222222\1 #';
+  FP[19]:=' ########### ####+### #---#3##RRRRRRR########V ## #222222222\#D#';
+  FP[20]:='          I  ###2#### #2-2# ##RRRRRRR####  ## V## #222222222##D#';
+  FP[21]:='##################### ##/## ###RRRRRRR## ## #V ## #222222222##D#';
+  FP[22]:='22222222222222222222#       ####RRRRRRR# ###X V## #222222222##D#';
+  FP[23]:='K + + + + + + + + +   ###########RRRRRRR#++##V    \---------##L#';
+  Convert_Format;
+ end; { Level3 }
 
-procedure PrintNum(YPos:byte; Num:longint);
-  var TempStr : Field;
+procedure Level5;
  begin
-  gotoxy(70,YPos);
-  write('       ');
-  str(Num,StrVal);
-  if (YPos=2) and (Score>0) then StrVal:=StrVal+'0';
-  if (YPos=11) then 
-    case WhipPower of
-     0..2:;
-     3..9:begin
-           str(WhipPower-2,TempStr);
-           StrVal:=StrVal+'+'+TempStr;
-          end;  
-    end; 
-  gotoxy(73-length(StrVal) div 2,YPos);
-  write(StrVal);
- end;
+  FP[1]:= '//1////////\\\\\\\\\\\1\\\\11111\C\1111111\\\\\\\\\\\\\\\\\XXCCC';
+  FP[2]:= '/////////1//\\\\1\\\\\\\\\\\\111\\\111111\\XXX\\\1\\\\\\\/1XXCCC';
+  FP[3]:= '///RRR///////\\\\\\\\\\\\\\Z\\111111111\\\\XLX\\\\\\\\\\///XXXXX';
+  FP[4]:= '//RRRRRR//////\\\\\\U\\\\1\\\\\\11111\\\\\\XXX\\\\\/////////////';
+  FP[5]:= '///RRRR///////\\\1\W W\\\\\\\\\\\\\\\\\\\\\\\\\//////1//////////';
+  FP[6]:= '/1//RR//XXXX/1//\\\\\\\\\\\\1\\\\\\\\\\//1/////////////////1////';
+  FP[7]:= '////////XCCX1//1////\\\\\\\\\\\\///////////////1////////////////';
+  FP[8]:= '////////XXXX/////////////////1////////////////////////XXXXXXXXXX';
+  FP[9]:= 'XXXX///////////////1///////////////XXXXXXXXXXXXXXXXXXXX=========';
+  FP[10]:='===XXXXXXXXXXX/////////XXXXXXXXXXXXX============================';
+  FP[11]:='=============XXXXXXXXXXX========================================';
+  FP[12]:='======================================================  1     ; ';
+  FP[13]:='K11 111===============================W       1  W        W   : ';
+  FP[14]:='1 1111 11 1    1       W        1         RR                  : ';
+  FP[15]:='111 1111 11 1              W            RRRRR       W         : ';
+  FP[16]:='1 1111 1111       1               W      +RRRRR               : ';
+  FP[17]:='111 1111 1   1            1              RRRRRRRR1         W  : ';
+  FP[18]:='1 1111 1111   B         W                 +RRRRRRR           1: ';
+  FP[19]:='111 1111 111 1                      W     RRRRRRR    W        : ';
+  FP[20]:='11 11 1111       1          W        1   RRRRRR         1     : ';
+  FP[21]:=' 111111 1    1      W                     RRR1           W    : ';
+  FP[22]:='111 11 111 1    1         P                      W            :`';
+  FP[23]:='1 11111 111  1       W            W                   W      I:U';
+  Convert_Format;
+ end; { Level5}
 
-procedure Update_Info;
+procedure Level7;
  begin
-  ak(7,0);col(4,7);
-  printnum(2,Score);
-  printnum(5,Level);
-  if Gems > 9 then printnum(8,Gems)
-  else begin col(20,23);printnum(8,Gems);col(4,7);end;
-  printnum(11,Whips);
-  printnum(14,Teleports);
-  printnum(17,Keys);
-  bak(0,0);
- end; { Update_Info }
+  FP[1]:= ' I                3+             3+             3+             3';
+  FP[2]:= 'PI                3+             3+             3+             3';
+  FP[3]:= ' I                3+             3+             3+             3';
+  FP[4]:= '############################################################### ';
+  FP[5]:= '+      ;K ##33333 33333##2 222 22222##111111 1111##..  ..     . ';
+  FP[6]:= ';;; ;; ;; ##3 33333 333##222222 2222##1 111111 11##  .. .....   ';
+  FP[7]:= 'U;;  ;  ; ##33 33U333 3## 2222U22 22##11111U1111 ## ....########';
+  FP[8]:= '  ;; ;; ; ##3333 333333##222 2222222##11 1111 111##. .. U    3..';
+  FP[9]:= '; I  ;;   ##3 3333333 3## 2222222 22##1 11 111111##.    #     .C';
+  FP[10]:=' ###############################################################';
+  FP[11]:='                     W;33333333333333333333333333333333333333333';
+  FP[12]:='  ###########################################W         K    ++++';
+  FP[13]:='Z                                T                             1';
+  FP[14]:='  ##############################################################';
+  FP[15]:='    # #+# #1# #+# #1# # #E#+# # #1# # #1# #;# #1# # # #+# #;# ##';
+  FP[16]:='  ## # #E# # #1# # # #;# # # # # # #E# #+#1# # #;# #1# #1#E# #T#';
+  FP[17]:='  # # # #;# # # #1# #+#1# # #1# # # # #1# # # # # #E# # # #;#Q##';
+  FP[18]:='  ## #1# #+# # # #E# # # #1#;# #+# # #;# # #1#E#+# # #;# # #E#T#';
+  FP[19]:='    # # # # #1# # # #1# # # # # # #1# # #E# # #1# #1# # #1# # ##';
+  FP[20]:='  ##############################################################';
+  FP[21]:='  ###K     ;      3    +:    3     :+3       +: 3    :+     +  3';
+  FP[22]:='  ##########  ##   :+  3  +    :+      :+     3  +:+     3  ::::';
+  FP[23]:='              ##3         3 +:    3 +   3  :+      3   :+  :D`DL';
+  Convert_Format;
+ end; { Level7 }
 
-procedure Border;
+procedure Level9;
  begin
-  gotoxy(1,24);
-  BC:=random(8)+8;
-  BB:=random(7)+1;
-  Col(BC,0);bak(BB,7);
-  for i:=1 to 66 do
-   begin
-    gotoxy(i,25);
-    write(Block);
-    gotoxy(i,1);
-    write(Block);
-   end;
-  for i:=2 to 24 do
-   begin
-    gotoxy(1,i);
-    write(Block);
-    gotoxy(66,i);
-    write(Block);
-   end;
-  bak(0,0);
-  end; { Border }
+  FP[1]:= 'K            3-      33333VVVVVVVVVVVV    .         .       .  Z';
+  FP[2]:= '     3-     ---     33VVVVVVVVVVVVVVZ          .                ';
+  FP[3]:= '3-  ---           333VVVVVVVVVVVVVVVVVV  .        U   .      .  ';
+  FP[4]:= '--              333VVVVVVVVVVVVVVVVVVVVVW    .           .      ';
+  FP[5]:= '          3-   33VVVVVVVV\\\\\\\\VVVVVVVVVV         .        VVV';
+  FP[6]:= '   3-    ---  33VVVVVVV\\++++W+++\\VVVVVVVVVV   .    ZVVVVVVVVVV';
+  FP[7]:= '  ---        33VVVVVVV\++\\RRRR\\+++\\VVVVVVVVVVVVVVVVVVVVVVVVVV';
+  FP[8]:= '3-       U  33VVVVVV\\+\\RRRRRRRRRR\++\\VVVVVVVVVVVVVVVVVVVVVVVC';
+  FP[9]:= '--         33VVVVVV\\+\RRRRRR////RRRR\+\\\VVVVVVVVVVVVVVV1111111';
+  FP[10]:='      333333VVVVVV\\+\RRRR////11///RRR\++\\VVVVVVVVV111111111111';
+  FP[11]:='  33333VVVVVVVVVV\\+\\RRR///11   1//RRRR\+\\VVVV1111111111111111';
+  FP[12]:='333VVVVVVVVVVVVV\\\W\RRR//C111 P 11//RRR\W\\\VVV1111111---111111';
+  FP[13]:='VVVVVVVVVVVVVVVVV\\\+\RRR//111   11//RRR\+\\VVVV1111111-B-111111';
+  FP[14]:='VVVVVVVVVVVVVVVVVV\\\+\RRR//111U11//RRR\\+\VVVVVV111111---111111';
+  FP[15]:='VVVVV3 .  3  VVVVVVV\\+\RRR////////RRRR\+\\VVVVV1111111111111111';
+  FP[16]:='3-.     -- .  VVVVVV\\\+RRRR//////RRRR\+\\VVVVV11111111111111---';
+  FP[17]:='--   - .3- --- VVVVVVV\\+\RRRRRRRRRRR\+\\VVVVV111111111111111- U';
+  FP[18]:='  - 3-  --.-3-. VVVVVVVV\++\RRRRRR\\++\VVVVVV1111111111111111---';
+  FP[19]:=' 3.        ---   VVVVVVVVV\++++W++++\\VVVVVV111111---11111111111';
+  FP[20]:='       U  3   3-  .VVVVVVVV\\\\\\\\VVVVVVVV1111111-B-11111111111';
+  FP[21]:='.  --.      - --.  - VVVVVVVVVVVVVVVVVVVVV11111111---11111111111';
+  FP[22]:='   3 --    3   -- 3-  ##VVVVVVVVVVVVVVVVV11111111111111111111111';
+  FP[23]:=' .   3  .    . 3-   . D+DLVVTTCCCTTVVVCC11111111111111111111111K';
+  Convert_Format;
+ end; { Level9 }
 
-procedure Restore_Border;
- begin    { Restores the bottom line of the border }
-  gotoxy(2,25);
-  col(BC,0);bak(BB,7);
-  for x:=1 to 64 do write(#178);
-  bak(0,0);
- end; { Restore_Border }
-
-procedure Flash(XPos,YPos:byte;Message:Str80);
- var Counter : integer;
+procedure Level11;
  begin
-  Counter := 14;
-  ClearKeys;
-  repeat
-   Counter := Counter + 1;
-   if Counter > 15 then Counter := 13;
-   col(Counter,15);
-   delay(20);
-   Print(XPos,YPos,Message);
-  until keypressed;
-  Restore_Border;
- end;
+  FP[1]:= '                                                        WWWW  3S';
+  FP[2]:= 'U################# #################################`###########';
+  FP[3]:= ' :3; \3+#3 W    K#3  #  W  W  W  W  W  W  W  W  W  #   3     3  ';
+  FP[4]:= 'Z:+: \3+# 3      #3  #  /////////////////////////  #      3     ';
+  FP[5]:= ' :3; \3+#    3   #3  #  /+//////+/////T///////+//  #            ';
+  FP[6]:= ' :+: \3+#        #3  #  ////T/////////////+////// 3#  3 ::;:  3 ';
+  FP[7]:= ' :3; \3+# 3  3   #3  # 3//////////W//////////////  #    :CC:    ';
+  FP[8]:= ' :+: \3+# W      #3  #  //+//////////////////+///  #    ;:::    ';
+  FP[9]:= ' :3; \3+#      3 #3  #  ///////+///////+/////////3 #3         3 ';
+  FP[10]:=' :+: \3+#3       #3  #3 /////////////////////////  #       3    ';
+  FP[11]:=' :3; \3+#W   3   #3  #  ///+//////XXXXX////W/////  #  3       3 ';
+  FP[12]:='P:C: \3K#       3#3  #  ////////+/XXKXX+/////////  #############';
+  FP[13]:=' :3; \3+# 3      #3  #  //////////XXXXX////////+/ 3#3         ++';
+  FP[14]:=' :+: \3+#     3  #3  # 3/+////////+///////T//////  #3+        ++';
+  FP[15]:=' :3; \3+#  3W    #3  #  /////////////////////////  #3+          ';
+  FP[16]:=' :+: \3+#        #3  #  /////T//////+////////+///  #3+      ::::';
+  FP[17]:=' :3; \3+# 3    3 #3  #3 /////////////////////////3 #3+      ```L';
+  FP[18]:=' :+: \3+#        #3  #  //W//////////////+///////  #3+      ::::';
+  FP[19]:=' :3; \3+#W   3   #3  #  /////+////+///////////+//  #3+          ';
+  FP[20]:='S:+: \3+#3       #3  #  /////////////////////////  #3+        ++';
+  FP[21]:=' :3; \3+#        #3 K#                             #3         ++';
+  FP[22]:='U### ####I########################## ###############E###########';
+  FP[23]:='                                                        ++++  3S';
+  Convert_Format;
+ end; { Level11 }
 
-procedure ClearKeys;
+procedure Level13;
  begin
-  while keypressed do read(kbd,ch);
- end;
+  FP[1]:= 'KKKKDE EI .  I  E    2  I   E  RRCC211///////// ////////////T//K';
+  FP[2]:= 'VVVVVE     2    I    .     .   RR22211//////// / ///////////2// ';
+  FP[3]:= '  E  I .    E  .     E  .    2 RR11111///   / ///      /////2// ';
+  FP[4]:= '2  . 2  E .     E2  . I    I   RR//////// // ////////// ////2// ';
+  FP[5]:= '  I   .    I   I .        .    RR//////// /////222////// ///2// ';
+  FP[6]:= 'E .   I E  .2  E    E .    E   RR/////T// /////2P2/   /// //2// ';
+  FP[7]:= ' 2   E  . I    .   I   I .    ERRC/////// /////222/ // /// / // ';
+  FP[8]:= 'I   .    2 E.  E     .      I  RR//////// ////// // // ////  // ';
+  FP[9]:= '.E I    .    I    2   E     .2 RR//////// ///////  ///I///// // ';
+  FP[10]:='   . 2     .      . I          RR//      1/ ////////// ////// / ';
+  FP[11]:='2I   . E   I  2.I  E      I.  \\\\ /////// /           ///////  ';
+  FP[12]:='RRRRRRRRRRRRRRRRRRRRRRRRRRRRRR\ZZ\RRRRRRRRRRRRRRRRRRRRRRRRRRRRRR';
+  FP[13]:='22--2-2--2--2-+--22----2-2---2\\\\VVVVVVVVVVVTVVV W VVVVVVTVVVVV';
+  FP[14]:='--2-2--2-2-2---2---2-2-+2---2--RR   .VVVVVVVVV + VVVTVVVV V VVVV';
+  FP[15]:='+2-2--2---2-2---22---2---2----2RRV     . VVVVVVVVVVVV VV VVV   V';
+  FP[16]:='2--+-2--2--+--22---2--+-2---2-+RRVV.  .     .VVVVVVVV V VVVVVV V';
+  FP[17]:='-2--2-2--2---2-+-22----2--2----RRVVVV    .       .VVVV  VVVV TVV';
+  FP[18]:='2-2--2--2-+2--B-2---2-+-2--+-2-RRVVVVVV  .   .      VVVVVVV VVVV';
+  FP[19]:='2+-2---2--2--2-2--2---2--2-----RRVVVVVVVV         .   .VVVVV VVV';
+  FP[20]:='-22-+-2--2-2---22--+-2--2-2-2--RRVVVVVVVVVV .            .V VVVV';
+  FP[21]:='2---2---2-2--2-+-2----2----2--+RRVVVVLDVVVVVV  .    .     . VVVV';
+  FP[22]:='VVVV2--2-+-2-2----2--2-2-2-2---RRCCVVVVDVDDVD                VVV';
+  FP[23]:='KKKD-2---2-2--2-2---2-+-2--2--2RRCCVVVVVDVVDVV222222222222222DKK';
+  Convert_Format;
+ end; { Level13 }
 
-procedure Cur(Num:byte);
- var Result : Registers;
+procedure Level15;
  begin
-  Result.AX := $100;
-  with Result do
-   if Color then
-    case Num of
-     1:CX:=$707;   { Underline   }
-     2:CX:=$8;     { Solid Block }
-     3:CX:=$2000;  { Invisible   }
-    end
-   else
-    case Num of
-     1:CX:=$C0D;
-     2:CX:=$E;
-     3:CX:=$2000;
-    end;
-   intr($10,Result);
- end; { Cur }
+  FP[1]:= '+*****#3#L#+ \    2    \ 2   2   W#CCCC#=C;=====    ====        ';
+  FP[2]:= '+**Q**# #D#     \/  2 \\     //   ##33##=;;===== === == ======= ';
+  FP[3]:= '+*****# #D#\\  //\/   \     \\// 2#\33\#===I=.  === ==== ===== =';
+  FP[4]:= '2###### #X#2  2 ///     2    //   #\33\#====  .=== ====== === ==';
+  FP[5]:= '2D33V  ##X#\\       2   \/     2  #\33\#===. .=== ======= == ===';
+  FP[6]:= '2#33#C##X##\/\  2 /\     2   /\   #\33\#==.  ==== ==  S  == ====';
+  FP[7]:= '2#33#.##X#W\/\\      2  \\\   //  #\;;\#== ====== == ======11111';
+  FP[8]:= '2#33#.##X#/\B      \/  \\/   2  2 #\  \#== ====== === =====11111';
+  FP[9]:= '2#33#.###X\///  ///   2 \\        #X  X#=== ===== ==== ====11111';
+  FP[10]:='2#33#.#####+\//2/\//         \\ 2 #X  X#=    ==== ===== =======;';
+  FP[11]:='2#33#.##X##++\////   2\  \  //\\  #X  X#= ======= W  : ======= =';
+  FP[12]:='2#33#.##XX##         \/\ 2   \\2  #X  X#== ====== 2    ====== ==';
+  FP[13]:='2#XX#.##XXX######## 2          ---#X  X#= ================ W ===';
+  FP[14]:='2#XX#.##XRRRRRRRRR##########2  - U#X  X# ====    ===1==== ======';
+  FP[15]:=';#XX#.##XRRRRRRRRRRRRRRRRRR########X  X#= == ==== == ==== ======';
+  FP[16]:=' #XX#.##XXRRRRRRRRRRRRRRRRRRRRRRRR#X  X#=K==    ==   =====   ===';
+  FP[17]:=' #XX#.##X##11RRRRRRRRRRRRRRRRRRRRR##  ########== ==== ======= ==';
+  FP[18]:='Z#XX#.####11111111111111RRRRRRRRR##  ##RRRRRR###= ==== ======= =';
+  FP[19]:=' #XX#.###11111111111111111111RRR##  ##RRRRRRRRR#== === ======== ';
+  FP[20]:=' #XX#.##11111111111111111111111##  ##RRRRRRRRRR##== == ======== ';
+  FP[21]:=' #CK#.##11111111B111111111B11111111##RRRRRRRRRRR#   == ======= =';
+  FP[22]:='P####X##111111111111111111111111111111RRRRRRRRRRU#====   ==== ==';
+  FP[23]:='       /-------------C----------------URRRRRRRRRRR#======      T';
+  Convert_Format;
+ end; { Level15 }
 
-procedure FootStep;
-  var x:integer;
+procedure Level17;
  begin
-  for x:=1 to ord(FastPC)*50+ord(not FastPC)*23 do sound(random(550)+350);
-  nosound;delay(120);
-  for x:=1 to ord(FastPC)*60+ord(not FastPC)*30 do sound(random(50)+150);
-  nosound;
- end;
+  FP[1]:= '     2    KRR++                P RRRRRRRRRRRR                   ';
+  FP[2]:= ' RRRRRRRRRRRRRRRRRRRRRRRRRRRRRR      -         RRRRRRRRRRRRRRR  ';
+  FP[3]:= '                    ++++++C 3RR  RRRRR1 RRRRR  RRCE             ';
+  FP[4]:= ' RRRRRRRRRRRRRRRRRRRRRRRRRR  RR  RRC1RRRR 1RR  RRRRRRRRRRRRRRRRR';
+  FP[5]:= '2222222222           ZRRTRRRRRR  RR  -     -       XXXXXXXXXXXKR';
+  FP[6]:= '--RRRR--RRRRRRRRRRRRRRRR     RR33RRRRRRRRRRRR  RR  RRRRRRRRRRRRR';
+  FP[7]:= '  RR-----------..*****RRRRR    **         +RR  RR             RR';
+  FP[8]:= '  RR--RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR--RRRRRRRRRRRRR  RR';
+  FP[9]:= '  RR--RR11111111----------D+DWD+DWD+DWLLRR333          2CBRR  RR';
+  FP[10]:='  RR--RR11111111RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR  RR';
+  FP[11]:='  RR--RR--RRRRRRRR  DT+*W*+TCRRZ1                             RR';
+  FP[12]:='  RR--RR--RRII.KRR  RRRRRRRRRRRRRRRRRRRR  RRRRRRRRRRRRRRRRRRRRRR';
+  FP[13]:='  RR--RR--RRIIRRRR                        RRU1-------XXXXXXXXX  ';
+  FP[14]:='  RR--RR--RRIIRRRRRRRRRRRRRRRRRRRRRR  RR  RRRRRRRRRRRRRRRRRRRR  ';
+  FP[15]:='  RR--RR--RR..RR 1RR 1RR 1RRR         RR                        ';
+  FP[16]:='  RR--RR--RRIIRR  -   -   -    RRRRRRRRR  RRRRRRRRRRRRRRRRRRRRRR';
+  FP[17]:='  RR------RRIIRR  RRRRRRRRRRR  RR  ;W;W;           22222222CRRK ';
+  FP[18]:='  RRRRRRRRRRIIRR         2KRRWWRR  RRRRRRRRRRRRRRRRRRRRRRRRRRR--';
+  FP[19]:='         -    RRRRRRRRRRRRRRRRRRR  RRXXXXXXXXXXXXXC3333333333333';
+  FP[20]:='  RRRRR 1RRR          1            RR--RRRRRRRRRRRRRRRRRRRRRRR- ';
+  FP[21]:='  X  RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR--URRCCRRCCRRXXXXXX333333  ';
+  FP[22]:='--RR              RRRRRRRR    2   KRR- RRR..RR..RR**RR**RR**RR  ';
+  FP[23]:='33RRRRRRRRRRRRRR   *    *   RRRRRRRRR--E.E******RRK*RR**RR**RR  ';
+  Convert_Format;
+ end; { Level17 }
 
-procedure GrabSound;
-  var x:integer;
+procedure Level19;
  begin
-  for x:=1 to ord(FastPC)*160+ord(not FastPC)*65 do
-   sound(random(1000)+1000);nosound
- end;
+  FP[1]:= '1  C  1      +   1   +        +  1      +     + 1 RRR++++++RRRRL';
+  FP[2]:= '--   ---  1     ---        1    ---  1         ---RRRR++++++RRRD';
+  FP[3]:= ' 1       ---RRRRRR    1   ---       ---    W      RRRR;;;;;;RRR1';
+  FP[4]:= '---  *  1 RRRRRRRRRR1---       1       1       1  RRRR111111RRR1';
+  FP[5]:= '1      RRRRR#####RRRRRR 1     ---     ---   1 ---RRRRR111111RRR1';
+  FP[6]:= '--1   RRRRRR#U K#RRRRR ---  1      T       ---  RRRRRR11111RRRR1';
+  FP[7]:= ' ---   RRRRR#####RRR       ---           1    #RRRRRR#11111RRRR1';
+  FP[8]:= '    1    RRRRRRRRRR  1           1      ---   ########11111RRRR1';
+  FP[9]:= ' * ---    RRRRRRRR  ---         ---   1       D--Z---`11B11RRRR1';
+  FP[10]:='      1    RRRRR            W        ---      ########111111RRR1';
+  FP[11]:='     ---                                      #RRRRRR#111111RRR1';
+  FP[12]:='               ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; FFRRRRRR1111111RRR1';
+  FP[13]:='#############################################;;;RRRRR11111111RR1';
+  FP[14]:='    #++#W3#* #  # *##::::::+::::K:::::::::::#1111RRRRR1111111RR1';
+  FP[15]:=' #  #3 #3 #        ##:3::::::::-::::::3:::::#11111RRRRR111111RR1';
+  FP[16]:='P#  #  #  #3 #  #  ##:::::::::-:::3:::::::::#11111RRRRR111111RR1';
+  FP[17]:=' #3 #  K  #  #  #3 ##::::::::-::::::::::::::#11111RRRRR11B111RR1';
+  FP[18]:='I#  #  #  #  # 3#  ##:::3:::-:::::::::::3:::#11111RRRRR11111RRR1';
+  FP[19]:=' #  #  #  #  #  #  ##::::::;::::::::*:::::::#1111RRRRRR11111RRR1';
+  FP[20]:='Z#  #  # 3# 3#  #  ##///////////////////////#1111RRRRR11111RRRR1';
+  FP[21]:=' #     #  #  #3 #                           #EEERRRRRR11111RRRR1';
+  FP[22]:='C# 3#  #  #  #**#  ##\\\\\\\\\\\\\\\\\\\\\\\#+++RRRRR;;;;;;RRRR ';
+  FP[23]:='3#+ #3*#3    #**#+3##33333333333333333333333#CCRRRRRRR*-U-*RRRRU';
+  Convert_Format;
+ end; { Level19 }
 
-procedure BlockSound;
-  var x:integer;
+procedure Level21;
  begin
-  for x:= 60 downto 30 do begin sound(x);delay(1+ord(FastPC)*2);end;
-  nosound;
- end;
+  FP[1]:= 'LVVVVVVVVVVVVVVVVVVVVVV333333333333333333VVVVVVVVVVVVVVVVVVVVVVK';
+  FP[2]:= 'DVVVVVVVVVVVVVVVVVVVV333                333VVVVVVVVVVVVVVVVVVVVI';
+  FP[3]:= '.VVVVVVVVVVVVVVVVVV333         ***        333VVVVVVVVVVVVVVVVVV-';
+  FP[4]:= 'DVVVVVVVVVVVVVVVV333         *******        333VVVVVVVVVVVVVVVV-';
+  FP[5]:= '.VV+VVVVVVVVVVV333          ****F****         333VVVVVVVVVVV+VV-';
+  FP[6]:= 'DVQ+VVVVVVVVV333   +         *******         +  333VVVVVVVVV+CV-';
+  FP[7]:= '-VV+VVVVVVV333        +        ***        +       333VVVVVVV+VV-';
+  FP[8]:= '-VVVVVVVV333             +             +            333VVVVVVVV-';
+  FP[9]:= '-VVVVVV333      Z                              T      333VVVVVV-';
+  FP[10]:='-VVVV333                     -------                    333VVVV-';
+  FP[11]:='-VV333                      ---------                     333VV-';
+  FP[12]:='E33C3         +    +    +  -----P-----  +    +    +        3C33E';
+  FP[13]:='-VV333                      ---------                     333VV-';
+  FP[14]:='-VVVV333                     -------                    333VVVV-';
+  FP[15]:='-VVVVVV333      T                              Z      333VVVVVV-';
+  FP[16]:='-VVVVVVVV333             +             +            333VVVVVVVV-';
+  FP[17]:='-VV+VVVVVVV333        +        ***        +       333VVVVVVV+VV-';
+  FP[18]:='-VC+VVVVVVVVV333   +         *******         +  333VVVVVVVVV+CV-';
+  FP[19]:='-VV+VVVVVVVVVVV333          ****F****         333VVVVVVVVVVV+VV-';
+  FP[20]:='-VVVVVVVVVVVVVVVV333         *******        333VVVVhelp!VVVVVVV-';
+  FP[21]:='-VVVVVVVVVVVVVVVVVV333         ***        333VVVVVVVVVVVVVVVVVV-';
+  FP[22]:='.VVVVVVVVVVVVVVVVVVVV333                333VVVVVVVVVVVVVVVVVVVVF';
+  FP[23]:='KVVVVVVVVVVVVVVVVVVVVVV333333333333333333VVVVVVVVVVVVVVVVVVVVVVK';
+  Convert_Format;
+ end; { Level21 }
 
-procedure NoneSound;
-  var x:integer;
+procedure Level23;
  begin
-  for x:=1 to 5 do
-   begin
-    sound(400);delay(10);nosound;delay(10);
-    sound(700);delay(10);nosound;delay(10);
-   end;
- end;
+  FP[1]:= 'L UD*D*D*D*D------------------------;;;;;;;;;;;;;;;;;;;;;;;;;;;;';
+  FP[2]:= '############-----------------##-####                           S';
+  FP[3]:= '+2222K2222+#11111111111111111##-22X# XXXXXXXXXXXXXXXXXXXXXXXXXXX';
+  FP[4]:= '+222222222+#-----------------##-22X# XXXXXXXXXXXXXXXXXXXXXXXXXXX';
+  FP[5]:= '+222222222+#22222222222222222##-2XX#                            ';
+  FP[6]:= '2/////////2#-----------------##-2XK#----------------------------';
+  FP[7]:= '2/W--W--W/2#33333333333333333##-22X#2222222222222222222222222222';
+  FP[8]:= '2/-------/2#-----------------##-22X#2222222222222222222222222222';
+  FP[9]:= '2/---P---/2#22222222222222222##-2XX#2222222222222222222222222222';
+  FP[10]:='2/---B---/2#-----------------##-2X+#----------------------------';
+  FP[11]:='2/-------/2#1111111-K-1111111##-22X#3333333333333333333333333---';
+  FP[12]:='2/-------/2####################-22X#333333333333333333333333----';
+  FP[13]:='2/W--W--W/2#--1111111111111-+##-2XX#3333------33333-------------';
+  FP[14]:='2/////////2#Q-------------------2X+#333--------333----------I--3';
+  FP[15]:='2222#Z#2222################# ##-22X#33----------3--------------3';
+  FP[16]:='2222#-#2222#=------======K==-##-22X#3-----33---------33333333333';
+  FP[17]:='#####-######*-=====-====-=-=-##-2XX#3----3333-------333333333333';
+  FP[18]:='C222/-/2222#==----==--==-==--##-2X+#3---333333-----3333333333333';
+  FP[19]:='2222/-/////#=====-====-=-====##-22X#3---3333333333333333--------';
+  FP[20]:='2222/-;;;;;;-==---==--==-=---##-22X#3---333333333333333--*+*+*+K';
+  FP[21]:='///////////#=-=-===-=====-==-##-2XX#---------------------#######';
+  FP[22]:='C2222222222#W---====-----===S##-2XC#+--------------------##22222';
+  FP[23]:='####################################:::::::::::::;:::::::##X222U';
+  Convert_Format;
+ end; { Level23 }
 
-procedure Static;
-  var x,y:integer;
- begin for x:= 1 to 15 do bor(random(16));bor(4);
-  for x:=1 to 33 do
-   case random(2) of
-    0:for y:=1 to random(60)+10 do sound(random(4000)+3000);
-    1:begin nosound;delay(random(30)); end;
-   end; nosound;
- end; { Static }
-
-procedure Col(Num1,Num2:byte);
- begin if Color then textcolor(Num1) else textcolor(Num2) end;
-
-procedure Bak(Num1,Num2:byte);
- begin if Color then textbackground(Num1) else textbackground(Num2) end;
-
-procedure Bor(Num:byte);
- var Result : Registers;
+procedure Level25;
  begin
-  if Color then
-    begin
-      with Result do begin AX:=$B00;BX:=Num; end;
-      intr($10,Result);
-    end;
- end;
+  FP[1]:= 'VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV VVVVVVVVVVVVVVVVVVVVVVVCC';
+  FP[2]:= 'VRRRRRVVVVVVVVV VVVVV VVVVVVVVVVVVVVV V VVV**VVVVVV*****VVVVVVCC';
+  FP[3]:= 'VRU KRVVV**VVV V VVV VIVVV*****VVVVV VVV V**VVVVVV V*****VVVVVVV';
+  FP[4]:= 'VRRRRRVVVV**V VVV V VVV V*****V VVV VVVVV VVVVVVV VVV*****VVVVVV';
+  FP[5]:= 'VVVVVVVVVVVV VVVVV VVVVV*****VVV V VVVVVVV V V V VVV VVVVVVVVVVV';
+  FP[6]:= 'VVVVVVVVVVV VVVVVVV**VVVVVVVVVVVV VVVVVVVVV V3V VVV VVVVVVVVVVVV';
+  FP[7]:= 'VVVV VVVVV VVVVVVVVV**VVVVVVVVVVVVVVVVVVVVVVVVVVVVVV VVRRRRRVVVV';
+  FP[8]:= 'VVV V VVV3V VVV VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV VVVRU KRVVVV';
+  FP[9]:= '***VVV V VVV V V VVVV##########XX##########VVVVVVV VVVVRRRRRVVVV';
+  FP[10]:='V***VVV VVVVV VVV VVVl#IIIIIIIIIIIIIIIIII##VVVVVV V**VVVVVVVV**V';
+  FP[11]:='VVVVVVTVVVV**VVVVV VVa#I#####IIIIII#####I#pVVVVV VVV**VVVV V**VV';
+  FP[12]:='VVVVV VVVV**VVVVV VVVv#I#LD+DIIIIIID-PU#I#iVVVV VVVVVVVVV V VVVV';
+  FP[13]:='VVVVVV VVVVVVVVV VVVVa#I#####IIIIII#####I#tV***VVVVVVVVVTVVV VVV';
+  FP[14]:='VVVVVVV VVVV*****VVVV##IIIIIIIIIIIIIIIIII#!VV***VVVVVVV VVVVV VV';
+  FP[15]:='VVVVVV VVVVVV*****VVV##########XX##########VVV***VVVVV VVVVVVV V';
+  FP[16]:='VVVVV VVVVVVVV*****VVVVVVVVVVVVVVVVVVVVVVVVVVVV***VVV VVV VVVVV ';
+  FP[17]:='VVVVVV****VVVV VVVVVVVVVVVVVVVVVVVVVVVVVV VVVVVVVV V VVV V VVV V';
+  FP[18]:='VVVVV****VVVV VVVVVVVV***VVV V V V VVVVV V VVVVVVVV VVV VVV V VV';
+  FP[19]:='VVVV****VVVVVV3VVVVVVVV***V V V V V VVVIVVV3VVVVVVVVVV VVVVV VVV';
+  FP[20]:='VVVVVVVVVVVVVVV V VVVVV VV VVVRRRRRV V VVVVV VVVVVVVV VVVV**VVVV';
+  FP[21]:='VVVVVVVVVVVVVVVV V VVV VVVVVVVRU KRVV VVVVVVV VVV****VVVV**VVVVV';
+  FP[22]:='VVVVVVVVVVVVVV**VVV V VVVVVVVVRRRRRVVV**VVVVVV V****VVVVVVVVVVVC';
+  FP[23]:='CCCCVVVVVVVVV**VVVVV VVVVVVVVVVVVVVVVVV**VVVVVV****VVVVVVVVVVVCC';
+  Convert_Format;
+ end; { Level25 }
 
-procedure Sign_Off;
+procedure Level27;
  begin
-  Shareware(false);
-  ClearKeys;
-  col(7,7);
-  bor(0);
-  bak(0,0);
-  clrscr;             
-  gotoxy(31,2);write('DUNGEONS OF KROZ II');
-  gotoxy(26,3);writeln('An Apogee Software Production');
-  writeln;
-  writeln('Other great games available from Scott Miller:');
-  writeln;col(15,15);
-  writeln('� The six Kroz games!  CAVERNS OF KROZ, KINGDOM OF KROZ, DUNGEONS OF KROZ,');
-  writeln('     RETURN TO KROZ, TEMPLE OF KROZ and THE FINAL CRUSADE OF KROZ.');
-  writeln('     Each volume is just $7.50, or order all six for $35!');
-  writeln;col(7,7);
-  writeln('� SUPERNOVA - Explore a galaxy and save a planet from an exploding star!');
-  writeln('     An epic adventure rated by Shareware Magazine as one of the best games');
-  writeln('     ever!  Highly advanced game has graphics, sound effects galore, clue');
-  writeln('     command, and dozens of unique features. ($10)');
-  writeln;
-  writeln('� BEYOND THE TITANIC - A fantastic adventure of exploration and survival.');
-  writeln('     What really happened?  Sound effects and 16 color screens.  ($8)');
-  writeln;
-  writeln('� WORD WHIZ - New game that challenges your knowledge of the English');
-  writeln('     language.  Fun to play, yet very education, too.  ($5)');
-  writeln;col(15,15);
-  writeln('� THE LOST ADVENTURES OF KROZ - All-new seventh Kroz game with 75 of the best');
-  write  ('     levels yet!  Built-in contest!  New features galore.  ($20)');
-  cur(2);col(7,7);
-  ClearKeys;
-  HALT;
- end; { Sign_Off }
+  FP[1]:= '3     +=     =+=    =  1=  =+=  =     -   -2   -    -2    -  Z-2';
+  FP[2]:= '3 P =   =   =   1==  =    =   = 1=    -2  -    -2   -    K-2  - ';
+  FP[3]:= '##################################   ###########################';
+  FP[4]:= '3 3 3 3 3**********************K##   ##LVSDCD++D*D++D##D1****DDC';
+  FP[5]:= '   K C############################   ##VV+DCD########**######D#D';
+  FP[6]:= '          V V  V  V V V   VV   V V   ##ITFD##---D*DID###**DCD*D-';
+  FP[7]:= 'VXVVVVVVVVS  VV V    V V V  V V V    ##ZW*.+D-2-D*###WWD**DCD*D-';
+  FP[8]:= 'V+VVV   +VVVVVVVVVVVVVVVVVVVVVVVVVV  ##########################D';
+  FP[9]:= 'VV  +VVV VVCCXXXXXXXKXXXXXXCXXXXXXV  #K    3C/////////////3 ZX  ';
+  FP[10]:='VVVVVVVV+VVXXXX+XXXXXXXXXXXXXXXXXXV  #########################  ';
+  FP[11]:='+  V +  VVVXXXXXXXXXXXXXXXXXXXXX+XV  R2 ==+ ==C/1111111/+ 2== 1 ';
+  FP[12]:='V V+VVVVVVVXXXXXXXXXXXXX+XXXXXXXXXV  R  +==. ==/1111111/ ==+  . ';
+  FP[13]:='+VVVV + VVVXXXXXXX+XXXXXXXXXXXXXXXV  R ===== 2=/111B111/1 ====  ';
+  FP[14]:='V  + VVV+VV+XXXXXXXXXXXXXXXXXXX+XXV  R  ==  ===/1111111/   ==   ';
+  FP[15]:='VVVVVVV-VVVXXXXXXXXXXXXXXXXXXXXXXXV  R 1   == ./1111111/       1';
+  FP[16]:='111111-11V#WWW---=   ===   =-------  R===    1 /1111111/  1  ==+';
+  FP[17]:='11111-111V#WWW-3-= = =B= = =222222;  R+= .  =  /////////    ====';
+  FP[18]:='1111-1111V#-----3= = = = = =222222;  R  2  ===   .  +== .=   == ';
+  FP[19]:='111-11111B#3-3-3-= = = = = =222222;  R ==   == 2   ====  ===2  1';
+  FP[20]:='11-111111V#-3-3-3= = = = = =222222;  R ===  1+==   === 2 +===   ';
+  FP[21]:='1-1111111V#----3-= = = = = =222222;  RK ===  ==== 1   .    1    ';
+  FP[22]:='-11111111V#+++--3= =+   += =222222;  RRRRRRRRRRRRRRRRRRRRRRRRR-X';
+  FP[23]:='T-------KV#+++-3-- =======I ------- ZU2 U2 U2 U2 UK U2 U2 U2 U2X';
+  Convert_Format;
+ end; { Level27 }
 
-procedure Shareware(Wait: boolean);
+procedure Level29;
  begin
-  bak(1,0);bor(1);clrscr;cur(3);col(15,15);
-  gotoxy(21,1);
-  writeln('DUNGEONS OF KROZ II � HOW TO REGISTER');
-  gotoxy(1,2);
-  for x:=1 to 80 do write('�');
-  gotoxy(1,3);
-  col(7,7);
-  writeln('  This is not a shareware game, but it is user-supported.  If you enjoy this');
-  writeln('game you are asked by the author to please send a registration check in the');
-  writeln('amount of $7.50 to Apogee Software.');
-  writeln('  This registration fee will qualify you to order any of the other Kroz');
-  writeln('volumes available:');
-  writeln;col(15,7);
-  writeln('  � Caverns of Kroz   - the first discovery of Kroz');
-  writeln('  � Dungeons of Kroz  - the dark side of Kroz, fast-paced action');
-  writeln('  � Kingdom of Kroz   - the national contest winner ("Best Game" in 1988)');
-  writeln('  � Return to Kroz    - the discovery of entirely new underground chambers');
-  writeln('  � Temple of Kroz    - the bizarre side of Kroz, nothing is what it seems');
-  writeln('  � The Final Crusade of Kroz - the surprising finish?');
-  writeln;col(7,7);
-  writeln('Each game is priced $7.50 each, any three for $20, or all six for only $35.');
-  writeln('You''ll also get a secret code that makes this game easier to complete,');
-  writeln('plus a "Hints, Tricks and Scoring Secrets" guide and "The Domain of Kroz" map.');
-  writeln;col(7,7);
-  write('Please make checks payable to:');
-  col(14,7);
-  writeln('   Apogee Software    (phone: 214/240-0614)');gotoxy(31,21);
-  writeln('   4206 Mayflower');col(15,15);
-  write  ('Address always valid!');gotoxy(31,22);col(14,7);
-  writeln('   Garland, TX 75043  (USA)');
-  writeln;
-  col(7,7);
-  write('Thank you and enjoy the game.  -- Scott Miller');
-  if Wait then delay(0);
-  bak(random(6)+1,7);
-  gotoxy(1,25);
-  insline;
-  gotoxy(27,25);
-  col(16,16);
-  write('Press any key to continue.');
-  ClearKeys;
-  repeat x:=random(maxint) until keypressed;
-  ClearKeys;
-  bak(0,0);bor(4);clrscr;cur(3);
- end; { Shareware }
+  FP[1]:= 'P-----------:333333333333333:---------:C:::::::::::K:-----------';
+  FP[2]:= '-:-:-::;:::-:---------------;-:::-:::-:1-1-1-1-1-1-1:-:::::::::-';
+  FP[3]:= '-:-:--:2:C;-:-:#############:-:U:-:U:-:-1-1-1-1-1-1-:-:   C   :-';
+  FP[4]:= '-:-::::2:X:-:-2#invisimaze!#2-: :3:-:-:1-1-1-1-1-::::-:::::::::-';
+  FP[5]:= '-:---B:2:X:-:-:#############:-:-:-:-:-:::::-::::::---------::-:-';
+  FP[6]:= '-::::::2:X:-:-:.K-----------:-:-:Z:-:-:S----;------:::::::-::-:-';
+  FP[7]:= '-:K-2222:X:-:-:::::::::::::-:-:-:::-:-:::::-::::::::-----:----:-';
+  FP[8]:= '-::::::::X:-:+++++++++++++++:-:K::--:-:---:-:---:----:::-::::::-';
+  FP[9]:= '-XXXXXXXXX:-:::::::::::::::::-::::-::-:-:-:-:-:-:-::::::--------';
+  FP[10]:=':::::::::::---------W---------::---::-:-:---:-:-:-::---:-:::::::';
+  FP[11]:='--------::::::::::::::::::::::::-:-::-:-:::::-:-:-:C-:-:-::-----';
+  FP[12]:='-::::::-------------W------------:----:-------:-:-::::-:-::-:::-';
+  FP[13]:='--:::::::::::::::::::::::::::::::::::::::::::-:-:----:-:-::---:-';
+  FP[14]:=':-:-----33333333333----------+----------------:-::::-:-:-::::-:-';
+  FP[15]:='--:-::::;;;;;;;;;;;::::::::::::::::::::::-:::-:----:-:-:-3::3-:-';
+  FP[16]:='-::K::::----------------------------------:Z;-:-::-:-:T--::::-:-';
+  FP[17]:='--::::::::::::::::::::::::::1:1:1:1:1:1:1::-:-:-::-:-:::::3:3-:-';
+  FP[18]:=':-:W:----------------------::::::::::::::::-:-:-::-:-------::-:`';
+  FP[19]:='--:-:-:11111111:Z:;:::::::-:K-XXXXXXX3333333:1:-::-:::::::-:3-:`';
+  FP[20]:='-::-:-::::::::::::*******:-::::::::::::::::-:-:W::-------:-::-:`';
+  FP[21]:='--:-:-:CI`-------:*******:-:::EWWWWW--------:T::::::::::-:-:3-:`';
+  FP[22]:=':-:-:-::::::::::-:::::::::---::::::::::::::::::3333333:--:-::-:`';
+  FP[23]:='------------------+:Z-----------------------------------::----:L';
+  Convert_Format;
+ end; { Level29 }
 
-procedure New_Gem_Color;
+procedure Level30;
  begin
-  repeat
-   GemColor:=random(15)+1;
-   if not Color then GemColor := 7;
-  until GemColor <> 8;
- end;
+  FP[1]:= 'K1VXXXXXXXXXXXXXXXX3333333333333K#333##Q...\2-2-2-2-2-2-2-2-2-:R';
+  FP[2]:= '-1V  +++++++++++++3333333333333333333#######-2-2-2-2-2-2-2-2-2;R';
+  FP[3]:= '-1V  #########################------+##-2-2-2-2-2-2-2-2-2-2-2-:R';
+  FP[4]:= '-1V  F-----------------------I-------##2-2-2-2---2-2-2-2-2-2-2RR';
+  FP[5]:= '-1V--##################################-2-2-2--C--2-2-2-2-2-2ZRR';
+  FP[6]:= '-1V2-2-2-2VV++K++VV2-2-2-2-2-2-2-2-2-2-2-2-2-2---2-2-2-2-2-RRRRR';
+  FP[7]:= '-1V-2-2-2-VV++S++VV-2-2-2-2-2-----2-2-2-2-2-2-2-2-2-2RRRRRRRRRRR';
+  FP[8]:= '-1V2-2-2-2VVDVVVDVV2-2-2-2-2-2-K-2-2-2-2-2-2-2-2-RRRRRRRRRRRRRRR';
+  FP[9]:= '-1V-2-2-2-2-2-2-2-2-2-2-2-2-2-----2-2-2-2-2-2-RRRRRRRRRRRRRRRRRR';
+  FP[10]:='-1V///////-2-2-2-2-2-2-2-2-2-2-2-2-2-2-2-2-2-RRRRR##333333333XXR';
+  FP[11]:='--XXXXXX//2-VVVVV-2-2-2==================-2-RRRRRE##3333333333XR';
+  FP[12]:='P X 33ZX//-2V+B+V2-2-2C==UDCDXDXDXDXDXDCD2-2RRRREAED3333B33333UR';
+  FP[13]:='--XXXXXX//2-VVVVV-2-2-2==================-2-RRRRRE##3333333333XR';
+  FP[14]:='-1V///////-2-2-2-2-2-2-2-2-2-2-2-2-2-2-2-2-2-RRRRR##333333333XXR';
+  FP[15]:='-1V-2-2-2-2-2-2-2-2-2-2-2-2-2-----2-2-2-2-2-2-RRRRRRRRRRRRRRRRRR';
+  FP[16]:='-1V2-2-2-2VVDVVVDVV2-2-2-2-2-2-K-2-2-2-2-2-2-2-2-RRRRRRRRRRRRRRR';
+  FP[17]:='-1V-2-2-2-VV++S++VV-2-2-2-2-2-----2-2-2-2-2-2-2-2-2-2RRRRRRRRRRR';
+  FP[18]:='-1V2-2-2-2VV++K++VV2-2-2-2-2-2-2-2-2-2-2-2-2-2---2-2-2-2-2-RRRRR';
+  FP[19]:='-1V;##################2-2-2-2-2-2-2-2-2-2-2-2--C--2-2-2-2-2-2ZRR';
+  FP[20]:='-1V1EEEEE1EEEEEE11EE###################2-2-2-2---2-2-2-2-2-2-2RR';
+  FP[21]:='-1V1EEEE1E1EEEE1EE1E##C+++++++3KKD***##-2-2-2-2-2-2-2-2-2-2-2-:R';
+  FP[22]:='-1VE1E11+EE11E1EEEE1##############***##2-2-2-2-2-2-2-2-2-2-2-2;R';
+  FP[23]:='K1V+E1EEEEEEE1E+EEEE+*W*+C+*W*+K##S-----2-2-2-2-2-2-2-2-2-2-2-:R';
+  Convert_Format;
+ end; { Level30 }
 
-procedure Play(Start,Stop,Speed:integer);
-  var x:integer;
- begin
-  if Start<=Stop then
-   for x:=Start to Stop do begin sound(x);delay(Speed)end
-  else
-   for x:=Start downto Stop do begin sound(x);delay(Speed) end;
-  nosound;
- end; { Play }
 
-procedure AddScore(What:integer);
- begin
-  case What of
-   {Monsters}  1..3:Score:=Score+What;
-   {Block}     4,14:if Score > 2 then Score:=Score-2;
-   {Whip}      5:Score:=Score+1;
-   {Stairs}    6:Score:=Score+Level;
-   {Chest}     7:Score:=Score+5;
-   {Gem}       9:Score:=Score+1;
-   {Invisible} 10:Score:=Score+10;
-   {Teleport}  11:Score:=Score+1;
-   {SpeedTime} 15:Score:=Score+2;
-   {Trap}      16:if Score>5 then Score:=Score-5;
-   {Lava}      22:Score:=Score+25;
-   {Border}    20:if Score > Level then Score:=Score-(Level div 2);
-   {Nugget}    27:Score:=Score+50;
-   {Create}    35:Score:=Score+Level*2;
-   {Generator} 36:Score:=Score+50;
-   {MBlock}    38:Score:=Score+1;
-  end;
-  Update_Info;
- end; { AddScore }
+BEGIN
+END. { Level Layouts }
 
-procedure Won;
- begin
-  Border;
-  ClearKeys;
-  col(15,31);bak(BB,0); 
-  print(5,1,'YOUR QUEST FOR THE MAGICAL STAFF OF KROZ WAS SUCCESSFUL!!');
-  bak(0,0);
-  High_Score(false);
- end; { Dead }
-
-procedure High_Score(PlayAgain:boolean);
-  var x,
-      Place : integer;
-      Stop  : boolean;
- begin
-  ClearKeys;
-  window(2,2,XSize+1,YSize+1);
-  bak(0,0);clrscr;
-  window(1,1,80,25);
-  cur(3);
-  assign(HSFile,'DUNGEON2.HS');
-  {$I-}
-  reset(HSFile);
-  {$I+}
-  if IOResult <> 0 then
-   begin
-    rewrite(HSFile);
-    for x:=1 to 15 do
-     with HSList[x] do
-      begin
-       case x of
-        1:begin Name:='Scott Miller';HighScore:=13640;HighLevel:=16;end;
-        2:begin Name:='Indy J.';HighScore:=8574;HighLevel:=14;end;
-        3:begin Name:='J. T. Kirk';HighScore:=6995;HighLevel:=11;end;
-        4:begin Name:='Neil Peart';HighScore:=3501;HighLevel:=8;end;
-        5:begin Name:='Ttocs Rellim';HighScore:=1228;HighLevel:=5;end
-        else begin Name:='Adventurer';HighScore:=0;HighLevel:=0;end
-       end;
-       write(HSFile,HSList[x]);
-      end;
-    close(HSFile);
-   end;
-  col(9,9);
-  gotoxy(25,3);
-  write('DUNGEONS OF KROZ II');
-  col(11,7);
-  gotoxy(16,5);write('NAME');
-  gotoxy(34,5);write('HIGH SCORE');
-  gotoxy(49,5);write('LEVEL');
-  reset(HSFile);
-  for x:=1 to 15 do
-   read(HSFile,HSList[x]);
-  Place:=1;
-  Stop:=false;
-  repeat
-   if Score>HSList[Place].HighScore then Stop:=true;
-   Place:=Place+1;
-   if not Stop and (Place>15) then Place:=100;
-  until Stop or (Place>15);
-  Place:=Place-1;
-  if Place<16 then
-   for x:=15 downto Place do
-    HSList[x]:=HSList[x-1];
-  with HSList[Place] do
-   begin
-    Name:='';
-    HighScore:=Score;
-    HighLevel:=Level;
-   end;
-  for x:=1 to 15 do
-   begin
-    if odd(x) then col(12,7) else col(13,7);
-    with HSList[x] do
-     begin
-      gotoxy(13,x+6);write(x:2);
-      gotoxy(16,x+6);write(Name);
-      gotoxy(36,x+6);write(HighScore);if HighScore>0 then write('0');
-      gotoxy(50,x+6);write(HighLevel);
-     end;
-   end;
-  close(HSFile);
-  ClearKeys;
-  if Place<16 then
-   begin
-    bak(4,7);
-    gotoxy(16,Place+6);
-    write('               ');
-    col(4,0);
-    bak(7,7);
-    gotoxy(16,23);
-    write('Enter your name then press <enter>.');
-    col(15,15);
-    bak(4,7);
-    gotoxy(16,Place+6);
-    cur(2);
-    readln(HSList[Place].Name);
-    cur(3);
-    rewrite(HSFile);
-    for x:=1 to 15 do write(HSFile,HSList[x]);
-    close(HSFile);
-   end;
-  bak(0,0);
-  gotoxy(16,23);
-  write('                                   ');
-  for x:=1 to 999 do
-   begin
-    SX[x]:=0;SY[x]:=0;
-    MX[x]:=0;MY[x]:=0;
-    FX[x]:=0;FY[x]:=0;
-   end;
-  if PlayAgain then
-   Flash(14,25,'Do you want to play another game (Y/N)?')
-  else
-   begin
-    ch:='N';
-    Flash(21,25,'Press any key to continue.');
-   end;
-  if PlayAgain then read(kbd,ch);
-  if upcase(ch) <> 'N' then Restart:=true
-  else
-   begin
-    bak(0,0);col(15,15);bor(0);cur(1);
-    clrscr;
-    if not PlayAgain then
-     begin
-      gotoxy(1,2);
-      writeln('You''ve completed DUNGEONS OF KROZ II!');
-     end
-    else
-     begin
-      gotoxy(17,2);
-      writeln('DUNGEONS OF KROZ II');
-     end;
-    Sign_Off;
-   end;
- end; { High_Score }
-
-procedure Dead(DeadDot: boolean);
- begin
-  if Gems>9 then col(4,7)
-  else
-   begin Gems:=0;col(20,23);end;
-  bak(7,0);
-  gotoxy(71,8);
-  write('     ');
-  str(Gems,StrVal);
-  gotoxy(73-length(StrVal) div 2,8);
-  write(StrVal);
-  bak(0,0);
-  if DeadDot then
-   for x:=150 downto 5 do
-    begin
-     gotoxy(PX,PY);
-     col(x,x);bak(random(8),0);
-     write(Player);
-     sound(x*x);
-    end;
-  nosound;
-  ClearKeys;
-  col(16,16);bak(BB,7);
-  print(27,1,'YOU HAVE DIED!!');
-  bak(0,0);
-  repeat
-   col(random(16),random(16));
-   gotoxy(PX,PY);
-   if DeadDot then write('*');
-   print(21,25,'Press any key to continue.');
-  until keypressed;
-  Border;
-  High_Score(true);
- end; { Dead }
-
-procedure Define_Levels;
- begin
-  for i := 1 to 30 do DF[i] := '';
-  
-        {  1  2  3  X  W  L  C  S  +  I  T  K  D  #  F  .  R  Q  /  \  B  V  =  A  U  Z  *  E  ;  :  `  - }
-DF[2]:= '200  5   100     2  1  1 40        1    50     5                                                ';
-DF[4]:= '   200       38  2                                                                              ';
-DF[6]:= '      180 50     2       75                                                                     ';
-DF[8]:= '             20  2  1    40 35  2              5         990              3                     ';
-DF[10]:='   400           1       20                 1                                     35            ';
-DF[12]:='100 75 50100 10  1  1  1 30     1  1                          5                     100         ';
-DF[14]:='      170     5  1  1    25500  1       50 50 50     1        1          28        1            ';
-DF[16]:='    60           1     6 30 20              1                  550        4     5  2            ';
-DF[18]:='100           3  1  1    20     2              5              1           4    20   850         ';
-DF[20]:='   550   650  5  1  1     5     1  1           1              1                20  8            ';
-DF[22]:='      300        1         300            150150              1               300               ';
-DF[24]:='   305        5  1  1     5     1           1                             2     5            999';
-DF[26]:='   100 20    25  2  1  2 20  1  2             10     1        5   785    10    15               ';
-DF[28]:='133133133        3  3    80420  1  1                                           10  5            ';
-
- end; { Define_Levels }
-
-procedure Convert_Format;
-  var XLoop,
-      YLoop  : integer;
-      tempstr: string[1];
- begin
-  SNum:=Null; MNum:=Null; FNum:=Null; BNum:=Null; GenNum:=Null;
-  T[9]:=-1; LavaFlow:=false;TreeRate:=0;GravCounter:=0;GravOn:=false;
-  for x:=1 to 66 do for y:=1 to 25 do PF[x,y]:=0;
-  for x:=1 to 999 do
-   begin                        {* reset monster's X, Y *}
-    SX[x]:=0;SY[x]:=0;
-    MX[x]:=0;MY[x]:=0;
-    FX[x]:=0;FY[x]:=0;
-   end;
-  New_Gem_Color;
-  for YLoop:=1 to YSize do
-   for XLoop:=1 to XSize do
-    begin
-    tempstr := copy(FP[YLoop], XLoop, 1);
-    case char(tempstr[1]) of
-     ' ':PF[XLoop+1,YLoop+1]:=Null;
-     '1':begin
-          SNum:=SNum+1;SX[SNum]:=XLoop+1;SY[SNum]:=YLoop+1;
-          PF[XLoop+1,YLoop+1]:=1;
-         end;
-     '2':begin
-          MNum:=MNum+1;MX[MNum]:=XLoop+1;MY[MNum]:=YLoop+1;
-          PF[XLoop+1,YLoop+1]:=2;
-         end;
-     '3':begin
-          FNum:=FNum+1;FX[FNum]:=XLoop+1;FY[FNum]:=YLoop+1;
-          PF[XLoop+1,YLoop+1]:=3;
-         end;
-     'X':PF[XLoop+1,YLoop+1]:=4;
-     'W':PF[XLoop+1,YLoop+1]:=5;
-     'L':PF[XLoop+1,YLoop+1]:=6;
-     'C':PF[XLoop+1,YLoop+1]:=7;
-     'S':PF[XLoop+1,YLoop+1]:=8;
-     '+':PF[XLoop+1,YLoop+1]:=9;
-     'I':PF[XLoop+1,YLoop+1]:=10;
-     'T':PF[XLoop+1,YLoop+1]:=11;
-     'K':PF[XLoop+1,YLoop+1]:=12;
-     'D':PF[XLoop+1,YLoop+1]:=13;
-     '#':PF[XLoop+1,YLoop+1]:=14;
-     'F':PF[XLoop+1,YLoop+1]:=15;
-     '.':PF[XLoop+1,YLoop+1]:=16;
-     'R':PF[XLoop+1,YLoop+1]:=17;
-     'Q':PF[XLoop+1,YLoop+1]:=18;
-     '/':PF[XLoop+1,YLoop+1]:=19;
-     '\':PF[XLoop+1,YLoop+1]:=20;
-     'B':PF[XLoop+1,YLoop+1]:=21;
-     'V':PF[XLoop+1,YLoop+1]:=22;
-     '=':PF[XLoop+1,YLoop+1]:=23;
-     'A':PF[XLoop+1,YLoop+1]:=24;
-     'U':PF[XLoop+1,YLoop+1]:=25;
-     'Z':PF[XLoop+1,YLoop+1]:=26;
-     '*':PF[XLoop+1,YLoop+1]:=27;
-     'E':PF[XLoop+1,YLoop+1]:=28;
-     ';':PF[XLoop+1,YLoop+1]:=29;
-     ':':PF[XLoop+1,YLoop+1]:=30;
-     '`':PF[XLoop+1,YLoop+1]:=31;
-     '-':PF[XLoop+1,YLoop+1]:=32;
-     '@':PF[XLoop+1,YLoop+1]:=33;
-     '%':PF[XLoop+1,YLoop+1]:=34;
-     ']':PF[XLoop+1,YLoop+1]:=35;
-     'G':begin PF[XLoop+1,YLoop+1]:=36;GenNum:=GenNum+1;end;
-     '(':PF[XLoop+1,YLoop+1]:=37;
-     '!':PF[XLoop+1,YLoop+1]:=222;
-     'P':begin PF[XLoop+1,YLoop+1]:=40; PX:=XLoop+1; PY:=YLoop+1; end
-     else
-      begin
-       tempstr := copy(FP[YLoop], XLoop, 1);
-       PF[XLoop+1,YLoop+1]:=ord(char(tempstr[1]));
-      end;
-    end;
-    end;
- end; { Convert_Format }
-
-procedure Go(var XWay,YWay:integer; Human:boolean);
-  var Previous, OldX, OldY: integer;
-  label JUMP;
- begin
-  if (Sideways)and(YWay=-1)and(not OneMove)and(Replacement<>75) then goto JUMP;
-  Previous:=Replacement; OldX:=PX; OldY:=PY;
-  PF[PX,PY]:=Replacement;
-  gotoxy(PX,PY);
-  write(' ');
-  PX:=PX+XWay;PY:=PY+YWay;
-  if PF[PX,PY] in [55..57,75] then Replacement:=PF[PX,PY]
-  else                             Replacement:=Null;
-  if Previous=75 then
-   begin
-    col(7,7);
-    gotoxy(OldX,OldY);
-    write(Rope);
-   end;
-  PF[PX,PY]:=40;
-  if T[5]<1 then
-   begin
-    gotoxy(PX,PY);col(14,15);bak(0,0);
-    write(Player);
-   end
-  else begin gotoxy(PX,PY);write(' ');end;
- if not Sideways then FootStep
- else if (Replacement <> 75) and Human then FootStep;
- if keypressed and Human then
-  begin
-   read(kbd,ch);
-   if ch=#27 then read(kbd,ch);
-  end;
-  JUMP:
- end; { Go }
-
-procedure MoveRock(var XWay,YWay:integer);
- begin
- end;
-
-procedure Trigger_Trap(Place:boolean; i:integer; ch:char);
- begin
- end; { Trigger_Trap }
-
-procedure End_Routine;
- begin
-  FootStep;
-  delay(300);
-  FootStep;
-  delay(300);
-  FootStep;
-  for x:=1 to ord(FastPC)*2650+ord(not FastPC)*250 do
-   begin
-    sound(random(3000)+x);
-    gotoxy(PX,PY);
-    bak(random(8),0);
-    col(14,15);
-    write(Player);
-    col(random(16),random(16));
-    bak(0,0);
-    print(15,25,'Oh no, something strange is happening!');
-   end;
-  for i:=ord(FastPC)*9000+ord(FastPC)*2200 downto 20 do sound(random(i));
-  col(14,15);bak(0,0);
-  for x:=1 to ord(FastPC)*3500+ord(not FastPC)*650 do
-   begin
-    sound(x*3);
-    gotoxy(PX,PY);
-    write(chr(220+random(4)));
-   end;
-  nosound;
-  gotoxy(PX,PY);
-  col(16,16);
-  bak(2,7);
-  write(Stairs);
-  Restore_Border;
-  Flash(14,25,'You are magically transported from Kroz!');
-  ClearKeys;
-  col(15,15);bak(0,0);
-  print(15,25,'Your Gems are worth 100 points each...');
-  for i:=1 to Gems do
-   begin
-    sound(i*8+100); Score:=Score+10; Update_Info; delay(20);
-   end; nosound; 
-  read(kbd,ch);
-  Restore_Border;
-  ClearKeys;
-  col(15,15);bak(0,0);
-  print(15,25,'Your Whips are worth 100 points each...');
-  for i:=1 to Whips do
-   begin
-    sound(i*10+200); Score:=Score+10; Update_Info; delay(20);
-   end; nosound; 
-  read(kbd,ch);
-  Restore_Border;
-  ClearKeys;
-  col(15,15);bak(0,0);
-  print(9,25,'Your Teleport Scrolls are worth 200 points each...');
-  for i:=1 to Teleports do
-   begin
-    sound(i*12+300); Score:=Score+20; Update_Info; delay(30);
-   end; nosound; 
-  read(kbd,ch);
-  Restore_Border;
-  ClearKeys;
-  col(15,15);bak(0,0);
-  print(14,25,'Your Keys are worth 10,000 points each...');
-  for i:=1 to Keys do
-   begin
-    sound(i*30+100); Score:=Score+1000; Update_Info; delay(50);
-   end; nosound; 
-  read(kbd,ch);
-  Restore_Border;
-  ClearKeys;
-  bak(GemColor,7);
-  for x:=1 to 30 do
-   begin
-    window(32-x,12-(x div 3),35+x,14+(x div 3));
-    clrscr;
-   end;
-  bak(0,0);
-  for x:=1 to 30 do
-   begin
-    window(32-x,12-(x div 3),35+x,14+(x div 3));
-    clrscr;
-    sound(x*45);
-   end; nosound;
-  window(1,1,80,25);cur(3);
-  bak(1,0);window(2,2,65,24);
-  clrscr;
-  col(14,15);
-  gotoxy(25,2);
-  writeln('BACK AT YOUR HUT');
-  gotoxy(25,3);
-  writeln('����������������');
-  writeln;
-  col(15,7);
-  { 15 writeln's available for text }
-  writeln('   For years you''ve waited for such a wonderful archaeological');
-  writeln(' discovery. And now you possess one of the greatest finds ever!');
-  writeln('   The Magical Staff will bring you even more recognition than');
-  writeln(' the Priceless Amulet you previously found in the depths of');
-  writeln(' Kroz.  However, Kroz is still mostly unexplored, and you have');
-  writeln(' reason to believe that even more fabulous treasures lie below.');
-  writeln('   Therefore, it doesn''t take much to convince you that another');
-  writeln(' expedition is in order.  You must leave no puzzle unsolved, no');
-  writeln(' treasure unfound--to quit now would be a coward''s choice.');
-  writeln('   So you plan for a good night''s rest, and think ahead to');
-  writeln(' tomorrow''s new journey.  What does the mysterious Kingdom of');
-  writeln(' Kroz have waiting for you, what type of new creatures will');
-  writeln(' try for your blood, and what new brilliant treasure does');
-  writeln(' Kroz protect.  Tomorrow will tell...');
-  writeln;col(14,15);
-  writeln('                        KINGDOM OF KROZ');col(15,7);
-  write  ('        ( Now available -- $7.50 or write for details. )');
-  ClearKeys;
-  window(1,1,80,25);bak(0,0);
-  Flash(21,25,'Press any key, Adventurer.');
-  WON;
- end; {End_Routine }
-
-begin
-end. { Levels }

@@ -2,8 +2,8 @@
 from audio import Audio
 from collections import deque
 from sys import exit
-from random import randint
 from typing import Sequence, Tuple, Union
+from time import sleep
 
 # Library Imports
 import pygame
@@ -61,12 +61,11 @@ class Crt:
         self.cursor_x = 0
         self.cursor_y = 0
         pygame.display.set_caption('PyKroz')
-        self.charbuffer = numpy.zeros((widthInTiles, heightInTiles), dtype = 'i')
-        # self.charbuffer = numpy.array([[randint(0, 255) for y in range(heightInTiles)] for x in range(widthInTiles)])
-        self.fg_color_buffer = numpy.zeros((widthInTiles, heightInTiles, 3), dtype = 'i')
-        # self.fg_color_buffer = numpy.array([[[randint(0, 255), randint(0, 255), randint(0, 255)] for y in range(heightInTiles)] for x in range(widthInTiles)])
-        self.bg_color_buffer = numpy.zeros((widthInTiles, heightInTiles, 3), dtype = 'i')
-        self.dirty_blocks = deque([Rect(0, 0, widthInTiles, heightInTiles)])
+        self.size = widthInTiles, heightInTiles
+        self.charbuffer: numpy.ndarray = numpy.zeros(self.size, dtype = 'i')
+        self.fg_color_buffer: numpy.ndarray = numpy.zeros((*self.size, 3), dtype = 'i')
+        self.bg_color_buffer: numpy.ndarray = numpy.zeros((*self.size, 3), dtype = 'i')
+        self.dirty_blocks = deque([Rect(0, 0, *self.size)])
 
     def tick(self):
         for event in get([
@@ -101,13 +100,19 @@ class Crt:
     def readkey(self):
         return self.keyboard.getKey()
 
-    def write(self, message: str):
-        self.dirty_blocks.append(Rect(self.cursor_x, self.cursor_y, len(message), 1))
-        for c in range(len(message)):
-            self.charbuffer[self.cursor_x + c, self.cursor_y] = Tiles.Value[message[c]]
-            self.fg_color_buffer[self.cursor_x + c, self.cursor_y] = self.foreground
-            self.bg_color_buffer[self.cursor_x + c, self.cursor_y] = self.background
-        self.cursor_x += len(message)
+    def write(self, message: Union[str, int]):
+        if isinstance(str, message):
+            self.dirty_blocks.append(Rect(self.cursor_x, self.cursor_y, len(message), 1))
+            for c in range(len(message)):
+                self.charbuffer[self.cursor_x + c, self.cursor_y] = Tiles.Value[message[c]]
+                self.fg_color_buffer[self.cursor_x + c, self.cursor_y] = self.foreground
+                self.bg_color_buffer[self.cursor_x + c, self.cursor_y] = self.background
+            self.cursor_x += len(message)
+        else:
+            self.charbuffer[self.cursor_x, self.cursor_y] = message
+            self.fg_color_buffer[self.cursor_x, self.cursor_y] = self.foreground
+            self.bg_color_buffer[self.cursor_x, self.cursor_y] = self.background
+            self.cursor_x += 1
 
     def writeln(self, message: Union[str, None] = None):
         if message is not None:
@@ -118,6 +123,9 @@ class Crt:
     def gotoxy(self, x: int, y: int):
         self.cursor_x = x
         self.cursor_y = y
+
+    def delay(ms: int):
+        sleep(ms / 1000)
 
     def textcolor(self, index: int):
         self.foreground = Colors.Code[index % len(Colors.Code)]
@@ -130,3 +138,12 @@ class Crt:
 
     def sounds(self, parts: Sequence[Tuple[int, int]]):
         self.audio.compose(parts)
+
+    def clrscr(self):
+        self.charbuffer.fill(Tiles.Value[' '])
+        self.fg_color_buffer.fill(255)
+        self.bg_color_buffer.fill(0)
+        self.dirty_blocks.append(Rect(0, 0, *self.size))
+
+    def halt(self):
+        exit()

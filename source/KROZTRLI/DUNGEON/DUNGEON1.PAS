@@ -85,43 +85,43 @@ const
 {7}  {55} CWall1    = #0;
 {8}  {56} CWall2    = #0;
 {9}  {57} CWall3    = #0;
-{�}  {58} OSpell1   = #127; {ALT-241}
-{�}  {59} OSpell2   = #127; {ALT-242}
-{�}  {60} OSpell3   = #127; {ALT-243}
-{�}  {61} CSpell1   = #0;   {ALT-244}
-{�}  {62} CSpell2   = #0;   {ALT-245}
-{�}  {63} CSpell3   = #0;   {ALT-246}
+{±}  {58} OSpell1   = #127; {ALT-241}
+{≥}  {59} OSpell2   = #127; {ALT-242}
+{≤}  {60} OSpell3   = #127; {ALT-243}
+{⌠}  {61} CSpell1   = #0;   {ALT-244}
+{⌡}  {62} CSpell2   = #0;   {ALT-245}
+{÷}  {63} CSpell3   = #0;   {ALT-246}
 {Y}  {64} GBlock    = #178;
 {0}  {65} Rock      = #79;
 {~}  {66} EWall     = #88;
 { }  {67} Trap5     = #0;   {represented by a $}
-{�}  {68} TBlock    = #0;   {ALT-145}
-{�}  {69} TRock     = #0;   {ALT-146}
-{�}  {70} TGem      = #0;   {ALT-147}
-{�}  {71} TBlind    = #0;   {ALT-148}
-{�}  {72} TWhip     = #0;   {ALT-149}
-{�}  {73} TGold     = #0;   {ALT-150}
-{�}  {74} TTree     = #0;   {ALT-151}
-{�}  {75} Rope      = #179; {ALT-179}
-{�}  {76} DropRope  = #25;  {ALT-185}
-{�}  {77}{DropRope}         {ALT-186}
-{�}  {78}{DropRope}         {ALT-187}
-{�}  {79}{DropRope}         {ALT-188}
-{�}  {80}{DropRope}         {ALT-189}
-{�}  {81} Amulet    = #12;  {ALT-131}
-{�}  {82} ShootRight= #26;  {ALT-175}
-{�}  {83} ShootLeft = #27;  {ALT-174}
+{æ}  {68} TBlock    = #0;   {ALT-145}
+{Æ}  {69} TRock     = #0;   {ALT-146}
+{ô}  {70} TGem      = #0;   {ALT-147}
+{ö}  {71} TBlind    = #0;   {ALT-148}
+{ò}  {72} TWhip     = #0;   {ALT-149}
+{û}  {73} TGold     = #0;   {ALT-150}
+{ù}  {74} TTree     = #0;   {ALT-151}
+{│}  {75} Rope      = #179; {ALT-179}
+{╣}  {76} DropRope  = #25;  {ALT-185}
+{║}  {77}{DropRope}         {ALT-186}
+{╗}  {78}{DropRope}         {ALT-187}
+{╝}  {79}{DropRope}         {ALT-188}
+{╜}  {80}{DropRope}         {ALT-189}
+{â}  {81} Amulet    = #12;  {ALT-131}
+{»}  {82} ShootRight= #26;  {ALT-175}
+{«}  {83} ShootLeft = #27;  {ALT-174}
 
-{�}  {224}Trap6     = #0;   {ALT-224}
-{�}  {225}Trap7     = #0;   {ALT-225}
-{�}  {226}Trap8     = #0;   {ALT-226}
-{�}  {227}Trap9     = #0;   {ALT-227}
-{�}  {228}Trap10    = #0;   {ALT-228}
-{�}  {229}Trap11    = #0;   {ALT-229}
-{�}  {230}Trap12    = #0;   {ALT-230}
-{�}  {231}Trap13    = #0;   {ALT-231}
+{α}  {224}Trap6     = #0;   {ALT-224}
+{ß}  {225}Trap7     = #0;   {ALT-225}
+{Γ}  {226}Trap8     = #0;   {ALT-226}
+{π}  {227}Trap9     = #0;   {ALT-227}
+{Σ}  {228}Trap10    = #0;   {ALT-228}
+{σ}  {229}Trap11    = #0;   {ALT-229}
+{µ}  {230}Trap12    = #0;   {ALT-230}
+{τ}  {231}Trap13    = #0;   {ALT-231}
 
-{�}  {252}Message   = #5;   {ALT-252}
+{ⁿ}  {252}Message   = #5;   {ALT-252}
 
 
       TotObjects    = 83;
@@ -334,7 +334,7 @@ procedure Border;
   gotoxy(1,24);
   BC:=random(8)+8;
   BB:=random(7)+1;
-  Col(BC,0);bak(BB,7);
+  col(BC,0);bak(BB,7);
   for i:=1 to 66 do
    begin
     gotoxy(i,25);
@@ -472,22 +472,22 @@ procedure Sign_Off;
   writeln;
   writeln('Other great games available from Scott Miller:');
   writeln;col(15,15);
-  writeln('� The six Kroz games!  CAVERNS OF KROZ, KINGDOM OF KROZ, DUNGEONS OF KROZ,');
+  writeln('■ The six Kroz games!  CAVERNS OF KROZ, KINGDOM OF KROZ, DUNGEONS OF KROZ,');
   writeln('     RETURN TO KROZ, TEMPLE OF KROZ and THE FINAL CRUSADE OF KROZ.');
   writeln('     Each volume is just $7.50, or order all six for $35!');
   writeln;col(7,7);
-  writeln('� SUPERNOVA - Explore a galaxy and save a planet from an exploding star!');
+  writeln('■ SUPERNOVA - Explore a galaxy and save a planet from an exploding star!');
   writeln('     An epic adventure rated by Shareware Magazine as one of the best games');
   writeln('     ever!  Highly advanced game has graphics, sound effects galore, clue');
   writeln('     command, and dozens of unique features. ($10)');
   writeln;
-  writeln('� BEYOND THE TITANIC - A fantastic adventure of exploration and survival.');
+  writeln('■ BEYOND THE TITANIC - A fantastic adventure of exploration and survival.');
   writeln('     What really happened?  Sound effects and 16 color screens.  ($8)');
   writeln;
-  writeln('� WORD WHIZ - New game that challenges your knowledge of the English');
+  writeln('■ WORD WHIZ - New game that challenges your knowledge of the English');
   writeln('     language.  Fun to play, yet very education, too.  ($5)');
   writeln;col(15,15);
-  writeln('� THE LOST ADVENTURES OF KROZ - All-new seventh Kroz game with 75 of the best');
+  writeln('■ THE LOST ADVENTURES OF KROZ - All-new seventh Kroz game with 75 of the best');
   write  ('     levels yet!  Built-in contest!  New features galore.  ($20)');
   cur(2);col(7,7);
   ClearKeys;
@@ -498,9 +498,9 @@ procedure Shareware(Wait: boolean);
  begin
   bak(1,0);bor(1);clrscr;cur(3);col(15,15);
   gotoxy(21,1);
-  writeln('DUNGEONS OF KROZ II � HOW TO REGISTER');
+  writeln('DUNGEONS OF KROZ II ─ HOW TO REGISTER');
   gotoxy(1,2);
-  for x:=1 to 80 do write('�');
+  for x:=1 to 80 do write('─');
   gotoxy(1,3);
   col(7,7);
   writeln('  This is not a shareware game, but it is user-supported.  If you enjoy this');
@@ -509,12 +509,12 @@ procedure Shareware(Wait: boolean);
   writeln('  This registration fee will qualify you to order any of the other Kroz');
   writeln('volumes available:');
   writeln;col(15,7);
-  writeln('  � Caverns of Kroz   - the first discovery of Kroz');
-  writeln('  � Dungeons of Kroz  - the dark side of Kroz, fast-paced action');
-  writeln('  � Kingdom of Kroz   - the national contest winner ("Best Game" in 1988)');
-  writeln('  � Return to Kroz    - the discovery of entirely new underground chambers');
-  writeln('  � Temple of Kroz    - the bizarre side of Kroz, nothing is what it seems');
-  writeln('  � The Final Crusade of Kroz - the surprising finish?');
+  writeln('  ■ Caverns of Kroz   - the first discovery of Kroz');
+  writeln('  ■ Dungeons of Kroz  - the dark side of Kroz, fast-paced action');
+  writeln('  ■ Kingdom of Kroz   - the national contest winner ("Best Game" in 1988)');
+  writeln('  ■ Return to Kroz    - the discovery of entirely new underground chambers');
+  writeln('  ■ Temple of Kroz    - the bizarre side of Kroz, nothing is what it seems');
+  writeln('  ■ The Final Crusade of Kroz - the surprising finish?');
   writeln;col(7,7);
   writeln('Each game is priced $7.50 each, any three for $20, or all six for only $35.');
   writeln('You''ll also get a secret code that makes this game easier to complete,');
@@ -988,7 +988,7 @@ procedure End_Routine;
   gotoxy(25,2);
   writeln('BACK AT YOUR HUT');
   gotoxy(25,3);
-  writeln('����������������');
+  writeln('────────────────');
   writeln;
   col(15,7);
   { 15 writeln's available for text }
