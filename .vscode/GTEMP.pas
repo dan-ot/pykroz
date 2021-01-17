@@ -21,462 +21,712 @@
 {Prepared for public release: 03/19/09 - Joe Siegler, Apogee Software, Ltd. }
 {*/                                                                         }
 {//-------------------------------------------------------------------------}
-{*** DUNGEONS OF KROZ II title screens.  By Scott Miller 11/12/89 ***}
+{*** DUNGEONS OF KROZ II player movement.  By Scott Miller 11/12/89 ***}
 
-unit DUNGEON3;
+unit DUNGEON5;
 
 interface 
 
-procedure Title;
+procedure Tablet_Message(Level: integer);
+procedure Next_Level;
+procedure Move(XWay,YWay:integer; Human:boolean);
+procedure Prayer;
 
 implementation {--------------------------------------------------------------}
 
-uses CRT, Turbo3, DOS, DUNGEON1, DUNGEON2;
+uses CRT, Turbo3, DOS, DUNGEON1, DUNGEON2, DUNGEON3, DUNGEON4;
 
-procedure Title;
- var StartGame : boolean;
- label DESCENT;
+procedure Prayer;
  begin
-  nosound;
-  ClearKeys;Cur(3);
-  col(15,15);bak(0,0);clrscr;Cur(3);
-  gotoxy(28,2);
-  writeln('Apogee Software Presents');
-  ClearKeys;
-  repeat
-   gotoxy(1,5);
-   col(random(15)+1,7);
-   writeln('     ���     ���     ����������         �����������        �������������  (R)');
-   writeln('     ��۱�  ��۱��   ��۱������۱      ��۱��������۱        ���������۱��');
-   writeln('     ��۱� ��۱��    ��۱�   ��۱�     ��۱�     ��۱�            ��۱���');
-   writeln('     ��۱���۱��     ��۱�   ��۱�    ��۱��      ��۱           ��۱��');
-   writeln('     ��۱��۱��      ���������۱��    ��۱�       ��۱�         ��۱��');
-   writeln('     �����۱��       ��۱���۱���     ��۱�       ��۱�        ��۱��');
-   writeln('     ��۱��۱        ��۱� ��۱        ��۱      ��۱��       ��۱��');
-   writeln('     ��۱���۱       ��۱�  ��۱       ��۱�     ��۱�      ���۱��');
-   writeln('     ��۱� ��۱      ��۱�   ��۱       ����������۱��     �������������');
-   writeln('     ��۱�  ��۱       ���     ���        �����������        �������������');
-   writeln('     ��۱�   ��۱');       
-   writeln('     ��۱�    �����������������������������������������������������������');
-   writeln('       ���      �����������������������������������������������������������');
-   writeln;
-   col(14,15);gotoxy(11,wherey);
-   writeln('DUNGEONS OF KROZ II -- UPDATED VOLUME TWO OF THE KROZ SERIES');
-   writeln;gotoxy(24,wherey);col(14,7);
-   writeln('Copyright (C) 1990 Scott Miller');
-   writeln;
-   writeln('           User-Supported Software -- $7.50 Registration Fee Required');
-   col(11,7);gotoxy(27,25);
-   write('Press any key to continue.');
-   delay(300);
-  until keypressed;
-  ClearKeys;
-  bak(1,0);bor(4);
-  clrscr;cur(3);
-  gotoxy(29,1);
-  col(4,7);bak(1,0);
-  write('���������������������');
-  gotoxy(29,3);
-  write('���������������������');
-  gotoxy(25,5);col(15,15);
-  write('An Apogee Software Production');
-  gotoxy(28,7);
-  write('Created by Scott Miller');
-  gotoxy(1,9);col(11,7);
-  writeln('  Dungeons of Kroz is a game of adventure, exploration and survival.  You are');
-  writeln('  an intrepid archaeologist in search of the Magical Staff,  hidden somewhere');
-  writeln('  deep in the vast and dangerous underground dungeons. You enter the dungeons');
-  writeln('  through a secret tunnel and ignite your brass lantern. Your only protection');
-  writeln('  is a worn leather whip and your ingenuity.  Sweat beading on your forehead,');
-  writeln('                you embark on a journey that may be your last...');
-  gotoxy(1,17);col(10,7);
-  write('         Use the cursor keys to move yourself (');
-  col(14,15);write(#2);col(10,7);
-  writeln(') through the dungeons.');
-  writeln('            Use your whip (press W) to destroy all nearby creatures.');
-  writeln('       You are on your own to discover what other mysteries await--some');
-  writeln('                           helpful, others deadly...');
-  col(14,7);
-  gotoxy(13,22);
-  write('Are you a ');col(15,15);write('N');col(14,7);
-  write('ovice, an ');col(15,15);write('E');col(14,7);
-  write('xperienced or an ');col(15,15);write('A');col(14,7);
-  write('dvanced player?');
-  col(28,16);write(#219);
-  sound(220);delay(100);nosound;
-  bak(4,7);
-  repeat
-   repeat
-    gotoxy(29,2);col(random(16),0);write(' DUNGEONS OF KROZ II ');delay(50);
-   until keypressed;
-   read(kbd,ch);
-   sound(300);delay(100);nosound;
-  until upcase(ch) in [#13,'N',' ','E','A','X'];
-  sound(700);delay(100);nosound;
-  gotoxy(13,22);col(0,0);bak(1,0);
-  for x:=1 to 28 do write('  ');
-  col(30,31);bak(1,0);
-  case upcase(ch) of
-   'N',' ',#13:begin Difficulty:=8;gotoxy(37,22);write('NOVICE');end;
-   'E':begin Difficulty:=5;gotoxy(34,22);write('EXPERIENCED');end;
-   'A':begin Difficulty:=2;gotoxy(36,22);write('ADVANCED');end;
-   'X':begin Difficulty:=9;gotoxy(34,22);write('SECRET MODE');end;
-  end;
-  ClearKeys;
-  gotoxy(33,25);
-  col(7,7);
-  write('Press any key.');
-  bak(4,7);
-  repeat
-   gotoxy(29,2);col(random(16),0);write(' DUNGEONS OF KROZ II ');delay(50);
-  until keypressed;
-  ClearKeys;
-  
-  Shareware(true);
-  
-  { New menu screen starts here. }
-  StartGame := false;
-  repeat
-   bor(1);
-   bak(0,0);
-   clrscr;
-   cur(3);
-   col(15,9);
-   gotoxy(31,2);
-   write('DUNGEONS OF KROZ II');
-   gotoxy(17,4);
-   col(6,7);
-   write('Copyright (c) 1990 Apogee Software Productions');
-   gotoxy(25,6);
-   write('Version 2.0 -- by Scott Miller');
-   gotoxy(4,8);
-   col(2,7);
-   writeln('THIS GAME MAY NOT BE DISTRIBUTED BY SHAREWARE OR PUBLIC DOMAIN LIBRARIES,');
-   gotoxy(5,9);
-   writeln('OR BULLETIN BOARD SYSTEMS.  ONLY KINGDOM OF KROZ II MAY BE DISTRIBUTED.');
-   gotoxy(1,10);
-   col(4,7);
-   for x := 1 to 80 do write(#196);
-   col(14,15);
-   gotoxy(28,12);
-   write('B');
-   col(11,7);
-   write('egin your descent into Kroz...');
-   col(14,15);
-   gotoxy(28,14);
-   write('I');
-   col(11,7);
-   write('nstructions');
-   col(14,15);
-   gotoxy(28,16);
-   write('M');
-   col(11,7);
-   write('arketing Kroz');
-   col(14,15);
-   gotoxy(28,18);
-   write('S');
-   col(11,7);
-   write('tory Behind Kroz');
-   col(14,15);
-   gotoxy(28,20);
-   write('O');
-   col(11,7);
-   write('riginal Kroz Games');
-   col(14,15);
-   gotoxy(28,22);
-   write('A');
-   col(11,7);
-   write('bout the Author');
-   gotoxy(26,24);
-   col(15,0);bak(1,7);
-   write('Your choice (B/I/M/S/O/A)? B');gotoxy(wherex-1,wherey);
-   cur(2);
-   ClearKeys;
-   read(kbd,ch);
-   if upcase(ch)='R' then MixUp:=true else MixUp:=false;
-   ClearKeys;
-   cur(3);
-   case upcase(ch) of
-    'B':begin
-         DESCENT:
-         for x:=100 downto 20 do
-          for y := 10 downto 1 do
-           begin sound(x*y*y);delay(y div 2);end;
-         nosound;
-         StartGame := true;
-        end;
-    'I':begin
-         bak(1,0);
-         bor(4);
-         clrscr;
-         cur(3);
-         ClearKeys;
-         gotoxy(32,2);col(14,7);writeln('THE INSTRUCTIONS');
-         gotoxy(32,3);          writeln('����������������');
-         writeln;
-         col(15,7);
-         writeln('   Dungeons of Kroz is a game of exploration and survival. Your journey will');
-         writeln(' take you through 30 very dangerous chambers, each riddled with diabolical');
-         writeln(' traps and hideous creatures.   Hidden in the deepest chamber lies a hidden');
-         writeln(' treasure of immense value.  Use the cursor pad to move 8 directions.');
-         writeln('   The chambers contain dozens of treasures, spells, traps and other unknowns.');
-         writeln(' Touching an object for the first time will reveal a little of its identity,');
-         writeln(' but it will be left to you to decide how best to use it--or avoid it.');
-         writeln('   When a creature touches you it will vanish, taking with it a few of your');
-         writeln(' gems that you have collected. If you have no gems then the creature will');
-         writeln(' instead take your life!  Whips can be used to kill nearby creatures, but');
-         writeln(' they''re better used to smash through "breakable walls" and other terrain.');
-         writeln('   Laptop and PCjr players can');
-         writeln(' use the alternate cursor             U I O      ( NW N NE )');
-         writeln(' pad instead of the cursor             J K       (   W E   )');
-         writeln(' keys to move your man, plus          N M ,      ( SW S SE )');
-         writeln(' the four normal cursor keys.');
-         writeln('   It''s a good idea to save your game at every new level, therefore, if you die');
-         writeln(' you can easily restore the game at that level and try again.');
-         writeln('   Registered users will get a "secret code" that makes this game much easier!');
-         flash(27,25,'Press any key to continue.');
-         bak(1,0);
-         clrscr;
-         cur(3);
-         ClearKeys;
-         gotoxy(32,2);col(14,7);writeln('THE INSTRUCTIONS');
-         gotoxy(32,3);          writeln('����������������');
-         writeln;
-         col(15,7);
-         writeln('   Dungeons of Kroz will present you with many challenges.  You will venture');
-         writeln(' deep underground and probably not make it out alive!');
-         writeln;
-         writeln(' Hints:  � Don''t forget to use the Home, End, PgUp, and PgDn keys to move your');
-         writeln('           on-screen character diagonally (along with the marked cursor keys).');
-         writeln;
-         writeln('         � Use your player to touch each new object to find out about it.  When');
-         writeln('           you first touch an object a message appears at the bottom of the');
-         writeln('           screen that describes it.');
-         writeln;
-         writeln('         � Collect keys to unlock doors, which usually block the stairs.');
-         writeln;
-         writeln('         � The faster monsters are the most dangerous to touch--they will knock');
-         writeln('           off three of your valuable gems.  The slowest creatures only take a');
-         writeln('           single gem from you, and the medium speed monsters take two.');
-         writeln;
-         flash(27,25,'Press any key to continue.');
-         bak(1,0);
-         clrscr;
-         cur(3);
-         ClearKeys;
-         gotoxy(32,2);col(14,7);writeln('THE INSTRUCTIONS');
-         gotoxy(32,3);          writeln('����������������');
-         col(15,7);
-         writeln('   Here are some brief descriptions of the most common objects that you are');
-         writeln(' likely to find in the Dungeons of Kroz:');
-         writeln;
-         write(  '      ');col(14,15);write(Player);col(15,7);
-           writeln(' - this is you, a dauntless archaeologist without peer');
-         write(  '      ');col(12,7);write(#142);col(15,7);
-           writeln(' - red creatures move slow and only knock off 1 gem when touched');
-         write(  '      ');col(10,7);write(#153);col(15,7);
-           writeln(' - green creatures move faster and knock off 2 gems when touched');
-         write(  '      ');col(9,7);write(#234);col(15,7);
-           writeln(' - blue creatures move fastest and knock off 3 gems when touched');
-         write(  '      ');col(random(13)+2,7);write(Gem);col(15,7);
-           writeln(' - collect all the gems you can to survive creature attacks');
-         write(  '      ');write(Whip);
-           writeln(' - whips are used to wipe out creatures and smash certain walls');
-         write(  '      ');col(13,7);write(Teleport);col(15,7);
-           writeln(' - teleport spells will magically transport you to a random place');
-         write(  '      ');col(14,7);bak(4,0);write(Chest);bak(1,0);col(15,7);
-           writeln(' - chests contain a random number of gems and whips');
-         write(  '      ');col(12,15);write(Key);col(15,7);
-           write(' - collect keys to go through doors (');col(3,0);bak(5,7);
-           write(door);col(15,7);bak(1,0);
-           writeln(')');
-         write(  '      ');write(Power);
-           writeln(' - collect these power rings to make your whips more powerful');
-         write(  '      ');col(16,16);bak(7,7);write(Stairs);col(15,7);bak(1,0);
-           writeln(' - stairs take you to the next level deeper in Kroz');
-         writeln;
-         writeln('   There are dozens and dozens of other objects to discover.  The best way');
-         writeln(' to learn the usefulness of any new object is to touch it and read the brief');
-         writeln(' message that appears at the bottom of the screen.');
-         flash(27,25,'Press any key to continue.');
-         bak(1,0);
-         clrscr;
-         cur(3);
-         ClearKeys;
-         gotoxy(33,2);col(14,7);writeln('MISCELLANEOUS');
-         gotoxy(33,3);          writeln('�������������');
-         writeln;
-         col(15,7);
-         writeln;
-         writeln('  � You can now save three different levels during a single game.  When you');
-         writeln('    select the "save" command you will also be asked to enter a letter, either');
-         writeln('    A, B or C.  If you just hit the space bar then A is the default selection.');
-         writeln('    These letters do not refer to disk drives!  They actually refer to the file');
-         writeln('    names used by the game.  The restore command lets use pick from A, B or C.');
-         writeln;
-         writeln('  � If you are tired of seeing the descriptions at the bottom of the screen');
-         writeln('    that appear whenever you touch a new object, you can disable most of the');
-         writeln('    messages by pressing the minus (-) key.  The plus key (+) resets messages.');
-         flash(27,25,'Press any key to continue.');
-        end;
-    'M':begin
-         bor(10);
-         bak(1,0);
-         clrscr;
-         ClearKeys;
-         cur(3);
-         gotoxy(29,2);col(14,7);writeln('THE MARKETING OF KROZ');
-         gotoxy(29,3);          writeln('���������������������');
-         writeln;
-         col(15,7);
-         writeln('   Dungeons of Kroz II is a user-supported game. This means that the creator of');
-         writeln(' this program relies on the appreciation of honest players to pay the game''s');
-         writeln(' registration fee--$7.50.');
-         writeln('   Payment of this fee entitles you to all the free help and hints you might');
-         writeln(' need to enjoy the game.  All letters from registered users are answered');
-         writeln(' within two days.  (Try to get this kind of support from commercial games!)');
-         writeln('   Also, players can order the other Kroz sequels ONLY if this registration');
-         writeln(' fee is paid.  ($7.50 each or $20 for The Lost Adventures of Kroz.)');
-         writeln('   Everyone who orders (or registers) any of the other six Kroz games will also');
-         writeln(' get a "Hints, Tricks and Scoring Secrets" guide, and "The Domain of Kroz" map.');
-         writeln('   A single Kroz game takes several months to create, up to 200 hours per game!');
-         writeln(' I can''t afford to devote this much time without receiving something in return.');
-         writeln(' That is why I ask for this small fee, which is only necessary if you enjoy');
-         writeln(' this game.  In other words, try before you buy.');
-         writeln('   Even if you buy this game from a public domain or shareware library, I don''t');
-         writeln(' receive any of that money.  You''re simply paying for "storage, distribution,');
-         writeln(' disk, and handling."');
-         writeln('   Note:  The current Apogee Software address will ALWAYS BE VALID.  Foreign');
-         writeln(' orders are always welcome, please send U.S. funds/money orders only.');
-         flash(27,25,'Press any key to continue.');
-        end;
-    'S':begin
-         bor(13);
-         bak(1,0);
-         clrscr;
-         ClearKeys;
-         cur(3);
-         gotoxy(29,2);col(14,7);writeln('THE STORY BEHIND KROZ');
-         gotoxy(29,3);          writeln('���������������������');
-         writeln;
-         col(15,7);
-         writeln('   The original Kroz Trilogy (consisting of Caverns of Kroz, Dungeons of Kroz,');
-         writeln(' and Kingdom of Kroz) was developed after I spent many hours playing another');
-         writeln(' explore-the-levels type game titled Rogue.  I never could finish Rogue,');
-         writeln(' though, because the game relied too much on luck and random occurrences.');
-         writeln('   The name "Kroz" is actually Zork (an Infocom text adventure) spelled in');
-         writeln(' reverse.  Many players still inquire about this bit of trivia.  The game was');
-         writeln(' first designed without predefined level layouts, meaning every level was a');
-         writeln(' random placement of creatures and play field objects.  New objects, like');
-         writeln(' spells, lava, doors, etc., were added quickly as the first Kroz game took');
-         writeln(' shape, including the ability to have predefined level floor plans.');
-         writeln('   My main objective was to create a game that wasn''t all fast paced action,');
-         writeln(' but also included strategy and puzzle solving.  Kingdom of Kroz was entered');
-         writeln(' in a national programming contest in 1988 and took top honors in the game');
-         writeln(' category, and number two overall (beaten by a spreadsheet program.)');
-         writeln('   The latest Kroz games have been greatly re-designed and re-programmed, but');
-         writeln(' the familiar appearance has been mostly maintained.  You will discover new');
-         writeln(' dangers, creatures and objects in your adventures below.');
-         writeln('   Thanks to all the players of Kroz who contributed dozens of suggestions,');
-         writeln(' ideas and improvements that were incorporated in later versions of Kroz.');
-         flash(27,25,'Press any key to continue.');
-         bak(1,0);
-         clrscr;
-         cur(3);
-         ClearKeys;
-         gotoxy(29,2);col(14,7);writeln('THE STORY BEHIND KROZ');
-         gotoxy(29,3);          writeln('���������������������');
-         writeln;
-         col(15,7);
-         writeln('   Kroz is a hobby that''s gotten out of control!');
-         writeln('   Kroz is truly a phenomenon in the user-supported software market.  The');
-         writeln(' overwhelming success of the original Kroz games was completely unexpected.');
-         writeln(' Most (probably 99%) of all "shareware" games are not profitable for their');
-         writeln(' creator.  This is a well-known fact among the community of shareware game');
-         writeln(' authors, and one that I''ve verified by speaking to many other games de-');
-         writeln(' signers.  Most people simply don''t register games.');
-         writeln('   Through my research the Kroz games are the only user-supported games that');
-         writeln(' generate a substantial amount of registrations and orders for it''s creator,');
-         writeln(' namely, Scott Miller (me).  I don''t know what cord I''ve struck with players,');
-         writeln(' but everyday I receive fascinating and appreciative letters from players');
-         writeln(' telling me how much they enjoy the Kroz games.');
-         writeln('   Thanks to Kroz I now know what a mutual fund is, but on the downside my');
-         writeln(' taxes require a book two inches thick to figure out.');
-         writeln('   Will Kroz ever end?  I thought that THE FINAL CRUSADE would be the closing');
-         writeln(' chapter--but a flood of letters demanding more proved that I''m a pushover.');
-         writeln(' I guess as long as the letters keep coming, I''ll continue to make Kroz games.');
-         writeln(' After all, Kroz is like my second home now, one that I like to visit often...');
-         writeln('                                                        -- Scott Miller');
-         flash(27,25,'Press any key to continue.');
-        end;
-    'O':begin
-         bor(15);
-         bak(1,0);
-         clrscr;
-         ClearKeys;
-         cur(3);
-         gotoxy(28,2);col(14,7);writeln('THE ORIGINAL KROZ GAMES');
-         gotoxy(28,3);          writeln('�����������������������');
-         writeln;
-         col(15,7);
-         writeln('   The Lost Adventures of Kroz is the latest addition to the Kroz family of');
-         writeln(' games.  Before this game there are six more Kroz volumes, separated into two');
-         writeln(' triligies:  The Kroz Trilogy and The Super Kroz Trilogy.');
-         writeln('   The original Kroz Trilogy was such a surprising success that I decided to');
-         writeln(' created a second "Super Kroz" trilogy.  The first three original Kroz');
-         writeln(' games are:   � Kingdom of Kroz  � Caverns of Kroz  � Dungeons of Kroz.');
-         writeln(' All three are still available and are constantly being updated and improved.');
-         writeln('   The original Kroz Trilogy games can be purchased for $7.50 each, or all 3');
-         writeln(' for $20 (these prices include postage, disks, and handling).');
-         writeln('   Only Kingdom of Kroz can be placed in a shareware library for distribution,');
-         writeln(' and the other two can only be ordered from Apogee Software Productions.');
-         writeln('   The Super Kroz Trilogy volumes are revamped and greatly improved.  They are');
-         writeln(' � Return to Kroz  � Temple of Kroz  � The Final Crusade of Kroz.  The last');
-         writeln(' three volumes were supposed to be the end of Kroz, but the mail kept coming');
-         writeln(' and again I was impelled to create another Kroz adventure.');
-         writeln('   All Kroz games work on all monitors, either graphics or monochrome systems.');
-         writeln(' Plus, they only rely on keyboard control, and have slow-down routines that');
-         writeln(' permit them to function correctly on any speed IBM PC compatible computer.');
-         flash(27,25,'Press any key to continue.');
-        end;
-    'A':begin    
-         bor(6);
-         bak(1,0);
-         clrscr;
-         ClearKeys;
-         cur(3);
-         gotoxy(32,2);col(14,7);writeln('ABOUT THE AUTHOR');
-         gotoxy(32,3);          writeln('����������������');
-         col(15,7);
-         writeln('   Scott Miller, the creator of all the Kroz games, along with Supernova, Trek');
-         writeln(' Trivia and Beyond the Titanic (all shareware games) began programming in high');
-         writeln(' school in 1975.  Since then he''s created over 100 games and has had dozens');
-         writeln(' publishered by BIG BLUE DISK, I.B.Magazette and Keypunch Software.');
-         writeln;
-         writeln('   For over three years he wrote two weekly computer columns for the Dallas');
-         writeln(' Morning News, one of the nation''s largest newspapers.  He also co-authored');
-         writeln(' a video game strategy book titled, "Shootout: Beating the Video Games."');
-         writeln(' Scott has written articles for COMPUTE!''s PC and PCjr Magazine and is a');
-         writeln(' software reviewer with COMPUTE! Publications.');         
-         writeln;
-         writeln('   Hobbies include softball, running, tennis, karate (1st degree black belt),');
-         writeln(' drumming, rock music, science fiction, and creating new computer games.');
-         writeln(' Favorite computer games are M.U.L.E., Jumpman, Planetfall, Enchanter, Zork,');
-         writeln(' Spelunker, and Archon.  All are games of strategy, with action secondary.');
-         writeln;
-         writeln('   Scott creates all Apogee Software programs on an AST Premium 80386 (20 Mhz)');
-         writeln(' equipped with VGA graphics, a NEC MultiSync II and an HP LaserJet series III.');
-         writeln(' The cost to market each Kroz game to the many shareware libraries and BBS''s');
-         writeln(' is over $10,000 per game.  All of the appreciative letters make it worth it!');
-         flash(27,25,'Press any key to continue.');
-        end
-    else goto DESCENT;
-   end;
-  until StartGame;
-  bak(0,0);
-  clrscr;
-  bor(4);
- end; { Title }
+ end;
 
-begin
-end.
+procedure Tablet_Message(Level: integer);
+ begin
+ end; { Tablet_Message }
+
+procedure Next_Level;
+ begin
+  case Level of
+   1:Level1;
+   3:Level3;
+   5:Level5;
+   7:Level7;
+   9:Level9;
+  11:Level11;
+  13:Level13;
+  15:Level15;
+  17:Level17;
+  19:Level19;
+  21:Level21;
+  23:Level23;
+  25:Level25;
+  27:Level27;
+  29:Level29;
+  30:Level30
+  else Create_PlayField;
+  end;
+ end; { Next_Level }
+
+procedure Move(XWay,YWay:integer; Human:boolean);
+  var Killed,
+      RXWay,RYWay,
+      TryCounter : integer;
+      Spot,
+      Original   : byte;
+      NoGo       : boolean;
+   label JUMP_END;
+ begin
+  if (Sideways)and(YWay=-1)and(Replacement<>75)and(not(PF[PX+XWay,PY+YWay]in [75..80]))then
+    goto JUMP_END;
+  if (PX+XWay<XBot) or (PX+XWay>XTop) or
+     (PY+YWay<YBot) or (PY+YWay>YTop) then
+       begin
+        if Human then
+         begin
+          Static;
+          AddScore(20);
+          ClearKeys;
+          if not(0 in FoundSet) then
+           begin
+            FoundSet:=FoundSet+[0];
+            Flash(16,25,'An Electrified Wall blocks your way.');
+           end;
+         end;
+        exit;
+       end;
+
+  case PF[PX+XWay,PY+YWay] of
+   {Null}      0:Go(XWay,YWay,Human);
+   {Monsters}  1..3:
+                 begin
+                  Gems:=Gems-PF[PX+XWay,PY+YWay];
+                  if Gems<0 then DEAD(true);
+                  AddScore(PF[PX+XWay,PY+YWay]);
+                  sound(200+200*PF[PX+XWay,PY+YWay]);delay(25);nosound;
+                  Go(XWay,YWay,Human);
+                  if keypressed then
+                   begin
+                    read(kbd,ch);
+                    if ch=#27 then read(kbd,ch);
+                   end;
+                 end;
+   {Block}     4,43,64:if Human then begin
+                  BlockSound; AddScore(4); ClearKeys;
+                  if not(4 in FoundSet) then
+                   begin
+                    FoundSet:=FoundSet+[4];
+                    Flash(17,25,'A Breakable Wall blocks your way.');
+                  end;
+                 end;
+   {Whip}      5:begin
+                  Go(XWay,YWay,Human);
+                  GrabSound;
+                  Whips:=Whips+1;
+                  AddScore(5);
+                  if not(5 in FoundSet) then
+                   begin
+                    FoundSet:=FoundSet+[5];
+                    Flash(26,25,'You found a Whip.');
+                   end;
+                 end;
+   {Stairs}    6:begin
+                  Go(XWay,YWay,Human);
+                  ClearKeys;
+
+                  if Level=30 then End_Routine;
+
+                  if MixUp then Level:=random(27)+2
+                  else Level:=Level+1;
+                  AddScore(6);
+                  if not(6 in FoundSet) then
+                   begin
+                    FoundSet:=FoundSet+[6];
+                    Flash(14,25,'Stairs take you to the next lower level.');
+                    ClearKeys;
+                   end;
+                  FootStep;
+                  T[1]:=5;T[2]:=6;T[3]:=7;T[8]:=7;
+                  T[4]:=0;  { restore SlowTime   }
+                  T[5]:=0;  { restore visibility }
+                  T[6]:=0;  { restore SpeedTime  }
+                  FoundSet:=FoundSet-[0,8,15,17,19..21,22,26,28,36,66];
+                  GenNum:=0;
+                  TreeRate:=-1;
+                  LavaFlow:=false;
+                  EvapoRate:=0;
+                  MagicEWalls:=false;
+                  HideLevel:=false;
+                  HideOpenWall:=false;
+                  HideRock:=false;
+                  HideStairs:=false;
+                  HideGems:=false;
+                  HideMBlock:=false;
+                  HideTrap:=false;
+                  HideCreate:=false;
+                  GravOn:=false;
+                  GravRate:=0;
+                  GravCounter:=0;
+                  Bonus:=0;
+                  Sideways:=false;
+                  Replacement:=Null;
+
+                  Next_Level;
+
+          { NOTE: The lines below are special conditions }
+
+
+                  FootStep;
+                  bak(GemColor,7);
+                  for x:=1 to 30 do
+                   begin
+                    window(32-x,12-(x div 3),35+x,14+(x div 3));
+                    clrscr;
+                   end;
+                  bak(0,0);
+                  for x:=1 to 30 do
+                   begin
+                    window(32-x,12-(x div 3),35+x,14+(x div 3));
+                    clrscr;
+                    sound(x*45);
+                   end; nosound;
+                  window(1,1,80,25);cur(3);
+                  window(2,2,65,24);
+                  clrscr;
+                  window(1,1,80,25);cur(3);
+                  Border;
+                  FootStep;
+                  Display_PlayField;
+                  FootStep;
+                  for x:=1 to 600 do
+                   begin
+                    gotoxy(PX,PY);
+                    col(random(16),random(16));bak(random(8),0);
+                    write(Player);sound(x div 2);
+                   end;
+                  gotoxy(PX,PY);col(14,15);bak(0,0);
+                  write(Player);
+                  nosound;
+                  I_Score     := Score;   { SAVE/RESTORE VARIABLES }
+                  I_Gems      := Gems;
+                  I_Whips     := Whips;
+                  I_Teleports := Teleports;
+                  I_Keys      := Keys;
+                  I_WhipPower := WhipPower;
+                  I_Difficulty:= Difficulty;
+                  I_PX        := PX;
+                  I_PY        := PY;
+                  I_FoundSet  := FoundSet;
+                  if Level=30 then
+                   Flash(9,25,'You have finally reached the last dungeon of Kroz!');
+                 end;
+   {Chest}     7:begin
+                  Go(XWay,YWay,Human);
+                  for xb:=3 to 42 do for yb:=3 to 42 do
+                   begin sound(xb*yb);delay(1);end; nosound;
+                  x:=random(3)+2;          {Whips}
+                  i:=random(Difficulty)+2; {Gems}
+                  Whips:=Whips+x;
+                  Gems:=Gems+i;
+                  AddScore(7);
+                  bak(0,0);
+                  ClearKeys;
+                  repeat
+                   col(random(2)+14,15);
+                   gotoxy(11,25);
+                   write('You found ',i,' gems and ',x,' whips inside the chest!');
+                  until keypressed;
+                  Restore_Border;
+                 end;
+   {SlowTime}  8:begin
+                  Go(XWay,YWay,Human);
+                  AddScore(5);
+                  for x:=7 downto 1 do
+                   begin sound(x*50+300);delay(x*10+40);end;nosound;
+                  if FastPC then T[4] := 100 else T[4]:=70;
+                  T[6]:=0;
+                  if not(8 in FoundSet) then
+                   begin
+                    FoundSet:=FoundSet+[8];
+                    Flash(16,25,'You activated a Slow Creature spell.');
+                   end;
+                 end;
+   {Gem}       9:begin
+                  Go(XWay,YWay,Human);
+                  GrabSound;
+                  Gems:=Gems+1;
+                  AddScore(9);
+                  if not(9 in FoundSet) then
+                   begin
+                    FoundSet:=FoundSet+[9];
+                    Flash(15,25,'Gems give you both points and strength.');
+                   end;
+                 end;
+   {Invisible}10:begin
+                  Go(XWay,YWay,Human);
+                  AddScore(10);
+                  for x:=1 to 4 do
+                   begin sound(600);delay(50);nosound;delay(50);end;nosound;
+                  gotoxy(PX,PY);write(' ');
+                  if FastPC then T[5] := 120 else T[5]:=35;
+                  if not(10 in FoundSet) then
+                   begin
+                    FoundSet:=FoundSet+[10];
+                    Flash(16,25,'Oh no, a temporary Blindness Potion!');
+                   end;
+                 end;
+   {Teleport} 11:begin
+                  Go(XWay,YWay,Human);
+                  GrabSound;
+                  Teleports:=Teleports+1;
+                  AddScore(11);
+                  if not(11 in FoundSet) then
+                   begin
+                    FoundSet:=FoundSet+[11];
+                    Flash(20,25,'You found a Teleport scroll.');
+                   end;
+                 end;
+   {Key}      12:begin
+                  Go(XWay,YWay,Human);
+                  Keys:=Keys+1;
+                  GrabSound;
+                  Update_Info;
+                  if not(12 in FoundSet) then
+                   begin
+                    FoundSet:=FoundSet+[12];
+                    Flash(22,25,'Use Keys to unlock doors.');
+                   end;
+                 end;
+   {Door}     13:if Human then
+                  begin
+                   if Keys<1 then
+                    begin
+                     for x:=1 to 15 do
+                      begin sound(random(99)+30);delay(15);nosound;delay(15);end;
+                     Flash(18,25,'To pass the Door you need a Key.');
+                    end
+                   else
+                    begin
+                     Keys:=Keys-1;
+                     AddScore(11);
+                     for x:=10 to 90 do
+                      begin sound(x);delay(15);end;
+                     Go(XWay,YWay,Human);
+                     ClearKeys;
+                     if not(13 in FoundSet) then
+                      begin
+                       FoundSet:=FoundSet+[13];
+                       Flash(12,25,'The Door opens!  (One of your Keys is used.)');
+                      end else ClearKeys;
+                     if (Level=75) and (PX=33) and (PY=14) then
+                      Flash(13,25,'You unlock the door to the Sacred Temple!');
+                    end;
+                  end; 
+   {Wall/River}14,17:if Human then begin
+                  if PF[PX+XWay,PY+YWay]=14 then BlockSound
+                  else
+                   begin
+                    for x:=1 to ord(FastPC)*2000+ord(not FastPC)*500 do sound(random(x*2+200)+x);nosound;
+                   end;
+                  AddScore(14);
+                  ClearKeys;
+                  if not(PF[PX+XWay,PY+YWay] in FoundSet) then
+                   begin
+                    FoundSet:=FoundSet+[PF[PX+XWay,PY+YWay]];
+                    case PF[PX+XWay,PY+YWay] of
+                     14:Flash(20,25,'A Solid Wall blocks your way.');
+                     17:Flash(18,25,'You cannot travel through Water.');
+                    end;
+                   end;
+                 end;
+   {SpeedTime}15:begin
+                  Go(XWay,YWay,Human);
+                  AddScore(15);
+                  for x:=1 to 7 do
+                   begin sound(x*50+300);delay(x*10+40);end;nosound;
+                  if FastPC then T[6] := 80 else T[6]:=50;
+                  T[4]:=0;
+                  if not(15 in FoundSet) then
+                   begin
+                    FoundSet:=FoundSet+[15];
+                    Flash(16,25,'You activated a Speed Creature spell.');
+                   end;
+                 end;
+   {Trap}     16:begin
+                  Go(XWay,YWay,Human);
+                  AddScore(16);
+                  for x:=1 to 500 do
+                   begin
+                    gotoxy(PX,PY);
+                    col(random(16),random(16));bak(random(8),random(8));
+                    write(Player);
+                   end;
+                  gotoxy(PX,PY);bak(0,0);col(0,0);write(' ');
+                  for yb:= 60 downto 1 do
+                   for x:= 550 downto 20 do sound(yb*x); nosound;
+                  PF[PX,PY]:=Null;PX:=Null;
+                  repeat
+                   x:=random(XSize)+XBot;
+                   y:=random(YSize)+YBot;
+                   if PF[x,y] = Null then
+                    begin
+                     PX:=x; PY:=y; PF[PX,PY]:=40;
+                    end;
+                  until PX <> Null;
+                  for x:=1 to ord(FastPC)*3000 + ord(not FastPC)*500 do
+                   begin
+                    gotoxy(PX,PY);
+                    col(random(16),random(16));bak(random(8),random(8));
+                    write(Player);
+                   end;
+                  if T[5]<1 then
+                   begin
+                    gotoxy(PX,PY);col(14,15);bak(0,0);
+                    write(Player);bak(0,0);
+                   end
+                  else begin gotoxy(PX,PY);bak(0,0);write(' ');end;
+                  ClearKeys;
+                  if not(16 in FoundSet) then
+                   begin
+                    FoundSet:=FoundSet+[16];
+                    Flash(19,25,'You activated a Teleport trap!');
+                   end;
+                 end;
+   {Power}    18:begin
+                  Go(XWay,YWay,Human);
+                  WhipPower:=WhipPower+1;
+                  for x:=3 to 35 do
+                   for y:=45 to 52 do
+                    begin
+                     sound(x*y);delay(7);nosound;delay(15);
+                     col(random(8),random(8));
+                     gotoxy(PX,PY);
+                     write(Player);
+                    end;
+                  bak(0,0);col(14,15);
+                  gotoxy(PX,PY);
+                  write(Player);
+                  bak(0,0);
+                  AddScore(15);
+                  Flash(9,25,'A Power Ring--your whip is now a little stronger!');
+                 end;
+  {Forest/Tree} 19,20:if Human then
+                 begin
+                  BlockSound;AddScore(4);
+                  ClearKeys;
+                  if not(PF[PX+XWay,PY+YWay] in FoundSet) then
+                   begin
+                    FoundSet:=FoundSet+[PF[PX+XWay,PY+YWay]];
+                    case PF[PX+XWay,PY+YWay] of
+                     19:Flash(14,25,'You cannot travel through forest terrain.');
+                     20:Flash(24,25,'A tree blocks your way.');
+                    end;
+                   end;
+                 end;
+   {Bomb}     21:begin
+                  Go(XWay,YWay,Human);
+                  xr:=0;xl:=0;yr:=0;yl:=0;
+                  for i:=70 to 600 do begin sound(i*2);delay(3);end;bor(15);
+                  for i:=ord(FastPC)*8230+ord(not FastPC)*5000 downto 20 do
+                   sound(random(i));
+                   for width:=1 to 4 do
+                    begin
+                     sound(30);
+                     if PX-width>1 then xl:=width;
+                     if PX+width<66 then xr:=width;
+                     if PY-width>1 then yl:=width;
+                     if PY+width<25 then yr:=width;
+                     for x:=PX-xl to PX+xr do
+                      for y:=PY-yl to PY+yr do
+                       if PF[x,y] in [Null..4,13,16,19,28..32,33,35,36..39,43,45,48..51,64,67,68..74,224..231] then
+                        begin
+                         gotoxy(x,y);
+                         col(12,15);
+                         write(#219);
+                        end;
+                    end;
+                    delay(100);
+                    for width:=1 to 4 do
+                     begin
+                      if PX-width>1 then xl:=width;
+                      if PX+width<66 then xr:=width;
+                      if PY-width>1 then yl:=width;
+                      if PY+width<25 then yr:=width;
+                      for x:=PX-xl to PX+xr do
+                       for y:=PY-yl to PY+yr do
+                        if PF[x,y] in [Null..4,13,16,19,28..32,33,35,36..39,43,45,48..51,64,67,68..74,224..231] then
+                         begin
+                          gotoxy(x,y);
+                          col(0,0);
+                          write(' ');
+                          if PF[x,y] in [1..3] then Score:=Score+PF[x,y];
+                          PF[x,y]:=Null;
+                         end;
+                     end;
+                  nosound;
+                  bor(4);
+                  Update_Info;
+                  ClearKeys;
+                  if not(21 in FoundSet) then
+                   begin
+                    FoundSet:=FoundSet+[21];
+                    Flash(20,25,'You activated a Magic Bomb!');
+                   end;
+                 end;
+   {Lava}     22:begin
+                  Go(XWay,YWay,Human);
+                  Gems:=Gems-10;
+                  for x:=ord(FastPC)*2000+ord(not FastPC)*1400 downto 20 do
+                   for y:= 9 downto 2 do sound(random(y*x+100)+y*x);nosound;
+                  if Gems<0 then
+                   begin
+                    Gems:=0;
+                    AddScore(22);
+                    Dead(true);
+                   end
+                  else
+                   AddScore(22);
+                  ClearKeys;
+                  if not(22 in FoundSet) then
+                   begin
+                    FoundSet:=FoundSet+[22];
+                    Flash(8,25,'Oooooooooooooooooooh!  Lava hurts!  (Lose 10 Gems.)');
+                   end;
+                 end;
+   {Pit}      23:begin
+                  Go(XWay,YWay,Human);
+                  ClearKeys;
+                  Flash(22,25,'Oh no, a Bottomless Pit!');
+                  bak(6,7);
+                  window(2,2,65,24);
+                  clrscr;
+                  bak(0,0);
+                  window(32,2,36,24);
+                  clrscr;
+                  window(1,1,80,25);
+                  cur(3);
+                  x:=3000;
+                  col(14,15);
+                  for i:=1 to 16 do
+                   begin
+                    if i=8 then
+                     begin
+                      col(15,15);
+                      bak(6,7);
+                      gotoxy(38,12);
+                      write('<--- HALF WAY!!!');
+                      bak(0,0);col(14,15);
+                     end else
+                    if i=9 then
+                     begin
+                      bak(6,7);
+                      gotoxy(38,12);
+                      write('                ');
+                      bak(0,0);col(14,15);
+                     end;
+                    for y:=2 to 24 do
+                     begin
+                      x:=x-8;
+                      sound(x);
+                      gotoxy(34,y);
+                      write(Player);
+                      delay(52-(3*i));
+                      gotoxy(34,y);
+                      write(' ');
+                     end; nosound;
+                   end;  
+                  gotoxy(34,24);
+                  write('_');
+                  for i:=8000 downto 20 do sound(random(i));nosound;
+                  ClearKeys;
+                  flash(29,1,'* SPLAT!! *');
+                  Dead(false);
+                 end;
+   {Tome}     24:begin
+                  Tome_Message;
+                  for i:= 1 to 5 do Tome_Effects;
+                  bak(0,0);
+                  for x:=1 to 24 do
+                   for y:=5 downto 1 do
+                    begin
+                     sound(x*45+y*10);delay(y*3);nosound;delay(40);
+                     gotoxy(51,13);col(random(16),random(16));
+                     write(Tome);
+                    end;
+                  gotoxy(51,13);
+                  col(16,16);bak(2,7);
+                  write(Stairs);bak(0,0);
+                  PF[PX+XWay,PY+YWay]:=6;
+                  Score:=Score+5000;
+                  Update_Info;
+                  ClearKeys;
+                  Flash(5,25,'The Magical Staff of Kroz is finally yours--50,000 points!');
+                  Flash(9,25,'Congratualtions, Adventurer, you finally did it!!!');
+                 end;
+   {Tunnel}   25:begin
+                  PXOld:=PX;PYOld:=PY;
+                  Go(XWay,YWay,Human);
+                  delay(350);FootStep;delay(500);FootStep;
+                  PF[PX,PY]:=25;
+                  gotoxy(PX,PY);
+                  col(15,7);
+                  write(Tunnel);
+                  repeat
+                   sound(random(3000)+100);
+                   x:=random(XSize)+XBot;
+                   y:=random(YSize)+YBot;
+                  until (PF[x,y]=25)and((PXOld+XWay<>x)or(PYOld+YWay<>y));
+                  Done:=false;
+                  for i:=1 to 100 do
+                   begin
+                    sound(random(3000)+100);
+                    a:=random(3)-1;
+                    b:=random(3)-1;
+                    if(PF[x+a,y+b] in [0,32,33,37,39,55..57,67,224..231]) and (Done=false)then
+                     begin
+                      if not((x+a<XBot)or(x+a>XTop)or(y+b<YBot)or(y+b>YTop)) then
+                       begin
+                        Done:=true;
+                        x:=x+a;
+                        y:=y+b;
+                       end;
+                     end;
+                   end;
+                  nosound;
+                  if Done=false then
+                   begin
+                    x:=PXOld;
+                    y:=PYOld;
+                   end;
+                  PX:=x;PY:=y;
+                  if PF[PX,PY] in [55..57] then Replacement:=PF[PX,PY]
+                  else                          Replacement:=Null;
+                  PF[PX,PY]:=40;
+                  for x:=1 to ord(FastPC)*2100+ord(not FastPC)*400 do
+                   begin
+                    sound(random(1000));
+                    gotoxy(PX,PY);
+                    col(random(16),random(16));bak(random(8),0);
+                    write(Player);
+                   end;nosound;
+                  if T[5]<1 then
+                   begin
+                    gotoxy(PX,PY);col(14,15);bak(0,0);
+                    write(Player);
+                   end
+                  else begin gotoxy(PX,PY);bak(0,0);col(0,0);write(' ');end;
+                  ClearKeys;
+                  if not(25 in FoundSet) then
+                   begin
+                    FoundSet:=FoundSet+[25];
+                    Flash(16,25,'You passed through a secret Tunnel!');
+                   end;
+                 end;
+   {Freeze}   26:begin
+                  Go(XWay,YWay,Human);
+                  AddScore(11);
+                  GrabSound;
+                  for x:=1 to ord(FastPC)*8000+ord(not FastPC)*5000 do 
+                   sound(random(1000)+x+200);nosound;
+                  if FastPC then T[7]:=60 else T[7]:=55;
+                  if not(26 in FoundSet) then
+                   begin
+                    FoundSet:=FoundSet+[26];
+                    Flash(13,25,'You have activated a Freeze Creature spell!');
+                   end;
+                 end;
+   {Nugget}   27:begin
+                  Go(XWay,YWay,Human);
+                  AddScore(27);
+                  GrabSound;
+                  if not(27 in FoundSet) then
+                   begin
+                    FoundSet:=FoundSet+[27];
+                    Flash(15,25,'You found a Gold Nugget...500 points!');
+                   end;
+                 end;
+   {Quake}    28:begin
+                  Go(XWay,YWay,Human);
+                  for i:=1 to ord(FastPC)*5500 + ord(not FastPC)*2500 do
+                    sound(random(i));nosound;
+                  for i:=1 to 50 do
+                   begin
+                    Done:=false;
+                    repeat
+                     x:=random(XSize)+XBot;
+                     y:=random(YSize)+YBot;
+                     if PF[x,y] in [0..3,5,7..11,15..16,26,32,33,37,39,67,224..231] then
+                      begin
+                       Done:=true;
+                       PF[x,y]:=4;
+                       gotoxy(x,y);
+                       col(6,7);
+                       write(Block);
+                      end;
+                    until (random(100)=0) or Done;
+                    for x:=1 to ord(FastPC)*700 + ord(not FastPC)*400 do
+                     sound(random(200));nosound;
+                   end;
+                  for i:=2500 downto 20 do sound(random(i));nosound;
+                  if not(28 in FoundSet) then
+                   begin
+                    FoundSet:=FoundSet+[28];
+                    ClearKeys;
+                    Flash(15,25,'Oh no, you set off an Earthquake trap!');
+                   end;
+                 end;
+   {IBlock}   29:begin
+                  gotoxy(PX+XWay,PY+YWay);
+                  col(6,7);
+                  write(Block);
+                  PF[PX+XWay,PY+YWay]:=4;
+                  BlockSound;
+                  ClearKeys;
+                  if not(29 in FoundSet) then
+                   begin
+                    FoundSet:=FoundSet+[29];
+                    Flash(13,25,'An Invisible Crumbled Wall blocks your way.');
+                   end;
+                 end;
+   {IWall}    30:begin
+                  gotoxy(PX+XWay,PY+YWay);
+                  col(6,7);
+                  write(Wall);
+                  PF[PX+XWay,PY+YWay]:=14;
+                  BlockSound;
+                  ClearKeys;
+                  if not(30 in FoundSet) then
+                   begin
+                    FoundSet:=FoundSet+[30];
+                    Flash(17,25,'An Invisible Wall blocks your way.');
+                   end;
+                 end;
+   {IDoor}    31:begin
+                  gotoxy(PX+XWay,PY+YWay);
+                  col(3,0);bak(5,7);
+                  write(Door);
+                  bak(0,0);
+                  PF[PX+XWay,PY+YWay]:=13;
+                  BlockSound;
+                  ClearKeys;
+                  if not(31 in FoundSet) then
+                   begin
+                    FoundSet:=FoundSet+[31];
+                    Flash(17,25,'An Invisible Door blocks your way.');
+                   end;
+                 end;
+   {Stop}     32:Go(XWay,YWay,Human);
+   {Trap2}    33:begin
+                  Go(XWay,YWay,Human);
+                  for x := XBot to XTop do
+                   for y := YBot to YTop do
+                    if PF[x,y] = 33 then PF[x,y] := Null;
+                 end
+
+       else if Human then BlockSound;
+  end;{case}
+  JUMP_END:
+  OneMove:=false;
+ end; { Move }
+
+ BEGIN
+ END.
