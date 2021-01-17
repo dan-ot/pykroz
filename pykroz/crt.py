@@ -104,7 +104,7 @@ class Crt:
         if isinstance(str, message):
             self.dirty_blocks.append(Rect(self.cursor_x, self.cursor_y, len(message), 1))
             for c in range(len(message)):
-                self.charbuffer[self.cursor_x + c, self.cursor_y] = Tiles.Value[message[c]]
+                self.charbuffer[self.cursor_x + c, self.cursor_y] = Tiles.Char[message[c]]
                 self.fg_color_buffer[self.cursor_x + c, self.cursor_y] = self.foreground
                 self.bg_color_buffer[self.cursor_x + c, self.cursor_y] = self.background
             self.cursor_x += len(message)
@@ -120,6 +120,9 @@ class Crt:
         self.cursor_x = 0
         self.cursor_y += 1
 
+    def window(self, x_min: int, y_min: int, x_max: int, y_max: int):
+        pass
+
     def gotoxy(self, x: int, y: int):
         self.cursor_x = x
         self.cursor_y = y
@@ -134,13 +137,13 @@ class Crt:
         self.background = Colors.Code[index % len(Colors.Code)]
 
     def sound(self, freq: int, duration: int):
-        self.audio.sound(freq, duration)
+        self.audio.sound(self.audio.tone(freq, duration, self.audio.square_wave))
 
     def sounds(self, parts: Sequence[Tuple[int, int]]):
-        self.audio.compose(parts)
+        self.audio.sound(self.audio.compose(parts))
 
     def clrscr(self):
-        self.charbuffer.fill(Tiles.Value[' '])
+        self.charbuffer.fill(Tiles.Char[' '])
         self.fg_color_buffer.fill(255)
         self.bg_color_buffer.fill(0)
         self.dirty_blocks.append(Rect(0, 0, *self.size))
