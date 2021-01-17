@@ -109,6 +109,12 @@ class Crt:
             self.bg_color_buffer[self.cursor_x + c, self.cursor_y] = self.background
         self.cursor_x += len(message)
 
+    def writeln(self, message: Union[str, None] = None):
+        if message is not None:
+            self.write(message)
+        self.cursor_x = 0
+        self.cursor_y += 1
+
     def gotoxy(self, x: int, y: int):
         self.cursor_x = x
         self.cursor_y = y
