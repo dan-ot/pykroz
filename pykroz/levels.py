@@ -154,10 +154,6 @@ class Level:
         self.Py: int = 0
         self.Pf: list[list[int]] = [[0 for _ in range(66)] for _ in range(25)]
         self.Fp: list[str] = ['{0:{width}}'.format(' ', width = XSIZE) for _ in range(YSIZE)]
-        self.SNum: int = 0
-        self.MNum: int = 0
-        self.FNum: int = 0
-        self.BNum: int = 0
         self.GenNum: int = 0
         self.T: list[int] = [0 for 0 in range(TMAX)]
         self.LavaFlow: bool = False
@@ -173,6 +169,8 @@ class Game:
         self.Df: list[str] = ['' for _ in range(1, 30)]
         self.OneMove: bool = True
         self.Replacement: Union[int, None] = None
+        self.Difficulty: int = 0
+        self.MixUp: bool = True
 
 # Procedures
 def Print(XPos: int, YPos: int, Message: str, console: Crt):

@@ -97,7 +97,7 @@ class Crt:
     def keypressed(self) -> bool:
         return self.keyboard.keypressed()
 
-    def read(self):
+    def read(self) -> int:
         pass
 
     def readkey(self):
