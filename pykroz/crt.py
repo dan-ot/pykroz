@@ -16,7 +16,7 @@ from pygame.event import get, Event
 import numpy
 
 # Project Imports
-from tiles import Tiles
+from ascii import ASCII
 from colors import Colors
 
 class Keyboard():
@@ -47,11 +47,11 @@ class Crt:
         self.audio = Audio(frequency, format)
 
         if fontFile is None:
-            tiles = Tiles.from_system_font() 
+            tiles = ASCII.from_system_font() 
         elif fontFile.endswith('.ttf'):
-            tiles = Tiles.from_font_file(fontFile)
+            tiles = ASCII.from_font_file(fontFile)
         else:
-            tiles = Tiles.from_bitmap_font(fontFile, (8, 12))
+            tiles = ASCII.from_bitmap_font(fontFile, (8, 12))
         
         self.tiles = tiles
         self.screen = pygame.display.set_mode((self.tiles.width * widthInTiles, self.tiles.height * heightInTiles))
@@ -107,7 +107,7 @@ class Crt:
         if isinstance(str, message):
             self.dirty_blocks.append(Rect(self.cursor_x, self.cursor_y, len(message), 1))
             for c in range(len(message)):
-                self.charbuffer[self.cursor_x + c, self.cursor_y] = Tiles.Char[message[c]]
+                self.charbuffer[self.cursor_x + c, self.cursor_y] = ASCII.Ord[message[c]]
                 self.fg_color_buffer[self.cursor_x + c, self.cursor_y] = self.foreground
                 self.bg_color_buffer[self.cursor_x + c, self.cursor_y] = self.background
             self.cursor_x += len(message)
@@ -146,7 +146,7 @@ class Crt:
         self.audio.sound(self.audio.compose(parts))
 
     def clrscr(self):
-        self.charbuffer.fill(Tiles.Char[' '])
+        self.charbuffer.fill(ASCII.Ord[' '])
         self.fg_color_buffer.fill(255)
         self.bg_color_buffer.fill(0)
         self.dirty_blocks.append(Rect(0, 0, *self.size))

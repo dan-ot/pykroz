@@ -8,7 +8,7 @@ from pygame import Color, Rect, Surface
 from pygame.freetype import Font, SysFont
 import pygame.locals
 
-class Tiles:
+class ASCII:
     def __init__(self, width: int, height: int, surface: Surface):
         self.width = width
         self.height = height
@@ -28,31 +28,31 @@ class Tiles:
                 print(min_y, max_y)
                 return max(biggest_width, character_width), character_height, current_character
                 
-        (width, height, biggest) = reduce(get_dimensions, Tiles.Code.values(), (0, 0, ''))
+        (width, height, biggest) = reduce(get_dimensions, ASCII.Char.values(), (0, 0, ''))
         print(biggest, height)
-        surface = Surface((width * len(Tiles.Code), height))
+        surface = Surface((width * len(ASCII.Char), height))
         surface.set_colorkey(Colors.Black)
-        for i in Tiles.Code:
-            c = Tiles.Code[i]
+        for i in ASCII.Char:
+            c = ASCII.Char[i]
             [m] = font.get_metrics(c)
             (min_x, _, _, max_y, _, _) = m
             (x, y) = (i * width + min_x), height - max_y
             font.render_to(surface, (x, y), c, fgcolor = Colors.White)
-        return Tiles(width, height, surface)
+        return ASCII(width, height, surface)
         
 
     def from_font_file(filename: str, size: int = 12):
         font = Font(filename, size)
-        return Tiles.from_font(font)
+        return ASCII.from_font(font)
 
     def from_system_font(size: int = 12):
         font = cast(Font, SysFont(['Consolas', 'Menlo', 'Monaco', '\'Droid Sans Mono\''], size))
-        return Tiles.from_font(font)
+        return ASCII.from_font(font)
 
     def from_bitmap_font(filename: str, tileSize: Tuple[int, int]):
         font_surface = load(filename)
         (width, height) = tileSize
-        surface = Surface((width * len(Tiles.Code), height))
+        surface = Surface((width * len(ASCII.Char), height))
         image_width_in_tiles = font_surface.get_width() // width
         image_height_in_tiles = font_surface.get_height() // height
 
@@ -60,7 +60,7 @@ class Tiles:
             for y in range(image_height_in_tiles):
                 surface.blit(font_surface, ((x * image_width_in_tiles + y) * width, 0), Rect(x * width, y * height, width, height))
 
-        return Tiles(width, height, surface)
+        return ASCII(width, height, surface)
 
     def draw(self, code: int, x: int, y: int, fgcolor: Color, bgColor: Color, target: Surface):
         self.mid.fill(bgColor)
@@ -75,7 +75,7 @@ class Tiles:
             (x, y),
         )
 
-    Code = {
+    Char = {
         0:   '\u0020',
         1:   '\u263A',
         2:   '\u263B',
@@ -334,7 +334,7 @@ class Tiles:
         255: '\u00A0',
     }
 
-    Char = {
+    Ord = {
         '\u0000': 0,
         '\u263A': 1,
         '\u263B': 2,
