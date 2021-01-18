@@ -22,7 +22,7 @@ from colors import Colors
 class Keyboard():
     def __init__(self):
         self.keyboard = {}
-        self.keys = deque()
+        self.keys: deque[int] = deque()
         pygame.key.set_repeat(0)
 
     def handle(self, event: Event):
@@ -96,6 +96,9 @@ class Crt:
 
     def keypressed(self) -> bool:
         return self.keyboard.keypressed()
+
+    def read(self):
+        pass
 
     def readkey(self):
         return self.keyboard.getKey()

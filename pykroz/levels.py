@@ -1,8 +1,11 @@
 # System Libraries
-from typing import List, cast
+from typing import List, Union
 from random import randint, randrange
 from pathlib import Path
 import json
+
+# Engine Libraries
+import pygame.locals
 
 # Project Libraries
 from tiles import Tiles
@@ -147,11 +150,29 @@ class Level:
         self.My: list[int] = [0 for _ in range(1000)]
         self.Fx: list[int] = [0 for _ in range(1000)]
         self.Fy: list[int] = [0 for _ in range(1000)]
+        self.Px: int = 0
+        self.Py: int = 0
+        self.Pf: list[list[int]] = [[0 for _ in range(66)] for _ in range(25)]
+        self.Fp: list[str] = ['{0:{width}}'.format(' ', width = XSIZE) for _ in range(YSIZE)]
+        self.SNum: int = 0
+        self.MNum: int = 0
+        self.FNum: int = 0
+        self.BNum: int = 0
+        self.GenNum: int = 0
+        self.T: list[int] = [0 for 0 in range(TMAX)]
+        self.LavaFlow: bool = False
+        self.TreeRate: int = 0
+        self.GravCounter: int = 0
+        self.GravOn: bool = False
+        self.Sideways: bool = False
 
 class Game:
     def __init__(self):
         self.HSList: list[HSType] = [HSType('', 0, 0) for _ in range(1, 15)]
         self.Restart: bool = False
+        self.Df: list[str] = ['' for _ in range(1, 30)]
+        self.OneMove: bool = True
+        self.Replacement: Union[int, None] = None
 
 # Procedures
 def Print(XPos: int, YPos: int, Message: str, console: Crt):
@@ -201,7 +222,7 @@ def Border(level: Level, console: Crt):
         console.write(VisibleTiles.Block)
     Bak(0, 0, console)
 
-def RestoreBorder(level: Level, console: Crt):
+def Restore_Border(level: Level, console: Crt):
     console.gotoxy(2, 25)
     Col(level.Bc, 0)
     Bak(level.Bb, 7)
@@ -219,7 +240,7 @@ def Flash(XPos: int, YPos: int, Message: str, level: Level, console: Crt):
         Col(counter, 15)
         console.delay(20)
         Print(XPos, YPos, Message, console)
-    RestoreBorder(level, console)
+    Restore_Border(level, console)
 
 def ClearKeys(console: Crt):
     console.keyboard.clear()
@@ -499,4 +520,333 @@ def High_Score(PlayAgain: bool, game: Game, level: Level, console: Crt):
             console.writeln('DUNGEONS OF KROZ II')
         Sign_Off(console)
 
+def Dead(DeadDot: bool, game: Game, level: Level, console: Crt):
+    if level.Gems > 9:
+        Col(4, 7, console)
+    else:
+        level.Gems = 0
+        Col(23, 23, console)
+    Bak(7, 0, console)
+    console.gotoxy(71, 8)
+    console.write('     ')
+    strVal = '{0}'.format(level.Gems)
+    console.gotoxy(73 - len(strVal) // 2, 8)
+    console.write(strVal)
+    Bak(0, 0, console)
+    if DeadDot:
+        for x in range(150, 5, -1):
+            console.gotoxy(level.Px, level.Py)
+            Col(x, x, console)
+            Bak(randint(8), 0, console)
+            console.write(VisibleTiles.Player)
+            console.sound(x * x, 0.5)
+    ClearKeys(console)
+    Col(16, 16, console)
+    Bak(level.Bb, 7, console)
+    Print(27, 1, 'YOU HAVE DIED!!', console)
+    Bak(0, 0, console)
+    while not console.keypressed():
+        Col(randint(16), randint(16), console)
+        console.gotoxy(level.Px, level.Py)
+        if DeadDot: console.write('*')
+        Print(21, 25, 'Press any key to continue.', console)
+    Border(level, console)
+    High_Score(True, game, level, console)
 
+def Define_Levels(game: Game):
+    for i in range(1, 30):
+        game.Df[i] = ''
+                  #  1  2  3  X  W  L  C  S  +  I  T  K  D  #  F  .  R  Q  /  \  B  V  =  A  U  Z  *  E  ;  :  `  -
+    game.Df[2] =  '200  5   100     2  1  1 40        1    50     5                                                '
+    game.Df[4] =  '   200       38  2                                                                              '
+    game.Df[6] =  '      180 50     2       75                                                                     '
+    game.Df[8] =  '             20  2  1    40 35  2              5         990              3                     '
+    game.Df[10] = '   400           1       20                 1                                     35            '
+    game.Df[12] = '100 75 50100 10  1  1  1 30     1  1                          5                     100         '
+    game.Df[14] = '      170     5  1  1    25500  1       50 50 50     1        1          28        1            '
+    game.Df[16] = '    60           1     6 30 20              1                  550        4     5  2            '
+    game.Df[18] = '100           3  1  1    20     2              5              1           4    20   850         '
+    game.Df[20] = '   550   650  5  1  1     5     1  1           1              1                20  8            '
+    game.Df[22] = '      300        1         300            150150              1               300               '
+    game.Df[24] = '   305        5  1  1     5     1           1                             2     5            999'
+    game.Df[26] = '   100 20    25  2  1  2 20  1  2             10     1        5   785    10    15               '
+    game.Df[28] = '133133133        3  3    80420  1  1                                           10  5            '
+
+def Convert_Format(level: Level):
+    SNum = 0
+    MNum = 0
+    FNum = 0
+    BNum = 0
+    GenNum = 0
+    level.T[9] = -1
+    level.LavaFlow = False
+    level.TreeRate = 0
+    level.GravCounter = 0
+    level.GravOn = False
+    for x in range(66):
+        for y in range(25):
+            level.Pf[x][y] = 0
+    for m in range(1000):
+        level.Sx[m] = 0
+        level.Sy[m] = 0
+        level.Mx[m] = 0
+        level.My[m] = 0
+        level.Fx[m] = 0
+        level.Fy[m] = 0
+    New_Gem_Color(level)
+    for YLoop in range(YSIZE):
+        for XLoop in range(XSIZE):
+            tempstr = level.Fp[YLoop][XLoop]
+            if tempstr == ' ':
+                level.Pf[XLoop + 1, YLoop + 1] = 0
+            elif tempstr == '1':
+                SNum += 1
+                level.Sx[SNum] = XLoop + 1
+                level.Sy[SNum] = YLoop + 1
+                level.Pf[XLoop + 1, YLoop + 1] = 1
+            elif tempstr == '2':
+                MNum += 1
+                level.Mx[MNum] = XLoop + 1
+                level.My[MNum] = YLoop + 1
+                level.Pf[XLoop + 1, YLoop + 1] = 1
+            elif tempstr == '3':
+                FNum += 1
+                level.Fx[FNum] = XLoop + 1
+                level.Fy[FNum] = YLoop + 1
+                level.Pf[XLoop + 1, YLoop + 1] = 1
+            elif tempstr == 'X':
+                level.Pf[XLoop + 1, YLoop + 1] = 4
+            elif tempstr == 'W':
+                level.Pf[XLoop + 1, YLoop + 1] = 5
+            elif tempstr == 'L':
+                level.Pf[XLoop + 1, YLoop + 1] = 6
+            elif tempstr == 'C':
+                level.Pf[XLoop + 1, YLoop + 1] = 7
+            elif tempstr == 'S':
+                level.Pf[XLoop + 1, YLoop + 1] = 8
+            elif tempstr == '+':
+                level.Pf[XLoop + 1, YLoop + 1] = 9
+            elif tempstr == 'I':
+                level.Pf[XLoop + 1, YLoop + 1] = 10
+            elif tempstr == 'T':
+                level.Pf[XLoop + 1, YLoop + 1] = 11
+            elif tempstr == 'K':
+                level.Pf[XLoop + 1, YLoop + 1] = 12
+            elif tempstr == 'D':
+                level.Pf[XLoop + 1, YLoop + 1] = 13
+            elif tempstr == '#':
+                level.Pf[XLoop + 1, YLoop + 1] = 14
+            elif tempstr == 'F':
+                level.Pf[XLoop + 1, YLoop + 1] = 15
+            elif tempstr == '.':
+                level.Pf[XLoop + 1, YLoop + 1] = 16
+            elif tempstr == 'R':
+                level.Pf[XLoop + 1, YLoop + 1] = 17
+            elif tempstr == 'Q':
+                level.Pf[XLoop + 1, YLoop + 1] = 18
+            elif tempstr == '/':
+                level.Pf[XLoop + 1, YLoop + 1] = 19
+            elif tempstr == '\\':
+                level.Pf[XLoop + 1, YLoop + 1] = 20
+            elif tempstr == 'B':
+                level.Pf[XLoop + 1, YLoop + 1] = 21
+            elif tempstr == 'V':
+                level.Pf[XLoop + 1, YLoop + 1] = 22
+            elif tempstr == '=':
+                level.Pf[XLoop + 1, YLoop + 1] = 23
+            elif tempstr == 'A':
+                level.Pf[XLoop + 1, YLoop + 1] = 24
+            elif tempstr == 'U':
+                level.Pf[XLoop + 1, YLoop + 1] = 25
+            elif tempstr == 'Z':
+                level.Pf[XLoop + 1, YLoop + 1] = 26
+            elif tempstr == '*':
+                level.Pf[XLoop + 1, YLoop + 1] = 27
+            elif tempstr == 'E':
+                level.Pf[XLoop + 1, YLoop + 1] = 28
+            elif tempstr == ';':
+                level.Pf[XLoop + 1, YLoop + 1] = 29
+            elif tempstr == ':':
+                level.Pf[XLoop + 1, YLoop + 1] = 30
+            elif tempstr == '`':
+                level.Pf[XLoop + 1, YLoop + 1] = 31
+            elif tempstr == '-':
+                level.Pf[XLoop + 1, YLoop + 1] = 32
+            elif tempstr == '@':
+                level.Pf[XLoop + 1, YLoop + 1] = 33
+            elif tempstr == '%':
+                level.Pf[XLoop + 1, YLoop + 1] = 34
+            elif tempstr == ']':
+                level.Pf[XLoop + 1, YLoop + 1] = 35
+            elif tempstr == 'G':
+                level.Pf[XLoop + 1, YLoop + 1] = 36
+                GenNum += 1
+            elif tempstr == '(':
+                level.Pf[XLoop + 1, YLoop + 1] = 37
+            elif tempstr == '!':
+                level.Pf[XLoop + 1, YLoop + 1] = 222
+            elif tempstr == 'P':
+                level.Pf[XLoop + 1, YLoop + 1] = 40
+                level.Px = XLoop + 1
+                level.Py = YLoop + 1
+            else:
+                level.Pf[XLoop + 1, YLoop + 1] = Tiles.Char[tempstr]
+
+def Go(XWay: int, YWay: int, Human: bool, game: Game, level: Level, console: Crt):
+    if level.Sideways and YWay == -1 and not game.OneMove and game.Replacement != 75:
+        return
+    previous = game.Replacement
+    old_x = level.Px
+    old_y = level.Py
+
+    level.Pf[level.Px, level.Py] = game.Replacement
+    console.gotoxy(level.Pf, level.Py)
+    console.write(' ')
+    level.Px += XWay
+    level.Py += YWay
+    if level.Pf[level.Px, level.Py] >=55 and level.Pf[level.Px, level.Py] <= 57 or level.Pf[level.Px, level.Py] == 75:
+        game.Replacement = level.Pf[level.Px, level.Py]
+    else:
+        game.Replacement = None
+    if previous == 75:
+        Col(7, 7, console)
+        console.gotoxy(old_x, old_y)
+        console.write(VisibleTiles.Rope)
+    level.Pf[level.Px, level.Py] = 40
+    if level.T[5] < 1:
+        console.gotoxy(level.Px, level.Py)
+        Col(14, 15, console)
+        Bak(0, 0, console)
+        console.write(VisibleTiles.Player)
+    else:
+        console.gotoxy(level.Px, level.Py)
+        console.write(' ')
+    if not level.Sideways:
+        FootStep(console)
+    elif game.Replacement != 75 and Human:
+        FootStep(console)
+    if console.keypressed() and Human:
+        ch = console.read()
+        if ch == pygame.locals.K_ESCAPE:
+            console.read()
+
+def MoveRock(XWay: int, YWay: int):
+    pass
+
+def Trigger_Trap(Place: bool, i: int, ch: str):
+    pass
+
+def End_Routine(level: Level, console: Crt):
+    FootStep(console)
+    console.delay(200)
+    FootStep(console)
+    console.delay(300)
+    FootStep(console)
+    for x in range(1, 250):
+        console.sound(randint(3000) + x, 0.5)
+        console.gotoxy(level.Px, level.Py)
+        Bak(randint(8), 0, console)
+        Col(14, 15, console)
+        console.write(VisibleTiles.Player)
+        Col(randint(16), randint(16), console)
+        Bak(0, 0, console)
+        Print(15, 25, 'Oh no, something strange is happening!', console)
+    for i in range(2200, 20, -1):
+        console.sound(randint(i))
+    Col(14, 15, console)
+    Bak(0, 0, console)
+    for x in range(650):
+        console.sound(x * 3, 2)
+        console.gotoxy(level.Px, level.Py)
+        console.write(220 + randint(4))
+    console.gotoxy(level.Px, level.Py)
+    Col(16, 16, console)
+    Bak(2, 7, console)
+    console.write(VisibleTiles.Stairs)
+    Restore_Border(level, console)
+    Flash(14, 25, 'You are magically transported from Kroz!')
+    ClearKeys(console)
+    Col(15, 15, console)
+    Bak(0, 0, console)
+    Print(15, 25, 'Your gems are worth 100 points each...')
+    for i in range(level.Gems):
+        level.Score += 10
+        Update_Info(level, console)
+        console.sound(i * 8 + 100, 20)
+    console.read()
+    Restore_Border(level, console)
+    ClearKeys(console)
+    Col(15, 15, console)
+    Bak(0, 0, console)
+    Print(15, 25, 'Your whips are worth 100 points each...')
+    for i in range(level.Whips):
+        level.Score += 10
+        Update_Info(level, console)
+        console.sound(i * 10 + 200, 20)
+    console.read()
+    Restore_Border(level, console)
+    ClearKeys(console)
+    Col(15, 15, console)
+    Bak(0, 0, console)
+    Print(9, 25, 'Your Teleport Scrolls are woth 200 points each...')
+    for i in range(level.Teleports):
+        level.Score += 20
+        Update_Info(level, console)
+        console.sound(i * 12 + 300, 30)
+    console.read()
+    Restore_Border(level, console)
+    ClearKeys(console)
+    Col(15, 15, console)
+    Bak(0, 0, console)
+    Print(14, 25, 'Your Keys are worth 10,000 points each...')
+    for i in range(level.Keys):
+        level.Score += 1000
+        Update_Info(level, console)
+        console.sound(i * 30 + 100, 50)
+    console.read()
+    Restore_Border(level, console)
+    ClearKeys(console)
+    Bak(level.GemColor, 7, console)
+    for x in range(30):
+        console.window(32 - x, 12 - x // 3, 35 + x, 14 + (x // 3))
+        console.clrscr()
+    Bak(0, 0, console)
+    for x in range(30):
+        console.window(32 - x, 12 - x // 3, 35 + x, 14 + x // 3)
+        console.clrscr()
+        console.sound(x * 45, 3)
+    console.window(1, 1, 80, 25)
+    Bak(1, 0, console)
+    console.window(2, 2, 65, 24)
+    console.clrscr()
+    Col(14, 15, console)
+    console.gotoxy(25, 2)
+    console.writeln('BACK AT YOUR HUT')
+    console.gotoxy(25, 3)
+    console.writeln('────────────────')
+    console.writeln()
+    Col(15, 7, console)
+    console.writeln('   For years you''ve waited for such a wonderful archaeological')
+    console.writeln(' discovery. And now you possess one of the greatest finds ever!')
+    console.writeln('   The Magical Staff will bring you even more recognition than')
+    console.writeln(' the Priceless Amulet you previously found in the depths of')
+    console.writeln(' Kroz.  However, Kroz is still mostly unexplored, and you have')
+    console.writeln(' reason to believe that even more fabulous treasures lie below.')
+    console.writeln('   Therefore, it doesn''t take much to convince you that another')
+    console.writeln(' expedition is in order.  You must leave no puzzle unsolved, no')
+    console.writeln(' treasure unfound--to quit now would be a coward''s choice.')
+    console.writeln('   So you plan for a good night''s rest, and think ahead to')
+    console.writeln(' tomorrow''s new journey.  What does the mysterious Kingdom of')
+    console.writeln(' Kroz have waiting for you, what type of new creatures will')
+    console.writeln(' try for you blood, and what new brilliant treasure does')
+    console.writeln(' Kroz protect.  Tomorrow will tell...')
+    console.writeln()
+    Col(14, 15, console)
+    console.writeln('                         KINGDOM OF KROZ')
+    Col(15, 7, console)
+    console.write  ('        ( Now available -- $7.50 or write for details. )')
+    ClearKeys(console)
+    console.window(1, 1, 80, 25)
+    Bak(0, 0, console)
+    Flash(21, 25, 'Press any key, Adventurer.', console)
+    Won(level, console)
