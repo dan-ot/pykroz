@@ -160,13 +160,19 @@ class Level:
         # player
         self.Px: int = 0
         self.Py: int = 0
+        self.Replacement: Union[int, None] = None # What the player is standing on...
         # enum of space occupants
         self.Pf: list[list[int]] = [[0 for _ in range(66)] for _ in range(25)]
         # string definition of the levels for parsing
         self.Fp: list[str] = ['{0:{width}}'.format(' ', width = XSIZE) for _ in range(YSIZE)]
         self.Parsed: list[int] = [0 for _ in range(TOTOBJECTS)]
         self.GenNum: int = 0
-        self.T: list[int] = [0 for 0 in range(TMAX)] # timers?
+        # Timers:
+        self.T: list[int] = [0 for 0 in range(TMAX)]
+        # * T[4] = SlowTime
+        # * T[5] = Invisibility
+        # * T[6] = FastTime
+        # * T[7] = Freeze
         self.LavaFlow: bool = False
         self.LavaRate: int = 0
         self.TreeRate: int = -1
@@ -197,6 +203,17 @@ class Level:
         self.Cf2: int = 0
         self.Bf1: int = 0
         self.Bf2: int = 0
+        # Save/Restore Variables
+        self.I_Score: int = 0
+        self.I_Gems: int = 0
+        self.I_Whips: int = 0
+        self.I_Teleports: int = 0
+        self.I_Keys: int = 0
+        self.I_WhipPower: int = 0
+        self.I_Px: int = 0
+        self.I_Py: int = 0
+        self.I_FoundSet: list[int] = []
+        self.I_Difficulty: int = 0
 
 class Game:
     def __init__(self):
@@ -204,7 +221,6 @@ class Game:
         self.Restart: bool = False
         self.Df: list[str] = ['' for _ in range(1, 30)]
         self.OneMove: bool = True
-        self.Replacement: Union[int, None] = None
         self.Difficulty: int = 0
         self.MixUp: bool = True
         self.Color: bool = True
