@@ -153,3 +153,9 @@ class Crt:
 
     def halt(self):
         exit()
+
+    def insline(self):
+        pass
+
+    def delline(self):
+        pass

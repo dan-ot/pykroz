@@ -51,6 +51,10 @@ class VisibleTiles:
     MBlock     = ASCII.Char[178]
     Trap4      = ASCII.Char[0]
     Player     = ASCII.Char[2]
+    SMonster   = ASCII.Char[142]
+    MMonster   = ASCII.Char[153]
+    FMonster   = ASCII.Char[234]
+    Tile       = ASCII.Char[0]
     ShowGems   = ASCII.Char[0]
     ZBlock     = ASCII.Char[178]
     BlockSpell = ASCII.Char[0]
@@ -144,23 +148,55 @@ class Level:
         self.Bc: int = 0
         self.Bb: int = 0
         self.GemColor: int = 0
+        # slow monsters
         self.Sx: list[int] = [0 for _ in range(1000)]
         self.Sy: list[int] = [0 for _ in range(1000)]
+        # medium monsters
         self.Mx: list[int] = [0 for _ in range(1000)]
         self.My: list[int] = [0 for _ in range(1000)]
+        # fast monsters
         self.Fx: list[int] = [0 for _ in range(1000)]
         self.Fy: list[int] = [0 for _ in range(1000)]
+        # player
         self.Px: int = 0
         self.Py: int = 0
+        # enum of space occupants
         self.Pf: list[list[int]] = [[0 for _ in range(66)] for _ in range(25)]
+        # string definition of the levels for parsing
         self.Fp: list[str] = ['{0:{width}}'.format(' ', width = XSIZE) for _ in range(YSIZE)]
+        self.Parsed: list[int] = [0 for _ in range(TOTOBJECTS)]
         self.GenNum: int = 0
-        self.T: list[int] = [0 for 0 in range(TMAX)]
+        self.T: list[int] = [0 for 0 in range(TMAX)] # timers?
         self.LavaFlow: bool = False
-        self.TreeRate: int = 0
+        self.LavaRate: int = 0
+        self.TreeRate: int = -1
+        self.Evaporate: int = 0
         self.GravCounter: int = 0
         self.GravOn: bool = False
+        self.GravRate: int = 0
         self.Sideways: bool = False
+        self.FloorPattern: bool = False
+        self.Bonus: int = 0
+        self.MagicEWalls: bool = False
+        self.HideRock: bool = False
+        self.HideStairs: bool = False
+        self.HideLevel: bool = False
+        self.HideCreate: bool = False
+        self.HideOpenWall: bool = False
+        self.HideTrap: bool = False
+        self.HideGems: bool = False
+        self.HideMBlock: bool = False
+        self.GenFactor: int = 0
+        self.BTime: int = 0
+        self.STime: int = 0
+        self.MTime: int = 0
+        self.FTime: int = 0
+        self.SkipTime: int = 0
+        # Floor colors
+        self.Cf1: int = 0
+        self.Cf2: int = 0
+        self.Bf1: int = 0
+        self.Bf2: int = 0
 
 class Game:
     def __init__(self):
@@ -171,6 +207,9 @@ class Game:
         self.Replacement: Union[int, None] = None
         self.Difficulty: int = 0
         self.MixUp: bool = True
+        self.Color: bool = True
+        self.FastPC: bool = True
+        self.FoundSet: list[int] = []
 
 # Procedures
 def Print(XPos: int, YPos: int, Message: str, console: Crt):
@@ -258,10 +297,10 @@ def NoneSound(console: Crt):
 def Static(console: Crt):
     console.sounds(sounds.Static())
 
-def Col(color: int, _: int, console: Crt):
+def Col(color: int, bw: int, console: Crt):
     console.textcolor(color)
 
-def Bak(color: int, _: int, console: Crt):
+def Bak(color: int, bw: int, console: Crt):
     console.textbackground(color)
 
 def Sign_Off(console: Crt):
