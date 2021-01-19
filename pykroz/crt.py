@@ -44,7 +44,7 @@ class Keyboard():
 class Crt:
     def __init__(self, widthInTiles: int, heightInTiles: int, fontFile: Union[str, None]):
         (frequency, format, _) = pygame.mixer.get_init()
-        self.audio = Audio(frequency, format)
+        self._audio = Audio(frequency, format)
 
         if fontFile is None:
             tiles = ASCII.from_system_font() 
@@ -53,9 +53,9 @@ class Crt:
         else:
             tiles = ASCII.from_bitmap_font(fontFile, (8, 12))
         
-        self.tiles = tiles
-        self.screen = pygame.display.set_mode((self.tiles.width * widthInTiles, self.tiles.height * heightInTiles))
-        self.keyboard = Keyboard()
+        self._tiles = tiles
+        self._screen = pygame.display.set_mode((self._tiles.width * widthInTiles, self._tiles.height * heightInTiles))
+        self._keyboard = Keyboard()
         self.foreground = Colors.White
         self.background = Colors.Black
         self.cursor_x = 0
@@ -76,32 +76,32 @@ class Crt:
             if event.type == pygame.locals.QUIT:
                 exit()
             print(event)
-            self.keyboard.handle(event)
-        self.audio.tick()
+            self._keyboard.handle(event)
+        self._audio.tick()
         for _ in range(len(self.dirty_blocks)):
             dirty = self.dirty_blocks.popleft()
             for x in range(dirty.width):
                 for y in range(dirty.height):
                     tx = x + dirty.left
                     ty = y + dirty.top
-                    self.tiles.draw(
+                    self._tiles.draw(
                         self.charbuffer[tx, ty],
-                        tx * self.tiles.width, ty * self.tiles.height,
+                        tx * self._tiles.width, ty * self._tiles.height,
                         pygame.Color(self.fg_color_buffer[tx, ty]),
                         pygame.Color(self.bg_color_buffer[tx, ty]),
-                        self.screen
+                        self._screen
                     )
 
         pygame.display.flip()
 
     def keypressed(self) -> bool:
-        return self.keyboard.keypressed()
+        return self._keyboard.keypressed()
 
     def read(self) -> int:
         pass
 
     def readkey(self):
-        return self.keyboard.getKey()
+        return self._keyboard.getKey()
 
     def write(self, message: Union[str, int]):
         if isinstance(str, message):
@@ -140,10 +140,10 @@ class Crt:
         self.background = Colors.Code[index % len(Colors.Code)]
 
     def sound(self, freq: int, duration: int):
-        self.audio.sound(self.audio.tone(freq, duration, self.audio.square_wave))
+        self._audio.sound(self._audio.tone(freq, duration, self._audio.square_wave))
 
-    def sounds(self, parts: Sequence[Tuple[int, int]]):
-        self.audio.sound(self.audio.compose(parts))
+    def sounds(self, parts: Sequence[Tuple[Union[int, None], int]]):
+        self._audio.sound(self._audio.compose(parts))
 
     def clrscr(self):
         self.charbuffer.fill(ASCII.Ord[' '])

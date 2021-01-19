@@ -280,7 +280,7 @@ def Flash(XPos: int, YPos: int, Message: str, level: Level, console: Crt):
     Restore_Border(level, console)
 
 def ClearKeys(console: Crt):
-    console.keyboard.clear()
+    console._keyboard.clear()
 
 def FootStep(console: Crt):
     console.sounds(sounds.FootStep())
