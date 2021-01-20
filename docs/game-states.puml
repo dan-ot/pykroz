@@ -1,0 +1,53 @@
+@startuml Game States
+hide empty description
+
+state "Game Menus" as GameMenu {
+    state "Title Screen" as Title: Choose difficulty
+    state Shareware: Describe funding model
+    state "Main Menu" as Menu
+    state MenuChoice <<choice>>
+    state Instructions1
+    state Instructions2
+    state Instructions3
+    state Marketing
+    state Story1
+    state Story2
+    state "Original Kroz Games" as Original
+    state "About the Author" as About
+}
+
+state "Playfield" as Play {
+    state Running {
+        state "Player's Turn" as Player
+        state "Monster's Turn" as Monster
+
+        Player --> Monster
+        Monster --> Player
+    }
+    state Alerting
+
+    Alerting --> Running
+    Running --> Alerting
+}
+
+[*] --> Title : Launch
+Title --> Shareware
+Shareware --> Menu
+Menu --> MenuChoice
+MenuChoice --> Instructions1: Press I
+Instructions1 --> Instructions2
+Instructions2 --> Instructions3
+Instructions3 --> Menu
+MenuChoice --> Marketing: Press M
+Marketing --> Menu
+MenuChoice --> Story1: Press S
+Story1 --> Story2
+Story2 --> Menu
+MenuChoice --> Original: Press O
+Original --> Menu
+MenuChoice --> About: Press A
+About --> Menu
+
+MenuChoice --> Alerting: Press B
+Alerting --> Menu: Quit
+@enduml

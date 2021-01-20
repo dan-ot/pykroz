@@ -1,4 +1,3 @@
-from numpy.core.einsumfunc import _parse_possible_contraction
 from ascii import ASCII
 from random import randint
 import pygame.locals
@@ -162,10 +161,6 @@ def Parse_Field(game: Game, level: Level):
         counter += 1
 
 def Create_Playfield(game: Game, level: Level):
-    s_num = 0
-    m_num = 0
-    f_num = 0
-    b_num = 0
     level.GenNum = 0
     level.LavaFlow = False
     level.T[9] = -1
@@ -191,17 +186,17 @@ def Create_Playfield(game: Game, level: Level):
                     y_spot = randint(YSIZE) + YBOT
                     if level.Pf[x_spot, y_spot] == 0:
                         if obj == 1:
-                            s_num += 1
-                            level.Sx[s_num] = x_spot
-                            level.Sy[s_num] = y_spot
+                            level.SNum += 1
+                            level.Sx[level.SNum] = x_spot
+                            level.Sy[level.SNum] = y_spot
                         elif obj == 2:
-                            m_num += 1
-                            level.Mx[m_num] = x_spot
-                            level.My[m_num] = y_spot
+                            level.MNum += 1
+                            level.Mx[level.MNum] = x_spot
+                            level.My[level.MNum] = y_spot
                         elif obj == 3:
-                            f_num += 1
-                            level.Fx[f_num] = x_spot
-                            level.Fy[f_num] = y_spot
+                            level.FNum += 1
+                            level.Fx[level.FNum] = x_spot
+                            level.Fy[level.FNum] = y_spot
                         elif obj == 36:
                             level.GenNum += 1
 

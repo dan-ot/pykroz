@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "source\\KROZTRLI\\DUNGEON"
+		},
+		{
+			"path": "docs"
 		}
 	],
 	"settings": {}

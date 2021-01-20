@@ -1,0 +1,33 @@
+@startuml CRT States
+hide empty description
+state Alerting {
+    state "New Feature Discovered"
+    state "Game Paused"
+    state "Save Game"
+    state "Restore Game"
+    state "Quit Game"
+    state "Dead"
+}
+state Alerting: Flashing Text in the last row.
+state Alerting: Press any key to escape.
+state Alerting: Some are prompts as well.
+
+state "Sound and Animation" as Sound {
+    state "Level Transition"
+    state "Bottomless Pit"
+    state "Whipping"
+    state "Tunneling"
+    state "Teleporting"
+    state "Win"
+    state "Earthquake"
+    state "Gem Killer Trap"
+}
+state Sound: While playing sounds, only animations continue.
+state Sound: Many of these routines include game state changes
+
+state Playing
+state Playing: Handle Player Input.
+state Playing: Loop through Monsters (on a timer).
+state Playing: After each individual Monster's turn,
+state Playing: the Player has a random chance of interrupting.
+@enduml
