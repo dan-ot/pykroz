@@ -151,12 +151,15 @@ class Level:
         # slow monsters
         self.Sx: list[int] = [0 for _ in range(1000)]
         self.Sy: list[int] = [0 for _ in range(1000)]
+        self.SNum: int = 0
         # medium monsters
         self.Mx: list[int] = [0 for _ in range(1000)]
         self.My: list[int] = [0 for _ in range(1000)]
+        self.MNum: int = 0
         # fast monsters
         self.Fx: list[int] = [0 for _ in range(1000)]
         self.Fy: list[int] = [0 for _ in range(1000)]
+        self.FNum: int = 0
         # player
         self.Px: int = 0
         self.Py: int = 0
@@ -168,7 +171,9 @@ class Level:
         self.Parsed: list[int] = [0 for _ in range(TOTOBJECTS)]
         self.GenNum: int = 0
         # Timers:
+        self.SkipTime: int = 0
         self.T: list[int] = [0 for 0 in range(TMAX)]
+        # * T[1..3] = Monster Move Timers?
         # * T[4] = SlowTime
         # * T[5] = Invisibility
         # * T[6] = FastTime
@@ -194,6 +199,7 @@ class Level:
         self.HideMBlock: bool = False
         self.GenFactor: int = 0
         self.BTime: int = 0
+        # Monster delay speeds
         self.STime: int = 0
         self.MTime: int = 0
         self.FTime: int = 0
@@ -626,9 +632,9 @@ def Define_Levels(game: Game):
     game.Df[28] = '133133133        3  3    80420  1  1                                           10  5            '
 
 def Convert_Format(level: Level):
-    SNum = 0
-    MNum = 0
-    FNum = 0
+    level.SNum = 0
+    level.MNum = 0
+    level.FNum = 0
     BNum = 0
     GenNum = 0
     level.T[9] = -1
@@ -653,19 +659,19 @@ def Convert_Format(level: Level):
             if tempstr == ' ':
                 level.Pf[XLoop + 1, YLoop + 1] = 0
             elif tempstr == '1':
-                SNum += 1
-                level.Sx[SNum] = XLoop + 1
-                level.Sy[SNum] = YLoop + 1
+                level.SNum += 1
+                level.Sx[level.SNum] = XLoop + 1
+                level.Sy[level.SNum] = YLoop + 1
                 level.Pf[XLoop + 1, YLoop + 1] = 1
             elif tempstr == '2':
-                MNum += 1
-                level.Mx[MNum] = XLoop + 1
-                level.My[MNum] = YLoop + 1
+                level.MNum += 1
+                level.Mx[level.MNum] = XLoop + 1
+                level.My[level.MNum] = YLoop + 1
                 level.Pf[XLoop + 1, YLoop + 1] = 1
             elif tempstr == '3':
-                FNum += 1
-                level.Fx[FNum] = XLoop + 1
-                level.Fy[FNum] = YLoop + 1
+                level.FNum += 1
+                level.Fx[level.FNum] = XLoop + 1
+                level.Fy[level.FNum] = YLoop + 1
                 level.Pf[XLoop + 1, YLoop + 1] = 1
             elif tempstr == 'X':
                 level.Pf[XLoop + 1, YLoop + 1] = 4

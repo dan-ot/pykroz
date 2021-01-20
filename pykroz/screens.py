@@ -205,7 +205,7 @@ def Create_Playfield(game: Game, level: Level):
                         elif obj == 36:
                             level.GenNum += 1
 
-def Diplay_Playfield(level: Level, console: Crt):
+def Display_Playfield(level: Level, console: Crt):
     for x_loop in range(XBOT, XTOP):
         for y_loop in range(YBOT, YTOP):
             if (level.Pf[x_loop, y_loop] > 0 or level.FloorPattern) and (not level.HideLevel):
@@ -434,6 +434,8 @@ def GetKey(game: Game, level: Level, console: Crt) -> int:
             level.Keys = 9
             Update_Info(level, console)
             return 0
+        elif key == pygame.locals.K_PAUSE or key == pygame.locals.K_p:
+            return 80
         elif key == pygame.locals.K_ESCAPE or key == pygame.locals.K_q:
             return 81
         elif key == pygame.locals.K_r:
