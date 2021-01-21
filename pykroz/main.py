@@ -1,6 +1,4 @@
-from time import sleep
-import sounds
-from random import randint, seed
+from random import seed
 import pygame
 import pygame.time
 import pygame.mixer

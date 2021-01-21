@@ -302,7 +302,7 @@ def Flash(XPos: int, YPos: int, Message: str, level: Level, console: Crt):
     Restore_Border(level, console)
 
 def ClearKeys(console: Crt):
-    console._keyboard.clear()
+    console._keyboard.clear_queue()
 
 def Col(color: int, bw: int, console: Crt):
     console.textcolor(color)

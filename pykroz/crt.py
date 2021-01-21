@@ -2,7 +2,7 @@
 from audio import Audio
 from collections import deque
 from sys import exit
-from typing import  Union
+from typing import  Optional, Union
 from time import sleep
 
 # Library Imports
@@ -33,14 +33,17 @@ class Keyboard():
         elif event.type == pygame.locals.KEYUP:
             self.keyboard[event.key] = False
 
-    def getKey(self):
-        return self.keys.pop()
+    def get_key_from_queue(self) -> Optional[int]:
+        if len(self.keys) > 0:
+            return self.keys.pop()
+        else:
+            return None
 
-    def clear(self):
+    def clear_queue(self):
         self.keys.clear()
 
-    def keypressed(self):
-        return self.keys.count() > 0
+    def key_in_queue(self):
+        return len(self.keys) > 0
 
 class Crt:
     def __init__(self, widthInTiles: int, heightInTiles: int, fontFile: Union[str, None]):
@@ -96,13 +99,23 @@ class Crt:
         pygame.display.flip()
 
     def keypressed(self) -> bool:
-        return self._keyboard.keypressed()
+        return self._keyboard.key_in_queue()
 
     def read(self) -> int:
-        pass
+        while not self._keyboard.key_in_queue():
+            for event in get([
+                pygame.locals.QUIT, 
+                pygame.locals.KEYDOWN, 
+                pygame.locals.KEYUP
+            ], pump = True):
+                if event.type == pygame.locals.QUIT:
+                    exit()
+                print(event)
+                self._keyboard.handle(event)
+        return self._keyboard.get_key_from_queue()
 
-    def readkey(self):
-        return self._keyboard.getKey()
+    def readkey(self) -> Optional[int]:
+        return self._keyboard.get_key_from_queue()
 
     def write(self, message: Union[str, int]):
         if isinstance(str, message):
