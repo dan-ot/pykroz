@@ -1,5 +1,4 @@
 # Python Imports
-from audio import Audio
 from collections import deque
 from sys import exit
 from typing import  Optional, Union
@@ -11,39 +10,15 @@ from pygame import Rect
 import pygame.locals
 import pygame.display
 import pygame.mixer
-import  pygame.key
-from pygame.event import get, Event
+from pygame.event import get
 import numpy
 
 # Project Imports
 from ascii import ASCII
 from colors import Colors
 from sounds import SampleSet
-
-class Keyboard():
-    def __init__(self):
-        self.keyboard = {}
-        self.keys: deque[int] = deque()
-        pygame.key.set_repeat(0)
-
-    def handle(self, event: Event):
-        if event.type == pygame.locals.KEYDOWN:
-            self.keyboard[event.key] = True
-            self.keys.appendleft(event.key)
-        elif event.type == pygame.locals.KEYUP:
-            self.keyboard[event.key] = False
-
-    def get_key_from_queue(self) -> Optional[int]:
-        if len(self.keys) > 0:
-            return self.keys.pop()
-        else:
-            return None
-
-    def clear_queue(self):
-        self.keys.clear()
-
-    def key_in_queue(self):
-        return len(self.keys) > 0
+from keyboard import Keyboard
+from audio import Audio
 
 class Crt:
     def __init__(self, widthInTiles: int, heightInTiles: int, fontFile: Union[str, None]):
@@ -82,7 +57,7 @@ class Crt:
             print(event)
             self._keyboard.handle(event)
         self._audio.tick()
-        for _ in range(len(self.dirty_blocks)):
+        while len(self.dirty_blocks) > 0:
             dirty = self.dirty_blocks.popleft()
             for x in range(dirty.width):
                 for y in range(dirty.height):
