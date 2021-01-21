@@ -11,22 +11,19 @@ from screens import Display_Playfield, GetKey, Hit, Init_Screen, Screen
 from movement import Move, Next_Level
 from titles import Title
 from layouts import Level1
+import sounds
 
 def Player_Move(game: Game, level: Level, console: Crt):
     # Translate keypress to interal message
     key = GetKey(game, level, console)
     if key == 80: # Pause
         Bak(0, 0, console)
-        Play(500, 500, 100, console)
-        Play(200, 100, 2, console)
+        console.sounds(sounds.Pause())
         ClearKeys(console)
         Flash(18, 25, ' Press any key to resume game. ', level, console)
         Restore_Border(level, console)
     elif key == 81: # Quit
-        Play(600, 600, 100, console)
-        Play(450, 450, 100, console)
-        Play(300, 300, 100, console)
-        Play(99, 99, 99, console)
+        console.sounds(sounds.Quit())
         ClearKeys(console)
         Flash(15, 25, ' Are you sure you want to quit (Y/N)? ')
         ch = console.read()
@@ -123,7 +120,7 @@ def Player_Move(game: Game, level: Level, console: Crt):
                 Col(randint(16), randint(16), console)
                 Bak(randint(8), 0, console)
                 console.write(VisibleTiles.Player)
-                console.sound(x // 2, 0.3)
+                console.sound(x // 2, 0.3) # sounds.Load()
             console.gotoxy(level.Px, level.Py)
             Col(14, 15, console)
             Bak(0, 0, console)
@@ -131,7 +128,7 @@ def Player_Move(game: Game, level: Level, console: Crt):
             Bak(0, 0, console)
         else:
             Restore_Border(level, console)
-            console.sound(300, 250)
+            console.sounds(sounds.Load_Error())
             Flash(14, 25, ' The SAVE file {0} was not found.'.format(which_file), level, console)
 
         Flash(17, 25, 'Press any key to begin this level.', level, console)
@@ -204,7 +201,7 @@ def Player_Move(game: Game, level: Level, console: Crt):
             console.write(' ')
         i = 0
         Col(14, 15, console)
-        console.sound(20, 3)
+        console.sound(20, 3) # sound.Teleport_Windup()
         while i <= 700:
             i += 1
             x = randint(XSIZE) + XBOT
@@ -215,13 +212,7 @@ def Player_Move(game: Game, level: Level, console: Crt):
                 console.delay(3)
                 console.gotoxy(x, y)
                 console.write(' ')
-        xb = 0
-        while xb <= 90:
-            xb += 2
-            yb = 0
-            while yb <= 220:
-                yb += 1
-                console.sound(xb * yb, 0.3)
+        console.sounds(sounds.Teleport())
         level.Pf[level.Px, level.Py] = level.Replacement
         level.Px = 0
         while level.Px == 0:
@@ -254,7 +245,7 @@ def Player_Move(game: Game, level: Level, console: Crt):
             NoneSound(console)
             return
         level.Whips -= 1
-        console.sound(70, 0.3)
+        console.sound(70, 0.3) # sounds.Whip()
         if level.Py > YBOT and level.Px > XBOT:
             Hit(level.Px - 1, level.Py - 1, '\\', level, console)
         if level.Px > XBOT:
@@ -337,7 +328,7 @@ def Move_Slow(game: Game, level: Level, console: Crt):
             Col(12, 7, console)
             slow = 142 if randint(2) == 0 else 65
             console.write(slow)
-            console.sound(20, 0.3) # This is usually silent - lots of them together used to make a soft hiss...
+            console.sound(20, 0.3) # sounds.Monster_Steps()
             level.Pf[level.Sx[loop], level.Sy[loop]] = 1 # Confirm the move
         # Things a monster can't move through
         elif occupant in [1, 2, 3, 6, 13, 14, 17, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 39, 41, 42, 44, 45, 46, 47, 52, 53, 54, 55, 56, 58, 59, 60, 61, 62, 63, 65, 66, 67, 75, 76, 77, 78, 79, 80, 224, 225, 226, 227, 228, 229, 230, 231]:
@@ -354,9 +345,9 @@ def Move_Slow(game: Game, level: Level, console: Crt):
             level.Sx[loop] = 0
             console.write(' ')
             level.Score += 1
-            console.sounds([(800, 18), (400, 20)])
+            console.sounds(sounds.Monster_Self_Destruction())
         elif occupant == 40: # The player!
-            console.sound(400, 25)
+            console.sounds(sounds.Monster1_On_Player())
             level.Sx[loop] = 0
             level.Gems -= 1
             if level.Gems < 0:
@@ -379,7 +370,7 @@ def Move_Slow(game: Game, level: Level, console: Crt):
             slow = 142 if randint(2) == 0 else 65
             console.write(slow)
             level.Pf[level.Sx[loop], level.Sy[loop]] = 1
-            GrabSound(console)
+            console.sounds(sounds.GrabSound())
         else:
             level.Sx[loop] += x_dir
             level.Sy[loop] += y_dir
@@ -437,7 +428,7 @@ def Move_Medium(game: Game, level: Level, console: Crt):
             Col(12, 7, console)
             medium = 148 if randint(2) == 0 else 153
             console.write(medium)
-            console.sound(20, 0.3) # This is usually silent - lots of them together used to make a soft hiss...
+            console.sound(20, 0.3) # sounds.Monster_Steps()
             level.Pf[level.Mx[loop], level.My[loop]] = 1 # Confirm the move
         # Things a monster can't move through
         elif occupant in [1, 2, 3, 6, 13, 14, 17, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 39, 41, 42, 44, 45, 46, 47, 52, 53, 54, 55, 56, 58, 59, 60, 61, 62, 63, 65, 66, 67, 75, 76, 77, 78, 79, 80, 224, 225, 226, 227, 228, 229, 230, 231]:
@@ -454,9 +445,9 @@ def Move_Medium(game: Game, level: Level, console: Crt):
             level.Mx[loop] = 0
             console.write(' ')
             level.Score += 2
-            console.sounds([(800, 18), (400, 20)])
+            console.sounds(sounds.Monster_Self_Destruction())
         elif occupant == 40: # The player!
-            console.sound(600, 25)
+            console.sound(sounds.Monster2_On_Player())
             level.Mx[loop] = 0
             level.Gems -= 2
             if level.Gems < 0:
@@ -536,7 +527,7 @@ def Move_Fast(game: Game, level: Level, console: Crt):
         if occupant in [0, 68, 69, 70, 71, 72, 73, 74]:
             Col(12, 7, console)
             console.write(VisibleTiles.FMonster)
-            console.sound(20, 0.3) # This is usually silent - lots of them together used to make a soft hiss...
+            console.sound(20, 0.3) # sounds.Monster_Steps()
             level.Pf[level.Fx[loop], level.Fy[loop]] = 1 # Confirm the move
         # Things a monster can't move through
         elif occupant in [1, 2, 3, 6, 13, 14, 17, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 39, 41, 42, 44, 45, 46, 47, 52, 53, 54, 55, 56, 58, 59, 60, 61, 62, 63, 65, 66, 67, 75, 76, 77, 78, 79, 80, 224, 225, 226, 227, 228, 229, 230, 231]:
@@ -552,9 +543,9 @@ def Move_Fast(game: Game, level: Level, console: Crt):
             level.Fx[loop] = 0
             console.write(' ')
             level.Score += 3
-            console.sounds([(800, 18), (400, 20)])
+            console.sounds(sounds.Monster_Self_Destruction())
         elif occupant == 40: # The player!
-            console.sound(800, 25)
+            console.sounds(sounds.Monster3_On_Player())
             level.Fx[loop] = 0
             level.Gems -= 3
             if level.Gems < 0:
@@ -619,7 +610,7 @@ def NewGame(game: Game, level: Level, console: Crt):
         Col(randint(16), randint(16), console)
         Bak(randint(8), 0, console)
         console.write(VisibleTiles.Player)
-        console.sound(x // 2)
+        console.sound(x // 2) # sounds.NewGame()
     console.gotoxy(level.Px, level.Py)
     Col(14, 15, console)
     Bak(0, 0, console)

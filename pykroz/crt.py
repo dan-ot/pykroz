@@ -2,7 +2,7 @@
 from audio import Audio
 from collections import deque
 from sys import exit
-from typing import Sequence, Tuple, Union
+from typing import  Union
 from time import sleep
 
 # Library Imports
@@ -18,6 +18,7 @@ import numpy
 # Project Imports
 from ascii import ASCII
 from colors import Colors
+from sounds import SampleSet
 
 class Keyboard():
     def __init__(self):
@@ -142,7 +143,7 @@ class Crt:
     def sound(self, freq: int, duration: int):
         self._audio.sound(self._audio.tone(freq, duration, self._audio.square_wave))
 
-    def sounds(self, parts: Sequence[Tuple[Union[int, None], int]]):
+    def sounds(self, parts: SampleSet):
         self._audio.sound(self._audio.compose(parts))
 
     def clrscr(self):

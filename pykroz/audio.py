@@ -1,12 +1,12 @@
 from collections import deque
 from typing import Sequence, Tuple, Union, cast
-import math
 import wave
 
 import numpy
-from scipy import signal
 import pygame.sndarray
 from pygame.mixer import Sound, find_channel
+
+from sounds import SampleSet
 
 class Audio:
     def __init__(self, sample_rate: float, bit_depth: int):
@@ -50,7 +50,7 @@ class Audio:
         wave = wave_func((freq, duration_in_ms))
         return self.wave_to_sound(wave)
 
-    def compose(self, commands: Sequence[Tuple[Union[int, None], int]], wave_func) -> Sound:
+    def compose(self, commands: SampleSet, wave_func) -> Sound:
         blocks = map(wave_func, commands)
         single = []
         for block in blocks:
