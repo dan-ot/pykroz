@@ -4,6 +4,7 @@ import pygame.locals
 
 from crt import Crt
 from levels import Bak, ClearKeys, Col, Flash, Game, Level, Shareware, VisibleTiles
+import sounds
 
 def Title(game: Game, level: Level, console: Crt):
     ClearKeys(console)
@@ -92,7 +93,7 @@ def Title(game: Game, level: Level, console: Crt):
     console.write('dvanced player?')
     Col(28, 16)
     console.write(219)
-    console.sound(220, 100)
+    console.sounds(sounds.Difficulty_Prompt())
     Bak(4, 7, console)
     ch = 0
     selections = set([pygame.locals.K_n, pygame.locals.K_SPACE, pygame.locals.K_e, pygame.locals.K_a, pygame.locals.K_x, pygame.locals.K_RETURN, pygame.locals.K_KP_ENTER])
@@ -103,7 +104,7 @@ def Title(game: Game, level: Level, console: Crt):
             console.write(' DUNGEONS OF KROZ II ')
             console.delay(50)
         ch = console.read()
-        console.sound(300, 100)
+        console.sounds(sounds.Difficulty_Key())
         Bak(4, 7, console)
     console.sound(700, 100)
     console.gotoxy(13, 22)
@@ -201,9 +202,7 @@ def Title(game: Game, level: Level, console: Crt):
         if ch == pygame.locals.K_r:
             game.MixUp = True
         elif ch == pygame.locals.K_b:
-            for x in range(100, 20, -1):
-                for y in range(10, 1, -1):
-                    console.sound(x * y * y, y / 2)
+            console.sounds(sounds.Begin_Game())
             start_game = True
         elif ch == pygame.locals.K_i:
             Bak(1, 0, console)
@@ -517,9 +516,7 @@ def Title(game: Game, level: Level, console: Crt):
             console.writeln(' is over $10,000 per game.  All of the appreciative letters make it worth it!')
             Flash(27, 25, 'Press any key to continue.', console)
         else:
-            for x in range(100, 20, -1):
-                for y in range(10, 1, -1):
-                    console.sound(x * y * y, y / 2)
+            console.sounds(sounds.Begin_Game())
             start_game = True
     Bak(0, 0, console)
     console.clrscr()

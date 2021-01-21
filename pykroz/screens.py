@@ -1,9 +1,10 @@
-from ascii import ASCII
 from random import randint
 import pygame.locals
 
+from ascii import ASCII
 from levels import AddScore, Bak, ClearKeys, Col, Flash, Game, Level, New_Gem_Color, Print, TMAX, TOTOBJECTS, Update_Info, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
 from crt import Crt
+import sounds
 
 def Screen(game: Game, console: Crt):
     ClearKeys(console)
@@ -18,7 +19,7 @@ def Screen(game: Game, console: Crt):
     console.write('Is your screen Color or Monochrome (C/M)? C')
     console.gotoxy(console.cursor_x - 1, console.cursor_y)
     ch = console.read()
-    console.sound(500, 30)
+    console.sounds(sounds.Color_Prompt())
     if ch == pygame.locals.K_m:
         game.Color = False
     else:
@@ -38,7 +39,7 @@ def Screen(game: Game, console: Crt):
     console.write('Slow or Fast PC (S/F)? S')
     console.gotoxy(console.cursor_x - 1, console.cursor_y)
     ch = console.read()
-    console.sound(300, 30)
+    console.sounds(sounds.Speed_Prompt())
     if ch == pygame.locals.K_f:
         game.FastPC = True
     else:
@@ -67,7 +68,7 @@ def Init_Screen(game: Game, level: Level, console: Crt):
     elif game.Difficulty == 2:
         level.Gems = 10
     level.FloorPattern = False
-    game.Replacement = None
+    level.Replacement = None
     level.Bonus = 0
     level.LavaFlow = False
     level.LavaRate = 0
@@ -400,12 +401,7 @@ def Display_Playfield(level: Level, console: Crt):
     level.FloorPattern = False
 
 def BadKeySound(console: Crt):
-    console.sound(540, 40)
-    for _ in range(4):
-        console.sounds([
-            (100, 15),
-            (None, 15)
-        ])
+    console.sounds(sounds.Bad_Key())
 
 def GetKey(game: Game, level: Level, console: Crt) -> int:
     if console.keypressed():
@@ -420,7 +416,7 @@ def GetKey(game: Game, level: Level, console: Crt) -> int:
             return 0
         elif key == pygame.locals.K_9:
             level.Pf[level.Px + 1, level.Py] = 6 # Stairs!
-            console.sound(2000, 40)
+            console.sounds(sounds.Generate_Stairs())
             return 0
         elif key == pygame.locals.K_0:
             level.Gems = 150
@@ -458,7 +454,7 @@ def GetKey(game: Game, level: Level, console: Crt) -> int:
         elif key == pygame.locals.K_COMMA or key == pygame.locals.K_KP4:
             return 181
         else:
-            BadKeySound(console)
+            console.sounds(sounds.Bad_Key())
             return 0
     else:
         return 0
@@ -481,7 +477,7 @@ def Hit(x: int, y: int, ch: str, level: Level, console: Crt):
         level.Pf[x, y] = 0
         console.write(' ')
         level.Score += int_thing
-        console.sounds((400, 20), (90, 1))
+        console.sounds(sounds.Whip_Hit())
     elif int_thing in [4, 19, 20, 252]: # Impediments, they might break
         i = level.WhipPower if int_thing != 19 else 8
         if int_thing == 4:
@@ -493,10 +489,9 @@ def Hit(x: int, y: int, ch: str, level: Level, console: Crt):
         if randint(7) < i: # A whip-power in 7 chance...
             console.write(' ')
             level.Pf[x, y] = 0
-            for s in range(3300, 20, -1):
-                console.sounds([(randint(s), 0.2), (90, 1)])
+            console.sounds(sounds.Whip_Breakable_Destroy())
         else:
-            console.sounds([(130, 25), (90, 1)])
+            console.sounds(sounds.Whip_Breakable_Hit())
             Col(6, 7, console)
             if char_thing == VisibleTiles.Tree:
                 Col(6, 0, console)
@@ -514,10 +509,9 @@ def Hit(x: int, y: int, ch: str, level: Level, console: Crt):
     elif int_thing in [10, 15, 16, 18, 36, 48, 49, 50, 51]: # Things that break
         level.Pf[x, y] = 0
         console.write(' ')
-        console.sounds([(400, 20), (90, 1)])
+        console.sounds(sounds.Whip_Breakable_Hit())
         if int_thing == 36:
-            for s in range(3300, 20, -1):
-                console.sounds([(randint(s), 0.2), (90, 1)])
+            console.sounds(sounds.Whip_Breakable_Destroy())
             AddScore(36)
             level.GenNum -= 1
 
@@ -628,11 +622,10 @@ def Hit(x: int, y: int, ch: str, level: Level, console: Crt):
         if randint(7) < level.WhipPower:
             console.write(' ')
             level.Pf[x, y] = 0
-            for s in range(3300, 20, -1):
-                console.sounds([(randint(s), 0.2), (90, 1)])
+            console.sounds(sounds.Whip_Breakable_Destroy())
             AddScore(38)
         else:
-            console.sounds([(130, 25), (90, 1)])
+            console.sounds(sounds.Whip_Breakable_Hit())
             if int_thing == 64:
                 Col(7, 7, console)
             else:
@@ -666,7 +659,7 @@ def Tome_Effects(level: Level, console: Crt):
         for x in range (XBOT, XTOP):
             for y in range(YBOT, YTOP):
                 if level.Pf[x, y] == 0:
-                    console.sound(x * y * (b + 1), 0.3)
+                    console.sounds(sounds.Victory_MacGuffin_2(b, x, y))
                     console.gotoxy(x, y)
                     Col(b * 2, 7 if b % 2 == 1 else 0, console)
                     console.write(VisibleTiles.Wall)

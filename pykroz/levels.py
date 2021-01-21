@@ -164,7 +164,7 @@ class Level:
         self.Px: int = 0
         self.Py: int = 0
         self.Replacement: Union[int, None] = None # What the player is standing on...
-        # enum of space occupants
+        # enum of playfield space occupants
         self.Pf: list[list[int]] = [[0 for _ in range(66)] for _ in range(25)]
         # string definition of the levels for parsing
         self.Fp: list[str] = ['{0:{width}}'.format(' ', width = XSIZE) for _ in range(YSIZE)]
@@ -172,7 +172,7 @@ class Level:
         self.GenNum: int = 0
         # Timers:
         self.SkipTime: int = 0
-        self.T: list[int] = [0 for 0 in range(TMAX)]
+        self.T: list[int] = [0 for _ in range(TMAX)]
         # * T[1..3] = Monster Move Timers?
         # * T[4] = SlowTime
         # * T[5] = Invisibility
@@ -304,21 +304,6 @@ def Flash(XPos: int, YPos: int, Message: str, level: Level, console: Crt):
 def ClearKeys(console: Crt):
     console._keyboard.clear()
 
-def FootStep(console: Crt):
-    console.sounds(sounds.FootStep())
-
-def GrabSound(console: Crt):
-    console.sounds(sounds.GrabSound())
-
-def BlockSound(console: Crt):
-    console.sounds(sounds.BlockSound())
-
-def NoneSound(console: Crt):
-    console.sounds(sounds.NoneSound())
-
-def Static(console: Crt):
-    console.sounds(sounds.Static())
-
 def Col(color: int, bw: int, console: Crt):
     console.textcolor(color)
 
@@ -424,14 +409,6 @@ def New_Gem_Color(level: Level):
     level.GemColor = randint(0, 15) + 1
     while level.GemColor == 8:
         level.GemColor = randint(0, 15) + 1
-
-def Play(Start: int, Stop: int, Speed: int, console: Crt):
-    if Start < Stop:
-        for x in range(Start, Stop):
-            console.sound(x, Speed)
-    else:
-        for x in range(Start, Stop, -1):
-            console.sound(x, Speed)
 
 def AddScore(What: int, level: Level, console: Crt):
     if What >= 1 and What <=3: # Monsters
@@ -598,7 +575,7 @@ def Dead(DeadDot: bool, game: Game, level: Level, console: Crt):
             Col(x, x, console)
             Bak(randint(8), 0, console)
             console.write(VisibleTiles.Player)
-            console.sound(x * x, 0.5)
+            console.sound(x * x, 0.5) # sounds.Death()
     ClearKeys(console)
     Col(16, 16, console)
     Bak(level.Bb, 7, console)
@@ -636,7 +613,7 @@ def Convert_Format(level: Level):
     level.MNum = 0
     level.FNum = 0
     BNum = 0
-    GenNum = 0
+    level.GenNum = 0
     level.T[9] = -1
     level.LavaFlow = False
     level.TreeRate = 0
@@ -739,7 +716,7 @@ def Convert_Format(level: Level):
                 level.Pf[XLoop + 1, YLoop + 1] = 35
             elif tempstr == 'G':
                 level.Pf[XLoop + 1, YLoop + 1] = 36
-                GenNum += 1
+                level.GenNum += 1
             elif tempstr == '(':
                 level.Pf[XLoop + 1, YLoop + 1] = 37
             elif tempstr == '!':
@@ -752,21 +729,21 @@ def Convert_Format(level: Level):
                 level.Pf[XLoop + 1, YLoop + 1] = ASCII.Ord[tempstr]
 
 def Go(XWay: int, YWay: int, Human: bool, game: Game, level: Level, console: Crt):
-    if level.Sideways and YWay == -1 and not game.OneMove and game.Replacement != 75:
+    if level.Sideways and YWay == -1 and not game.OneMove and level.Replacement != 75:
         return
-    previous = game.Replacement
+    previous = level.Replacement
     old_x = level.Px
     old_y = level.Py
 
-    level.Pf[level.Px, level.Py] = game.Replacement
+    level.Pf[level.Px, level.Py] = level.Replacement
     console.gotoxy(level.Pf, level.Py)
     console.write(' ')
     level.Px += XWay
     level.Py += YWay
     if level.Pf[level.Px, level.Py] >=55 and level.Pf[level.Px, level.Py] <= 57 or level.Pf[level.Px, level.Py] == 75:
-        game.Replacement = level.Pf[level.Px, level.Py]
+        level.Replacement = level.Pf[level.Px, level.Py]
     else:
-        game.Replacement = None
+        level.Replacement = None
     if previous == 75:
         Col(7, 7, console)
         console.gotoxy(old_x, old_y)
@@ -781,9 +758,9 @@ def Go(XWay: int, YWay: int, Human: bool, game: Game, level: Level, console: Crt
         console.gotoxy(level.Px, level.Py)
         console.write(' ')
     if not level.Sideways:
-        FootStep(console)
+        console.sounds(sounds.FootStep())
     elif game.Replacement != 75 and Human:
-        FootStep(console)
+        console.sounds(sounds.FootStep())
     if console.keypressed() and Human:
         ch = console.read()
         if ch == pygame.locals.K_ESCAPE:
@@ -796,13 +773,13 @@ def Trigger_Trap(Place: bool, i: int, ch: str):
     pass
 
 def End_Routine(level: Level, console: Crt):
-    FootStep(console)
+    console.sounds(sounds.FootStep())
     console.delay(200)
-    FootStep(console)
+    console.sounds(sounds.FootStep())
     console.delay(300)
-    FootStep(console)
+    console.sounds(sounds.FootStep())
     for x in range(1, 250):
-        console.sound(randint(3000) + x, 0.5)
+        console.sound(randint(3000) + x, 0.5) # sounds.Victory_Strange()
         console.gotoxy(level.Px, level.Py)
         Bak(randint(8), 0, console)
         Col(14, 15, console)
@@ -811,11 +788,11 @@ def End_Routine(level: Level, console: Crt):
         Bak(0, 0, console)
         Print(15, 25, 'Oh no, something strange is happening!', console)
     for i in range(2200, 20, -1):
-        console.sound(randint(i))
+        console.sound(randint(i)) # Also sounds.Victory_Strage() - one sound covers the whole sequence
     Col(14, 15, console)
     Bak(0, 0, console)
     for x in range(650):
-        console.sound(x * 3, 2)
+        console.sound(x * 3, 2) # sounds.Victory_ScramblePlayer()
         console.gotoxy(level.Px, level.Py)
         console.write(220 + randint(4))
     console.gotoxy(level.Px, level.Py)
@@ -831,7 +808,7 @@ def End_Routine(level: Level, console: Crt):
     for i in range(level.Gems):
         level.Score += 10
         Update_Info(level, console)
-        console.sound(i * 8 + 100, 20)
+        console.sounds(sounds.Points_For_Gems(i))
     console.read()
     Restore_Border(level, console)
     ClearKeys(console)
@@ -841,7 +818,7 @@ def End_Routine(level: Level, console: Crt):
     for i in range(level.Whips):
         level.Score += 10
         Update_Info(level, console)
-        console.sound(i * 10 + 200, 20)
+        console.sounds(sounds.Points_For_Whips(i))
     console.read()
     Restore_Border(level, console)
     ClearKeys(console)
@@ -851,7 +828,7 @@ def End_Routine(level: Level, console: Crt):
     for i in range(level.Teleports):
         level.Score += 20
         Update_Info(level, console)
-        console.sound(i * 12 + 300, 30)
+        console.sounds(sounds.Points_For_Teleports(i))
     console.read()
     Restore_Border(level, console)
     ClearKeys(console)
@@ -861,7 +838,7 @@ def End_Routine(level: Level, console: Crt):
     for i in range(level.Keys):
         level.Score += 1000
         Update_Info(level, console)
-        console.sound(i * 30 + 100, 50)
+        console.sounds(sounds.Points_For_Keys(i))
     console.read()
     Restore_Border(level, console)
     ClearKeys(console)
@@ -873,7 +850,7 @@ def End_Routine(level: Level, console: Crt):
     for x in range(30):
         console.window(32 - x, 12 - x // 3, 35 + x, 14 + x // 3)
         console.clrscr()
-        console.sound(x * 45, 3)
+        console.sound(x * 45, 3) # sounds.Level_Wipe()
     console.window(1, 1, 80, 25)
     Bak(1, 0, console)
     console.window(2, 2, 65, 24)
