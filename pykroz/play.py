@@ -6,7 +6,7 @@ from typing import cast
 import pygame.locals
 
 from crt import Crt
-from levels import Bak, Border, ClearKeys, Col, Dead, Define_Levels, Flash, Game, GrabSound, Level, NoneSound, PMOVE, Play, Print, Restore_Border, SaveType, Sign_Off, TMAX, Update_Info, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
+from levels import Bak, Border, ClearKeys, Col, Dead, Define_Levels, Flash, Game, Level, PMOVE, Print, Restore_Border, SaveType, Sign_Off, TMAX, Update_Info, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
 from screens import Display_Playfield, GetKey, Hit, Init_Screen, Screen
 from movement import Move, Next_Level
 from titles import Title
@@ -181,7 +181,7 @@ def Player_Move(game: Game, level: Level, console: Crt):
     
     elif key == 84: # Teleport
         if level.Teleports < 1:
-            NoneSound(console)
+            console.sounds(sounds.NoneSound())
             return
         level.Teleports -= 1
         Update_Info(level, console)
@@ -242,7 +242,7 @@ def Player_Move(game: Game, level: Level, console: Crt):
     
     elif key == 87: # Whip
         if level.Whips < 1:
-            NoneSound(console)
+            console.sounds(sounds.NoneSound())
             return
         level.Whips -= 1
         console.sound(70, 0.3) # sounds.Whip()
@@ -470,7 +470,7 @@ def Move_Medium(game: Game, level: Level, console: Crt):
             medium = 148 if randint(2) == 0 else 153
             console.write(medium)
             level.Pf[level.Mx[loop], level.My[loop]] = 1
-            GrabSound(console)
+            console.sounds(sounds.GrabSound())
         else:
             level.Mx[loop] += x_dir
             level.My[loop] += y_dir
@@ -567,7 +567,7 @@ def Move_Fast(game: Game, level: Level, console: Crt):
             Col(12, 7, console)
             console.write(VisibleTiles.FMonster)
             level.Pf[level.Fx[loop], level.Fy[loop]] = 1
-            GrabSound(console)
+            console.sounds(sounds.GrabSound())
         else:
             level.Fx[loop] += x_dir
             level.Fy[loop] += y_dir

@@ -454,7 +454,7 @@ def GetKey(game: Game, level: Level, console: Crt) -> int:
         elif key == pygame.locals.K_COMMA or key == pygame.locals.K_KP4:
             return 181
         else:
-            BadKeySound(console)
+            console.sounds(sounds.Bad_Key())
             return 0
     else:
         return 0

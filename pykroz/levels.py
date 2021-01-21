@@ -304,21 +304,6 @@ def Flash(XPos: int, YPos: int, Message: str, level: Level, console: Crt):
 def ClearKeys(console: Crt):
     console._keyboard.clear()
 
-def FootStep(console: Crt):
-    console.sounds(sounds.FootStep())
-
-def GrabSound(console: Crt):
-    console.sounds(sounds.GrabSound())
-
-def BlockSound(console: Crt):
-    console.sounds(sounds.BlockSound())
-
-def NoneSound(console: Crt):
-    console.sounds(sounds.NoneSound())
-
-def Static(console: Crt):
-    console.sounds(sounds.Static())
-
 def Col(color: int, bw: int, console: Crt):
     console.textcolor(color)
 
@@ -424,14 +409,6 @@ def New_Gem_Color(level: Level):
     level.GemColor = randint(0, 15) + 1
     while level.GemColor == 8:
         level.GemColor = randint(0, 15) + 1
-
-def Play(Start: int, Stop: int, Speed: int, console: Crt):
-    if Start < Stop:
-        for x in range(Start, Stop):
-            console.sound(x, Speed)
-    else:
-        for x in range(Start, Stop, -1):
-            console.sound(x, Speed)
 
 def AddScore(What: int, level: Level, console: Crt):
     if What >= 1 and What <=3: # Monsters
@@ -781,9 +758,9 @@ def Go(XWay: int, YWay: int, Human: bool, game: Game, level: Level, console: Crt
         console.gotoxy(level.Px, level.Py)
         console.write(' ')
     if not level.Sideways:
-        FootStep(console)
+        console.sounds(sounds.FootStep())
     elif game.Replacement != 75 and Human:
-        FootStep(console)
+        console.sounds(sounds.FootStep())
     if console.keypressed() and Human:
         ch = console.read()
         if ch == pygame.locals.K_ESCAPE:
@@ -796,11 +773,11 @@ def Trigger_Trap(Place: bool, i: int, ch: str):
     pass
 
 def End_Routine(level: Level, console: Crt):
-    FootStep(console)
+    console.sounds(sounds.FootStep())
     console.delay(200)
-    FootStep(console)
+    console.sounds(sounds.FootStep())
     console.delay(300)
-    FootStep(console)
+    console.sounds(sounds.FootStep())
     for x in range(1, 250):
         console.sound(randint(3000) + x, 0.5) # sounds.Victory_Strange()
         console.gotoxy(level.Px, level.Py)

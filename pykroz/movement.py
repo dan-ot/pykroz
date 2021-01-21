@@ -1,8 +1,8 @@
 from random import randint
 
 from crt import Crt
-from levels import AddScore, Bak, BlockSound, Border, ClearKeys, Col, Dead, End_Routine, Flash, FootStep, Game, Go, GrabSound, Level, Restore_Border, Static, Update_Info, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
-from screens import Create_Playfield, Diplay_Playfield, Display_Playfield, Tome_Effects, Tome_Message
+from levels import AddScore, Bak, Border, ClearKeys, Col, Dead, End_Routine, Flash, Game, Go, Level, Restore_Border, Update_Info, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
+from screens import Create_Playfield, Display_Playfield, Display_Playfield, Tome_Effects, Tome_Message
 from layouts import Level1, Level11, Level13, Level15, Level17, Level19, Level21, Level23, Level25, Level27, Level29, Level3, Level30, Level5, Level7, Level9
 import sounds
 
@@ -54,7 +54,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         return
     if level.Px + x_way < XBOT or level.Px + x_way > XTOP or level.Py + y_way < YBOT or level.Py + y_way > YTOP:
         if Human:
-            Static(console)
+            console.sounds(sounds.Static())
             AddScore(20, level, console)
             ClearKeys(console)
             if not 0 in game.FoundSet:
@@ -73,7 +73,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         if console.keypressed():
             _ = console.read()
     elif onto in [4, 43, 64]: # Block
-        BlockSound(console)
+        console.sounds(sounds.BlockSound())
         AddScore(4, level, console)
         ClearKeys(console)
         if not 4 in game.FoundSet:
@@ -81,7 +81,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
             Flash(17, 25, 'A Breakable Wall blocks your way.', level, console)
     elif onto == 5: # Whip
         Go(x_way, y_way, Human)
-        GrabSound(console)
+        console.sounds(sounds.GrabSound())
         level.Whips += 1
         AddScore(5)
         if not 5 in game.FoundSet:
@@ -101,7 +101,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
             game.FoundSet.append(6)
             Flash(14, 25, 'Stairs take you to the next lower level.', level, console)
             ClearKeys(console)
-        FootStep(console)
+        console.sounds(sounds.FootStep())
         level.T[1] = 5
         level.T[2] = 6
         level.T[3] = 7
@@ -133,7 +133,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         
         Next_Level(game, level)
 
-        FootStep(console)
+        console.sounds(sounds.FootStep)
         Bak(level.GemColor, 7, console)
         for x in range(1, 30):
             console.window(32 - x, 12 - x // 3, 35 + x, 14 + x // 3)
@@ -147,9 +147,9 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         console.clrscr()
         console.window(1, 1, 80, 25)
         Border(level, console)
-        FootStep(console)
+        console.sounds(sounds.FootStep())
         Display_Playfield(level, console)
-        FootStep(console)
+        console.sounds(sounds.FootStep())
         for x in range(1, 600):
             console.gotoxy(level.Px, level.Py)
             Col(randint(16), randint(16), console)
@@ -198,7 +198,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
             Flash(16, 25, 'You activated a Slow Creature spell.', level, console)
     elif onto == 9: # Gem
         Go(x_way, y_way, Human)
-        GrabSound(console)
+        console.sounds(sounds.GrabSound())
         level.Gems += 1
         AddScore(9, level, console)
         if 9 not in game.FoundSet:
@@ -216,7 +216,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
             Flash(16, 25, 'Oh no, a temporary Blindness Potion!', level, console)
     elif onto == 11: # Teleport
         Go(x_way, y_way, Human)
-        GrabSound(console)
+        console.sounds(sounds.GrabSound())
         level.Teleports += 1
         AddScore(11, level, console)
         if 11 not in game.FoundSet:
@@ -224,7 +224,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
             Flash(20, 25, 'You found a Teleport scroll.', level, console)
     elif onto == 12: # Key
         Go(x_way, y_way, Human)
-        GrabSound(console)
+        console.sounds(sounds.GrabSound())
         level.Keys += 1
         Update_Info(level, console)
         if 12 not in game.FoundSet:
@@ -251,7 +251,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
     elif onto == 14 or onto == 17: # Wall, River
         if Human:
             if onto == 14:
-                BlockSound(console)
+                console.sounds(sounds.BlockSound())
             else:
                 console.sounds(sounds.River_Splash())
             AddScore(14, level, console)
@@ -330,7 +330,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         Flash(9, 25, 'A Power Ring--your whip is now a little stronger!', level, console)
     elif onto == 19 or onto == 20: # Forest, Tree
         if Human:
-            BlockSound(console)
+            console.sounds(sounds.BlockSound())
             AddScore(4, level, console)
             ClearKeys(console)
             if onto not in game.FoundSet:
@@ -452,9 +452,9 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         py_old = level.Py
         Go(x_way, y_way, Human, game, level, console)
         console.delay(350)
-        FootStep(console)
+        console.sounds(sounds.FootStep())
         console.delay(500)
-        FootStep(console)
+        console.sounds(sounds.FootStep())
         level.Pf[level.Px, level.Py] = 25
         console.gotoxy(level.Px, level.Py)
         Col(15, 7, console)
@@ -509,7 +509,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
     elif onto == 26: # Freeze
         Go(x_way, y_way, Human, game, level, console)
         AddScore(11, level, console)
-        GrabSound(console)
+        console.sounds(sounds.GrabSound())
         console.sounds(sounds.Freeze())
         level.T[7] = 55 # 60 on FastPC
         if 26 not in game.FoundSet:
@@ -518,7 +518,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
     elif onto == 27: # Nugget
         Go(x_way, y_way, Human, game, level, console)
         AddScore(27, level, console)
-        GrabSound(console)
+        console.sounds(sounds.GrabSound())
         if 27 not in game.FoundSet:
             game.FoundSet.append(27)
             Flash(15, 25, 'You found a Gold Nugget...500 points!', level, console)
@@ -547,7 +547,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         Col(6, 7, console)
         console.write(VisibleTiles.Block)
         level.Pf[level.Px + x_way, level.Py + y_way] = 4
-        BlockSound(console)
+        console.sounds(sounds.BlockSound())
         ClearKeys(console)
         if 29 not in game.FoundSet:
             game.FoundSet.append(29)
@@ -557,7 +557,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         Col(6, 7, console)
         console.write(VisibleTiles.Wall)
         level.Pf[level.Px + x_way, level.Py + y_way] = 14
-        BlockSound(console)
+        console.sounds(sounds.BlockSound())
         ClearKeys(console)
         if 30 not in game.FoundSet:
             game.FoundSet.append(30)
@@ -569,7 +569,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         console.write(VisibleTiles.Door)
         Bak(0, 0, console)
         level.Pf[level.Px + x_way, level.Py + y_way] = 13
-        BlockSound(console)
+        console.sounds(sounds.BlockSound())
         ClearKeys(console)
         if 31 not in game.FoundSet:
             game.FoundSet.append(31)
@@ -584,5 +584,5 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
                     level.Pf[x, y] = 0
     else:
         if Human:
-            BlockSound(console)
+            console.sounds(sounds.BlockSound())
     game.OneMove = False
