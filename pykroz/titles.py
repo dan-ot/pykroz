@@ -3,17 +3,17 @@ from random import randint
 import pygame.locals
 
 from crt import Crt
-from levels import Bak, ClearKeys, Col, Flash, Game, Level, Shareware, VisibleTiles
+from levels import Bak, Col, Flash, Game, Level, Shareware, VisibleTiles
 import sounds
 
 def Title(game: Game, level: Level, console: Crt):
-    ClearKeys(console)
+    console.clearkeys()
     Col(15, 15, console)
     Bak(0, 0, console)
     console.clrscr()
     console.gotoxy(28, 2)
     console.writeln('Apogee Software Presents')
-    ClearKeys(console)
+    console.clearkeys()
     while not console.keypressed():
         console.gotoxy(1, 5)
         Col(randint(15) + 1, 7, console)
@@ -44,7 +44,7 @@ def Title(game: Game, level: Level, console: Crt):
         console.gotoxy(27, 25)
         console.write('Press any key to continue.')
         console.delay(300)
-    ClearKeys(console)
+    console.clearkeys()
     Bak(1, 0, console)
     console.clrscr()
     console.gotoxy(29, 1)
@@ -126,7 +126,7 @@ def Title(game: Game, level: Level, console: Crt):
         game.Difficulty = 9
         console.gotoxy(34, 22)
         console.write('SECRET MODE')
-    ClearKeys(console)
+    console.clearkeys()
     console.gotoxy(33, 25)
     Col(7, 7, console)
     console.write('Press any key.')
@@ -136,7 +136,7 @@ def Title(game: Game, level: Level, console: Crt):
         Col(randint(16), 0, console)
         console.write(' DUNGEONS OF KROZ II ')
         console.delay(50)
-    ClearKeys(console)
+    console.clearkeys()
 
     Shareware(console, Wait = True)
 
@@ -196,9 +196,9 @@ def Title(game: Game, level: Level, console: Crt):
         Bak(1, 7, console)
         console.write('Your choice (B/I/M/S/O/A)? B')
         console.gotoxy(console.cursor_x - 1, console.cursor_y)
-        ClearKeys(console)
+        console.clearkeys()
         ch = console.read()
-        ClearKeys(console)
+        console.clearkeys()
         if ch == pygame.locals.K_r:
             game.MixUp = True
         elif ch == pygame.locals.K_b:
@@ -207,7 +207,7 @@ def Title(game: Game, level: Level, console: Crt):
         elif ch == pygame.locals.K_i:
             Bak(1, 0, console)
             console.clrscr()
-            ClearKeys(console)
+            console.clearkeys()
             console.gotoxy(32, 2)
             Col(14, 7, console)
             console.writeln('THE INSTRUCTIONS')
@@ -237,7 +237,7 @@ def Title(game: Game, level: Level, console: Crt):
             Flash(27, 25, 'Press any key to continue.', console)
             Bak(1, 0, console)
             console.clrscr()
-            ClearKeys(console)
+            console.clearkeys()
             console.gotoxy(32, 2)
             Col(14, 7, console)
             console.writeln('THE INSTRUCTIONS')
@@ -264,7 +264,7 @@ def Title(game: Game, level: Level, console: Crt):
             Flash(27, 25, 'Press any key to continue.', console)
             Bak(1, 0, console)
             console.clrscr()
-            ClearKeys(console)
+            console.clearkeys()
             console.gotoxy(32, 2)
             Col(14, 7, console)
             console.writeln('THE INSTRUCTIONS')
@@ -342,7 +342,7 @@ def Title(game: Game, level: Level, console: Crt):
             Flash(27, 25, 'Press any key to continue.', level, console)
             Bak(1, 0, console)
             console.clrscr()
-            ClearKeys(console)
+            console.clearkeys()
             console.gotoxy(33, 2)
             Col(14, 7, console)
             console.writeln('MISCELLANEOUS')
@@ -364,7 +364,7 @@ def Title(game: Game, level: Level, console: Crt):
         elif ch == pygame.locals.K_m:
             Bak(1, 0, console)
             console.clrscr()
-            ClearKeys(console)
+            console.clearkeys()
             console.gotoxy(29, 2)
             Col(14, 7, console)
             console.writeln('THE MARKETING OF KROZ')
@@ -396,7 +396,7 @@ def Title(game: Game, level: Level, console: Crt):
         elif ch == pygame.locals.K_s:
             Bak(1, 0, console)
             console.clrscr()
-            ClearKeys(console)
+            console.clearkeys()
             console.gotoxy(29, 2)
             Col(14, 7, console)
             console.writeln('THE STORY BEHIND KROZ')
@@ -426,7 +426,7 @@ def Title(game: Game, level: Level, console: Crt):
             Flash(27, 25, 'Press any key to continue.', console)
             Bak(1, 0, console)
             console.clrscr()
-            ClearKeys(console)
+            console.clearkeys()
             console.gotoxy(29, 2)
             Col(14, 7, console)
             console.writeln('THE STORY BEHIND KROZ')
@@ -457,7 +457,7 @@ def Title(game: Game, level: Level, console: Crt):
         elif ch == pygame.locals.K_o:
             Bak(1, 0, console)
             console.clrscr()
-            ClearKeys(console)
+            console.clearkeys()
             console.gotoxy(28,2)
             Col(14, 7, console)
             console.writeln('THE ORIGINAL KROZ GAMES')
@@ -487,7 +487,7 @@ def Title(game: Game, level: Level, console: Crt):
         elif ch == pygame.locals.K_a:
             Bak(1, 0, console)
             console.clrscr()
-            ClearKeys(console)
+            console.clearkeys()
             console.gotoxy(32, 2)
             Col(14, 7, console)
             console.writeln('ABOUT THE AUTHOR')

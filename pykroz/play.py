@@ -6,7 +6,7 @@ from typing import cast
 import pygame.locals
 
 from crt import Crt
-from levels import Bak, Border, ClearKeys, Col, Dead, Define_Levels, Flash, Game, Level, PMOVE, Print, Restore_Border, SaveType, Sign_Off, TMAX, Update_Info, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
+from levels import Bak, Border, Col, Dead, Define_Levels, Flash, Game, Level, PMOVE, Print, Restore_Border, SaveType, Sign_Off, TMAX, Update_Info, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
 from screens import Display_Playfield, GetKey, Hit, Init_Screen, Screen
 from movement import Move, Next_Level
 from titles import Title
@@ -19,12 +19,12 @@ def Player_Move(game: Game, level: Level, console: Crt):
     if key == 80: # Pause
         Bak(0, 0, console)
         console.sounds(sounds.Pause())
-        ClearKeys(console)
+        console.clearkeys()
         Flash(18, 25, ' Press any key to resume game. ', level, console)
         Restore_Border(level, console)
     elif key == 81: # Quit
         console.sounds(sounds.Quit())
-        ClearKeys(console)
+        console.clearkeys()
         Flash(15, 25, ' Are you sure you want to quit (Y/N)? ')
         ch = console.read()
         if ch == pygame.locals.K_y:
@@ -39,7 +39,7 @@ def Player_Move(game: Game, level: Level, console: Crt):
             return
         Bak(0, 0, console)
         Col(15, 15, console)
-        ClearKeys(console)
+        console.clearkeys()
         Print(8, 25, ' Pick which letter to RESTORE from: A, B or C?  A  ')
         console.gotoxy(56, 25)
         ch = console.read()
@@ -140,7 +140,7 @@ def Player_Move(game: Game, level: Level, console: Crt):
         ch = console.read()
         Bak(0, 0, console)
         Col(15, 15, console)
-        ClearKeys(console)
+        console.clearkeys()
         Print(11, 25, ' Pick which letter to SAVE to: A, B, or C?  A  ')
         console.gotoxy(54, 25)
         ch = console.read()
@@ -223,7 +223,7 @@ def Player_Move(game: Game, level: Level, console: Crt):
                 level.Py = 0
                 level.Pf[level.Px, level.Py] = 40
         level.Replacement = None
-        ClearKeys(console)
+        console.clearkeys()
         for x in range(1, 500): # 3000 on FastPC
             console.gotoxy(level.Px, level.Py)
             Col(randint(16), randint(16), console)
@@ -263,7 +263,7 @@ def Player_Move(game: Game, level: Level, console: Crt):
         if level.Py > YBOT:
             Hit(level.Px, level.Py - 1, '│', level, console)
         Update_Info(level, console)
-        ClearKeys(console)
+        console.clearkeys()
 
     elif key == 172: # North
         Move(0, -1, PMOVE, game, level, console)
@@ -616,7 +616,7 @@ def NewGame(game: Game, level: Level, console: Crt):
     Bak(0, 0, console)
     console.write(VisibleTiles.Player)
     Bak(0, 0, console)
-    ClearKeys(console)
+    console.clearkeys()
     Flash(17, 25, 'Press any key to begin this level.')
     while not game.Restart:
         Player_Move(game, level, console)

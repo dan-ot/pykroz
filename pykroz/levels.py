@@ -291,7 +291,7 @@ def Restore_Border(level: Level, console: Crt):
 
 def Flash(XPos: int, YPos: int, Message: str, level: Level, console: Crt):
     counter = 14
-    ClearKeys(console)
+    console.clearkeys()
     while not console.keypressed():
         counter += 1
         if counter > 15:
@@ -301,9 +301,6 @@ def Flash(XPos: int, YPos: int, Message: str, level: Level, console: Crt):
         Print(XPos, YPos, Message, console)
     Restore_Border(level, console)
 
-def ClearKeys(console: Crt):
-    console._keyboard.clear()
-
 def Col(color: int, bw: int, console: Crt):
     console.textcolor(color)
 
@@ -312,7 +309,7 @@ def Bak(color: int, bw: int, console: Crt):
 
 def Sign_Off(console: Crt):
     Shareware(console, Wait = False)
-    ClearKeys(console)
+    console.clearkeys()
     Col(7, 7, console)
     Bak(0, 0, console)
     console.clrscr()
@@ -344,7 +341,7 @@ def Sign_Off(console: Crt):
     console.writeln('■ THE LOST ADVENTURES OF KROZ - All-new seventh Kroz game with 75 of the best')
     console.write  ('     levels yet!  Built-in contest!  New features galore.  ($20)')
     Col(7, 7, console)
-    ClearKeys(console)
+    console.clearkeys()
     console.halt()
 
 def Shareware(console: Crt, Wait: bool):
@@ -398,10 +395,10 @@ def Shareware(console: Crt, Wait: bool):
     console.gotoxy(27, 25)
     Col(16, 16, console)
     console.write('Press any key to continue.')
-    ClearKeys(console)
+    console.clearkeys()
     while not console.keypressed():
         pass
-    ClearKeys(console)
+    console.clearkeys()
     Bak(0, 0, console)
     console.clrscr()
 
@@ -451,7 +448,7 @@ def AddScore(What: int, level: Level, console: Crt):
 
 def Won(level: Level, console: Crt):
     Border(level, console)
-    ClearKeys(console)
+    console.clearkeys()
     Col(15, 31, console)
     Bak(level.Bb, 0, console)
     Print(5, 1, 'YOUR QUEST FOR THE MAGICAL STAFF OF KROZ WAS SUCCESSFUL!!', console)
@@ -459,7 +456,7 @@ def Won(level: Level, console: Crt):
     High_Score(console, PlayAgain = False)
 
 def High_Score(PlayAgain: bool, game: Game, level: Level, console: Crt):
-    ClearKeys(console)
+    console.clearkeys()
     console.window(2, 2, XSIZE + 1, YSIZE + 1)
     Bak(0, 0, console)
     console.clrscr()
@@ -511,7 +508,7 @@ def High_Score(PlayAgain: bool, game: Game, level: Level, console: Crt):
         console.write('{0}0'.format(game.HSList[x].HighScore) if game.HSList[x].HighScore > 0 else '0')
         console.gotoxy(50, x + 6)
         console.write('{0}'.format(game.HSList[x].HighLevel))
-    ClearKeys(console)
+    console.clearkeys()
     if place < 16:
         Bak(4, 7, console)
         console.gotoxy(16, place + 6)
@@ -576,7 +573,7 @@ def Dead(DeadDot: bool, game: Game, level: Level, console: Crt):
             Bak(randint(8), 0, console)
             console.write(VisibleTiles.Player)
             console.sound(x * x, 0.5) # sounds.Death()
-    ClearKeys(console)
+    console.clearkeys()
     Col(16, 16, console)
     Bak(level.Bb, 7, console)
     Print(27, 1, 'YOU HAVE DIED!!', console)
@@ -801,7 +798,7 @@ def End_Routine(level: Level, console: Crt):
     console.write(VisibleTiles.Stairs)
     Restore_Border(level, console)
     Flash(14, 25, 'You are magically transported from Kroz!')
-    ClearKeys(console)
+    console.clearkeys()
     Col(15, 15, console)
     Bak(0, 0, console)
     Print(15, 25, 'Your gems are worth 100 points each...')
@@ -811,7 +808,7 @@ def End_Routine(level: Level, console: Crt):
         console.sounds(sounds.Points_For_Gems(i))
     console.read()
     Restore_Border(level, console)
-    ClearKeys(console)
+    console.clearkeys()
     Col(15, 15, console)
     Bak(0, 0, console)
     Print(15, 25, 'Your whips are worth 100 points each...')
@@ -821,7 +818,7 @@ def End_Routine(level: Level, console: Crt):
         console.sounds(sounds.Points_For_Whips(i))
     console.read()
     Restore_Border(level, console)
-    ClearKeys(console)
+    console.clearkeys()
     Col(15, 15, console)
     Bak(0, 0, console)
     Print(9, 25, 'Your Teleport Scrolls are woth 200 points each...')
@@ -831,7 +828,7 @@ def End_Routine(level: Level, console: Crt):
         console.sounds(sounds.Points_For_Teleports(i))
     console.read()
     Restore_Border(level, console)
-    ClearKeys(console)
+    console.clearkeys()
     Col(15, 15, console)
     Bak(0, 0, console)
     Print(14, 25, 'Your Keys are worth 10,000 points each...')
@@ -841,7 +838,7 @@ def End_Routine(level: Level, console: Crt):
         console.sounds(sounds.Points_For_Keys(i))
     console.read()
     Restore_Border(level, console)
-    ClearKeys(console)
+    console.clearkeys()
     Bak(level.GemColor, 7, console)
     for x in range(30):
         console.window(32 - x, 12 - x // 3, 35 + x, 14 + (x // 3))
@@ -881,7 +878,7 @@ def End_Routine(level: Level, console: Crt):
     console.writeln('                         KINGDOM OF KROZ')
     Col(15, 7, console)
     console.write  ('        ( Now available -- $7.50 or write for details. )')
-    ClearKeys(console)
+    console.clearkeys()
     console.window(1, 1, 80, 25)
     Bak(0, 0, console)
     Flash(21, 25, 'Press any key, Adventurer.', console)
