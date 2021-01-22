@@ -2,12 +2,12 @@ from random import randint
 import pygame.locals
 
 from ascii import ASCII
-from levels import AddScore, Bak, ClearKeys, Col, Flash, Game, Level, New_Gem_Color, Print, TMAX, TOTOBJECTS, Update_Info, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
+from levels import AddScore, Bak, Col, Flash, Game, Level, New_Gem_Color, Print, TMAX, TOTOBJECTS, Update_Info, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
 from crt import Crt
 import sounds
 
 def Screen(game: Game, console: Crt):
-    ClearKeys(console)
+    console.clearkeys()
     game.Color = True
     Bak(0, 0, console)
     console.clrscr()
