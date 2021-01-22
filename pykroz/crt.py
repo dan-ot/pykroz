@@ -140,6 +140,9 @@ class Crt:
         self.bg_color_buffer.fill(0)
         self.dirty_blocks.append(Rect(0, 0, *self.size))
 
+    def clearkeys(self):
+        self._keyboard.clear_queue()
+
     def halt(self):
         exit()
 

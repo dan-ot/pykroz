@@ -6,7 +6,7 @@ from typing import cast
 import pygame.locals
 
 from crt import Crt
-from levels import Bak, Border, ClearKeys, Col, Dead, Define_Levels, Flash, Game, Level, PMOVE, Print, Restore_Border, SaveType, Sign_Off, TMAX, Update_Info, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
+from levels import Bak, Border, Col, Dead, Define_Levels, Flash, Game, Level, PMOVE, Print, Restore_Border, SaveType, Sign_Off, TMAX, Update_Info, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
 from screens import Display_Playfield, GetKey, Hit, Init_Screen, Screen
 from movement import Move, Next_Level
 from titles import Title

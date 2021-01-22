@@ -1,7 +1,7 @@
 from random import randint
 
 from crt import Crt
-from levels import AddScore, Bak, Border, ClearKeys, Col, Dead, End_Routine, Flash, Game, Go, Level, Restore_Border, Update_Info, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
+from levels import AddScore, Bak, Border, Col, Dead, End_Routine, Flash, Game, Go, Level, Restore_Border, Update_Info, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
 from screens import Create_Playfield, Display_Playfield, Display_Playfield, Tome_Effects, Tome_Message
 from layouts import Level1, Level11, Level13, Level15, Level17, Level19, Level21, Level23, Level25, Level27, Level29, Level3, Level30, Level5, Level7, Level9
 import sounds
@@ -56,7 +56,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         if Human:
             console.sounds(sounds.Static())
             AddScore(20, level, console)
-            ClearKeys(console)
+            console.clearkeys()
             if not 0 in game.FoundSet:
                 game.FoundSet.append(0)
                 Flash(16, 25, 'An Electrified Wall blocks your way.', level, console)
@@ -75,7 +75,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
     elif onto in [4, 43, 64]: # Block
         console.sounds(sounds.BlockSound())
         AddScore(4, level, console)
-        ClearKeys(console)
+        console.clearkeys()
         if not 4 in game.FoundSet:
             game.FoundSet.append(4)
             Flash(17, 25, 'A Breakable Wall blocks your way.', level, console)
@@ -89,7 +89,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
             Flash(26, 25, 'You found a Whip.', level, console)
     elif onto == 6: # Stairs
         Go(x_way, y_way, Human)
-        ClearKeys(console)
+        console.clearkeys()
         if level.Level == 30:
             End_Routine(level, console)
         if game.MixUp:
@@ -100,7 +100,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         if not 6 in game.FoundSet:
             game.FoundSet.append(6)
             Flash(14, 25, 'Stairs take you to the next lower level.', level, console)
-            ClearKeys(console)
+            console.clearkeys()
         console.sounds(sounds.FootStep())
         level.T[1] = 5
         level.T[2] = 6
@@ -181,7 +181,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         level.Gems += gems
         AddScore(7, level, console)
         Bak(0, 0, console)
-        ClearKeys(console)
+        console.clearkeys()
         while not console.keypressed():
             Col(randint(2) + 14, 15, console)
             console.gotoxy(11, 25)
@@ -240,12 +240,12 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
                 AddScore(11, level, console)
                 console.sounds(sounds.Open_Door())
                 Go(x_way, y_way, Human)
-                ClearKeys(console)
+                console.clearkeys()
                 if 13 not in game.FoundSet:
                     game.FoundSet.append(13)
                     Flash(12, 25, 'The Door opens!  (One of your Keys is used.)', level, console)
                 else:
-                    ClearKeys(console)
+                    console.clearkeys()
                 if level.Level == 75 and level.Px == 33 and level.Py == 14:
                     Flash(13, 25, 'You unlock the door to the Sacred Temple!', level, console)
     elif onto == 14 or onto == 17: # Wall, River
@@ -255,7 +255,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
             else:
                 console.sounds(sounds.River_Splash())
             AddScore(14, level, console)
-            ClearKeys(console)
+            console.clearkeys()
             if onto not in game.FoundSet:
                 game.FoundSet.append(onto)
                 if onto == 14:
@@ -308,7 +308,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
             console.gotoxy(level.Px, level.Py)
             Bak(0, 0, console)
             console.write(' ')
-        ClearKeys(console)
+        console.clearkeys()
         if 16 not in game.FoundSet:
             game.FoundSet.append(16)
             Flash(19, 25, 'You activated a Teleport trap!', level, console)
@@ -332,7 +332,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         if Human:
             console.sounds(sounds.BlockSound())
             AddScore(4, level, console)
-            ClearKeys(console)
+            console.clearkeys()
             if onto not in game.FoundSet:
                 game.FoundSet.append(onto)
                 if onto == 19:
@@ -366,7 +366,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
                             Col(12, 15, console)
                             console.write(219)
             Update_Info(level, console)
-            ClearKeys(console)
+            console.clearkeys()
             if 21 not in game.FoundSet:
                 game.FoundSet.append(21)
                 Flash(20, 25, 'You activated a Magic Bomb!', console)
@@ -380,13 +380,13 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
             Dead(True, game, level, console)
         else:
             AddScore(22, level, console)
-        ClearKeys(console)
+        console.clearkeys()
         if 22 not in game.FoundSet:
             game.FoundSet.append(22)
             Flash(8, 25, 'Oooooooooooooooooooh!  Lava hurts!  (Lose 10 Gems.)', level, console)
     elif onto == 23: # Pit
         Go(x_way, y_way, Human, game, level, console)
-        ClearKeys(console)
+        console.clearkeys()
         Flash(22, 25, 'Oh no, a Bottomless Pit!', level, console)
         Bak(6, 7, console)
         console.window(2, 2, 65, 24)
@@ -422,7 +422,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         console.gotoxy(34, 24)
         console.write('_')
         console.sounds(sounds.Pit_Splat())
-        ClearKeys(console)
+        console.clearkeys()
         Flash(29, 1, '* SPLAT!! *', level, console)
         Dead(False, game, level, console)
     elif onto == 24: # Tome
@@ -444,7 +444,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         level.Pf[level.Px + x_way, level.Py + y_way] = 6
         level.Score += 5000
         Update_Info(level, console)
-        ClearKeys(console)
+        console.clearkeys()
         Flash(5, 25, 'The Magical Staff of Kroz is finally yours--50,000 points!', level, console)
         Flash(9, 25, 'Congratulations, Adventurer, you finally did it!!!', level, console)
     elif onto == 25: # Tunnel
@@ -502,7 +502,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
             console.write(VisibleTiles.Player)
         else:
             console.write(' ')
-        ClearKeys(console)
+        console.clearkeys()
         if 25 not in game.FoundSet:
             game.FoundSet.append(25)
             Flash(16, 265, 'You passed through a secret Tunnel!', level, console)
@@ -540,7 +540,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         console.sounds(sounds.Quake_Finish())
         if 28 not in game.FoundSet:
             game.FoundSet.append(28)
-            ClearKeys(console)
+            console.clearkeys()
             Flash(15, 25, 'Oh no, you set off an Earthquake trap!', level, console)
     elif onto == 29: # IBlock
         console.gotoxy(level.Px + x_way, level.Py + y_way)
@@ -548,7 +548,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         console.write(VisibleTiles.Block)
         level.Pf[level.Px + x_way, level.Py + y_way] = 4
         console.sounds(sounds.BlockSound())
-        ClearKeys(console)
+        console.clearkeys()
         if 29 not in game.FoundSet:
             game.FoundSet.append(29)
             Flash(13, 25, 'An Invisible Crumbled Wall blocks your way.', level, console)
@@ -558,7 +558,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         console.write(VisibleTiles.Wall)
         level.Pf[level.Px + x_way, level.Py + y_way] = 14
         console.sounds(sounds.BlockSound())
-        ClearKeys(console)
+        console.clearkeys()
         if 30 not in game.FoundSet:
             game.FoundSet.append(30)
             Flash(17, 25, 'An Invisible Wall blocks your way.', level, console)
@@ -570,7 +570,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         Bak(0, 0, console)
         level.Pf[level.Px + x_way, level.Py + y_way] = 13
         console.sounds(sounds.BlockSound())
-        ClearKeys(console)
+        console.clearkeys()
         if 31 not in game.FoundSet:
             game.FoundSet.append(31)
             Flash(17, 25, 'An Invisible Door blocks your way.', level, console)
