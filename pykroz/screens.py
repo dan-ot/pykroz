@@ -1,4 +1,5 @@
-from random import randint
+from colors import Colors
+from random import randint, randrange
 import pygame.locals
 
 from ascii import ASCII
@@ -11,11 +12,11 @@ def Screen(game: Game, console: Crt):
     game.Color = True
     console.bak(0, 0)
     console.clrscr()
-    console.col(9, 9)
+    console.col(9)
     console.gotoxy(31, 2)
     console.write('DUNGEONS OF KROZ II')
     console.gotoxy(18, 10)
-    console.col(15, 7)
+    console.col(15)
     console.write('Is your screen Color or Monochrome (C/M)? C')
     console.gotoxy(console.cursor_x - 1, console.cursor_y)
     ch = console.read()
@@ -24,17 +25,17 @@ def Screen(game: Game, console: Crt):
         game.Color = False
     else:
         game.Color = True
-    console.bak(0, 0)
+    console.bak(0)
     console.gotoxy(18, 10)
     console.delline()
     console.gotoxy(9, 17)
-    console.col(7, 7)
+    console.col(7)
     console.write('If you have an older PC (like an XT model) choose "S" for Slow.')
     console.gotoxy(10, 19)
     console.write('If you have a PC AT, 80386 chip, etc., choose "F" for Fast.')
     console.gotoxy(32, 21)
     console.write('(Default = Slow)')
-    console.col(15, 15)
+    console.col(15)
     console.gotoxy(28, 14)
     console.write('Slow or Fast PC (S/F)? S')
     console.gotoxy(console.cursor_x - 1, console.cursor_y)
@@ -92,8 +93,8 @@ def Init_Screen(game: Game, level: Level, console: Crt):
         level.Teleports = 15
         level.Keys = 2
         game.FoundSet = [x for x in range(0, TOTOBJECTS)]
-    level.Px = randint(XSIZE) + XBOT
-    level.Py = randint(YSIZE) + YBOT
+    level.Px = randrange(XSIZE) + XBOT
+    level.Py = randrange(YSIZE) + YBOT
     level.BTime = 2 # 9 for FastPC?
     level.STime = 3 # 10 for FastPC?
     level.MTime = 2 # 8 for FastPC?
@@ -107,49 +108,49 @@ def Init_Screen(game: Game, level: Level, console: Crt):
     level.T[8] = 6
     if game.Color:
         console.window(67, 1, 80, 25)
-        console.bak(1, 0)
+        console.bak(1)
         console.clrscr()
         console.window(1, 1, 80, 25)
-    console.col(14, 7)
+    console.col(14)
     console.print(71, 1, 'Score', console)
     console.print(71, 4, 'Level', console)
     console.print(71, 7, 'Gems', console)
     console.print(71, 10, 'Whips', console)
     console.print(69, 13, 'Teleports', console)
     console.print(71, 16, 'Keys', console)
-    console.col(11, 7)
-    console.bak(4, 0)
+    console.col(11)
+    console.bak(4)
     console.print(70, 19, 'OPTIONS', console)
-    console.bak(1, 0)
+    console.bak(1)
     console.gotoxy(70, 20)
-    console.col(15, 15)
+    console.col(15)
     console.write('W')
-    console.col(7, 7)
+    console.col(7)
     console.write('hip')
     console.gotoxy(70, 21)
-    console.col(15, 15)
+    console.col(15)
     console.write('T')
-    console.col(7, 7)
+    console.col(7)
     console.write('eleport')
     console.gotoxy(70, 22)
-    console.col(15, 15)
+    console.col(15)
     console.write('P')
-    console.col(7, 7)
+    console.col(7)
     console.write('ause')
     console.gotoxy(70, 23)
-    console.col(15, 15)
+    console.col(15)
     console.write('Q')
-    console.col(7, 7)
+    console.col(7)
     console.write('uit')
     console.gotoxy(70, 24)
-    console.col(15, 15)
+    console.col(15)
     console.write('S')
-    console.col(7, 7)
+    console.col(7)
     console.write('ave')
     console.gotoxy(70, 25)
-    console.col(15, 15)
+    console.col(15)
     console.write('R')
-    console.col(7, 7)
+    console.col(7)
     console.write('estore')
 
 def Parse_Field(game: Game, level: Level):
@@ -183,8 +184,8 @@ def Create_Playfield(game: Game, level: Level):
             for _ in range(level.Parsed[obj]):
                 done = False
                 while not done:
-                    x_spot = randint(XSIZE) + XBOT
-                    y_spot = randint(YSIZE) + YBOT
+                    x_spot = randrange(XSIZE) + XBOT
+                    y_spot = randrange(YSIZE) + YBOT
                     if level.Pf[x_spot, y_spot] == 0:
                         if obj == 1:
                             level.SNum += 1
@@ -207,143 +208,143 @@ def Display_Playfield(level: Level, console: Crt):
             if (level.Pf[x_loop, y_loop] > 0 or level.FloorPattern) and (not level.HideLevel):
                 console.gotoxy(x_loop, y_loop)
                 if level.Pf[x_loop, y_loop] == 0: # Floor
-                    console.col(level.Cf1, level.Cf2)
-                    console.bak(level.Bf1, level.Bf2)
+                    console.col(level.Cf1)
+                    console.bak(level.Bf1)
                     console.write(VisibleTiles.Tile)
-                    console.bak(0, 0)
+                    console.bak(0)
                 elif level.Pf[x_loop, y_loop] == 1: # Slow Monster
-                    console.col(12, 7)
+                    console.col(12)
                     console.write(VisibleTiles.SMonster)
                 elif level.Pf[x_loop, y_loop] == 2: # Medium Monster
-                    console.col(10, 7)
+                    console.col(10)
                     console.write(VisibleTiles.MMonster)
                 elif level.Pf[x_loop, y_loop] == 3: # Fast Monster
-                    console.col(9, 7)
+                    console.col(9)
                     console.write(VisibleTiles.FMonster)
                 elif level.Pf[x_loop, y_loop] == 4: # Block
                     if level.Level != 71:
-                        console.col(6, 7)
+                        console.col(6)
                         console.write(VisibleTiles.Block)
                 elif level.Pf[x_loop, y_loop] == 5: # Whip
-                    console.col(15, 7)
+                    console.col(15)
                     console.write(VisibleTiles.Whip)
                 elif level.Pf[x_loop, y_loop] == 6: # Stairs
                     if not level.HideStairs:
-                        console.bak(7, 7)
-                        console.col(16, 16)
+                        console.bak(7)
+                        console.col(16)
                         console.write(VisibleTiles.Stairs)
-                        console.bak(0, 0)
+                        console.bak(0)
                 elif level.Pf[x_loop, y_loop] == 7: # Chest
-                    if randint(20) == 0:
-                        console.col(15, 7)
+                    if randrange(20) == 0:
+                        console.col(15)
                         console.write(VisibleTiles.Chance)
                     else:
-                        console.col(14, 7)
-                        console.bak(4, 0)
+                        console.col(14)
+                        console.bak(4)
                         console.write(VisibleTiles.Chest)
-                        console.bak(0, 0)
+                        console.bak(0)
                 elif level.Pf[x_loop, y_loop] == 8: # Slow Time
-                    if randint(35) == 0:
-                        console.col(15, 7)
+                    if randrange(35) == 0:
+                        console.col(15)
                         console.write(VisibleTiles.Chance)
                     else:
-                        console.col(11, 7)
+                        console.col(11)
                         console.write(VisibleTiles.SlowTime)
                 elif level.Pf[x_loop, y_loop] == 9: # Gem
                     if not level.HideGems:
-                        console.col(level.GemColor, 7)
+                        console.col(level.GemColor)
                         console.write(VisibleTiles.Gem)
                 elif level.Pf[x_loop, y_loop] == 10: # Invisible
-                    console.col(2, 7)
+                    console.col(2)
                     console.write(VisibleTiles.Invisible)
                 elif level.Pf[x_loop, y_loop] == 11: # Teleport
-                    console.col(13, 7)
+                    console.col(13)
                     console.write(VisibleTiles.Teleport)
                 elif level.Pf[x_loop, y_loop] == 12: # Key
-                    if randint(25) == 0:
-                        console.col(15, 7)
+                    if randrange(25) == 0:
+                        console.col(15)
                         console.write(VisibleTiles.Chance)
                     else:
-                        console.col(12, 15)
+                        console.col(12)
                         console.write(VisibleTiles.Key)
                 elif level.Pf[x_loop, y_loop] == 13: # Door
-                    console.bak(5, 7)
-                    console.col(3, 0)
+                    console.bak(5)
+                    console.col(3)
                     console.write(VisibleTiles.Door)
-                    console.bak(0, 0)
+                    console.bak(0)
                 elif level.Pf[x_loop, y_loop] == 14: # Wall
-                    console.col(6, 7)
+                    console.col(6)
                     console.write(VisibleTiles.Wall)
                 elif level.Pf[x_loop, y_loop] == 15: # SpeedTime
                     if randint(10) == 0:
-                        console.col(15, 7)
+                        console.col(15)
                         console.write(VisibleTiles.Chance)
                     else:
-                        console.col(11, 7)
+                        console.col(11)
                         console.write(VisibleTiles.SpeedTime)
                 elif level.Pf[x_loop, y_loop] == 16: # Trap
                     if not level.HideTrap:
-                        console.col(7, 7)
+                        console.col(7)
                         console.write(VisibleTiles.Trap)
                 elif level.Pf[x_loop, y_loop] == 17: # River
-                    if randint(15) == 0:
-                        console.col(15, 7)
-                        console.bak(4, 7)
+                    if randrange(15) == 0:
+                        console.col(15)
+                        console.bak(4)
                         console.write(VisibleTiles.Lava)
-                        console.bak(0, 0)
+                        console.bak(0)
                     else:
-                        console.col(9, 0)
-                        console.bak(1, 7)
+                        console.col(9)
+                        console.bak(1)
                         console.write(VisibleTiles.River)
-                        console.bak(0, 0)
+                        console.bak(0)
                 elif level.Pf[x_loop, y_loop] == 18: # Power
-                    if randint(15) == 0:
-                        console.col(15, 7)
+                    if randrange(15) == 0:
+                        console.col(15)
                         console.write(VisibleTiles.Chance)
                     else:
-                        console.col(15, 7)
+                        console.col(15)
                         console.write(VisibleTiles.Power)
                 elif level.Pf[x_loop, y_loop] == 19: # Forest
-                    console.col(2, 7)
+                    console.col(2)
                     console.write(VisibleTiles.Forest)
-                    console.bak(0, 0)
+                    console.bak(0)
                 elif level.Pf[x_loop, y_loop] == 20 or level.Pf[x_loop, y_loop] == 252: # Tree
-                    console.col(6, 0)
-                    console.bak(2, 7)
+                    console.col(6)
+                    console.bak(2)
                     console.write(VisibleTiles.Tree)
-                    console.bak(0, 0)
+                    console.bak(0)
                 elif level.Pf[x_loop, y_loop] == 21: # Bomb
-                    if randint(40) == 0:
-                        console.col(15, 7)
+                    if randrange(40) == 0:
+                        console.col(15)
                         console.write(VisibleTiles.Chance)
                     else:
-                        console.col(15, 7)
+                        console.col(15)
                         console.write(VisibleTiles.Bomb)
                 elif level.Pf[x_loop, y_loop] == 22: # Lava
-                    console.col(12, 16)
-                    console.bak(4, 7)
+                    console.col(12)
+                    console.bak(4)
                     console.write(VisibleTiles.Lava)
-                    console.bak(0, 0)
+                    console.bak(0)
                 elif level.Pf[x_loop, y_loop] == 23: # Pit
-                    console.col(7, 7)
+                    console.col(7)
                     console.write(VisibleTiles.Pit)
                 elif level.Pf[x_loop, y_loop] == 24: # Tome
-                    console.col(31, 31)
-                    console.bak(5, 0)
+                    console.col(31) # 31 = blinking?
+                    console.bak(5)
                     console.write(VisibleTiles.Tome)
-                    console.bak(0, 0)
+                    console.bak(0)
                 elif level.Pf[x_loop, y_loop] == 25: # Tunnel
-                    console.col(15, 7)
+                    console.col(15)
                     console.write(VisibleTiles.Tunnel)
                 elif level.Pf[x_loop, y_loop] == 26: # Freeze
-                    console.col(11, 7)
+                    console.col(11)
                     console.write(VisibleTiles.Freeze)
                 elif level.Pf[x_loop, y_loop] == 27: # Nugget
-                    console.col(14, 7)
+                    console.col(14)
                     console.write(VisibleTiles.Nugget)
                 elif level.Pf[x_loop, y_loop] == 28: # Quake
-                    if randint(15) == 0:
-                        console.col(15, 7)
+                    if randrange(15) == 0:
+                        console.col(15)
                         console.write(VisibleTiles.Chance)
                 # 29: IBlock
                 # 30: IWall
@@ -351,53 +352,53 @@ def Display_Playfield(level: Level, console: Crt):
                 # 32: Stop
                 # 33: Trap2
                 elif level.Pf[x_loop, y_loop] == 34: # Zap
-                    console.col(12, 7)
+                    console.col(12)
                     console.write(VisibleTiles.Zap)
                 elif level.Pf[x_loop, y_loop] == 35: # Create
                     if not level.HideCreate:
-                        console.col(15, 7)
+                        console.col(15)
                         console.write(VisibleTiles.Chance)
                 elif level.Pf[x_loop, y_loop] == 36: # Generator
-                    console.col(30, 31)
+                    console.col(30) # 30 = blinking?
                     console.write(VisibleTiles.Generator)
                 # 37: Trap3
                 elif level.Pf[x_loop, y_loop] == 38: # MBlock
                     if not level.HideMBlock:
-                        console.col(6, 7)
+                        console.col(6)
                         console.write(VisibleTiles.MBlock)
                 # 39: Trap4
                 elif level.Pf[x_loop, y_loop] == 40: # Player
-                    console.bak(7, 7)
-                    console.col(16, 16)
+                    console.bak(7)
+                    console.col(16) # 16 = blinking?
                     console.write(VisibleTiles.Stairs)
-                    console.bak(0, 0)
+                    console.bak(0)
                 # 41: ShowGems
                 # 42:
                 elif level.Pf[x_loop, y_loop] == 43: # ZBlock
-                    console.col(6, 7)
+                    console.col(6)
                     console.write(VisibleTiles.ZBlock)
                 # 44: BlockSpell
                 elif level.Pf[x_loop, y_loop] == 45: # Chance
-                    console.col(15, 7)
+                    console.col(15)
                     console.write(VisibleTiles.Chance)
                 elif level.Pf[x_loop, y_loop] == 46: # Statue
-                    console.col(31, 23)
+                    console.col(31) # 31 = blinking?
                     console.write(VisibleTiles.Statue)
                 # 67: Trap5
                 elif level.Pf[x_loop, y_loop] == 222: # ??
-                    console.col(15, 0)
-                    console.bak(6, 7)
+                    console.col(15)
+                    console.bak(6)
                     console.write('!')
-                    console.bak(0, 0)
+                    console.bak(0)
                 # 224...231: Traps
                 elif level.Pf[x_loop, y_loop] in [29, 30, 31, 32, 33, 37, 39, 41, 42, 44, 67, 224, 225, 226, 227, 228, 229, 230, 231]:
                     # Explained in comments above
                     pass
                 else:
-                    console.col(15, 0)
-                    console.bak(6, 7)
+                    console.col(15)
+                    console.bak(6)
                     console.write(ASCII.Char[level.Pf[x_loop, y_loop]].upper())
-                    console.bak(0, 0)
+                    console.bak(0)
     level.FloorPattern = False
 
 def BadKeySound(console: Crt):
@@ -465,9 +466,9 @@ def Hit(x: int, y: int, ch: str, level: Level, console: Crt):
     char_thing = ASCII.Char[int_thing]
 
     # Swing the whip
-    console.bak(0, 0)
+    console.bak(0)
     for _ in range(45):
-        console.col(randint(16), 15)
+        console.col(Colors.Random())
         console.gotoxy(x, y)
         console.write(ch)
 
@@ -486,26 +487,26 @@ def Hit(x: int, y: int, ch: str, level: Level, console: Crt):
             char_thing = VisibleTiles.Forest
         elif int_thing == 20 or int_thing == 252:
             char_thing = VisibleTiles.Tree
-        if randint(7) < i: # A whip-power in 7 chance...
+        if randrange(7) < i: # A whip-power in 7 chance...
             console.write(' ')
             level.Pf[x, y] = 0
             console.sounds(sounds.Whip_Breakable_Destroy())
         else:
             console.sounds(sounds.Whip_Breakable_Hit())
-            console.col(6, 7)
+            console.col(6)
             if char_thing == VisibleTiles.Tree:
-                console.col(6, 0)
-                console.bak(2, 7)
+                console.col(6)
+                console.bak(2)
             elif char_thing == VisibleTiles.Forest:
-                console.col(2, 7)
+                console.col(2)
             console.write(char_thing)
             if char_thing == VisibleTiles.Tree:
-                console.bak(0, 0)
+                console.bak(0)
     elif int_thing == 6: # Stairs
-        console.col(16, 16)
-        console.bak(7, 7)
+        console.col(16) # 16 = blinking?
+        console.bak(7)
         console.write(VisibleTiles.Stairs)
-        console.bak(0, 0)
+        console.bak(0)
     elif int_thing in [10, 15, 16, 18, 36, 48, 49, 50, 51]: # Things that break
         level.Pf[x, y] = 0
         console.write(' ')
@@ -517,109 +518,109 @@ def Hit(x: int, y: int, ch: str, level: Level, console: Crt):
 
     # Things that don't break - if any were hidden under Chance symbols, they're revealed
     elif int_thing == 5:
-        console.col(15, 7)
+        console.col(15)
         console.write(VisibleTiles.Whip)
     elif int_thing == 7:
-        console.col(14, 7)
-        console.bak(4, 0)
+        console.col(14)
+        console.bak(4)
         console.write(VisibleTiles.Chest)
-        console.bak(0, 0)
+        console.bak(0)
     elif int_thing == 8:
-        console.col(11, 7)
+        console.col(11)
         console.write(VisibleTiles.SlowTime)
     elif int_thing == 9:
         console.col(level.GemColor, 7)
         console.write(VisibleTiles.Gem)
     elif int_thing == 11:
-        console.col(13, 7)
+        console.col(13)
         console.write(VisibleTiles.Teleport)
     elif int_thing == 12:
-        console.col(12, 15)
+        console.col(12)
         console.write(VisibleTiles.Key)
     elif int_thing == 13:
-        console.col(3, 0)
-        console.bak(5, 7)
+        console.col(3)
+        console.bak(5)
         console.write(VisibleTiles.Door)
     elif int_thing in [14, 52, 53]: # Invisible walls become visible?
-        console.col(6, 7)
+        console.col(6)
         console.write(VisibleTiles.Wall)
     elif int_thing == 54:
-        console.col(7, 7)
+        console.col(7)
         console.write(VisibleTiles.Wall)
     elif int_thing == 17:
-        console.col(9, 0)
-        console.bak(1, 7)
+        console.col(9)
+        console.bak(1)
         console.write(VisibleTiles.River)
-        console.bak(0, 0)
+        console.bak(0)
     elif int_thing == 21:
-        console.col(15, 7)
+        console.col(15)
         console.write(VisibleTiles.Bomb)
     elif int_thing == 22:
-        console.col(12, 16)
-        console.bak(4, 7)
+        console.col(12)
+        console.bak(4)
         console.write(VisibleTiles.Lava)
-        console.bak(0, 0)
+        console.bak(0)
     elif int_thing == 23:
-        console.col(7, 7)
+        console.col(7)
         console.write(VisibleTiles.Wall)
     elif int_thing == 24:
-        console.col(31, 31)
-        console.bak(5, 0)
+        console.col(31)
+        console.bak(5)
         console.write(VisibleTiles.Tome)
-        console.bak(0, 0)
+        console.bak(0)
     elif int_thing == 25:
-        console.col(15, 7)
+        console.col(15)
         console.write(VisibleTiles.Tunnel)
     elif int_thing == 26:
-        console.col(11, 7)
+        console.col(11)
         console.write(VisibleTiles.Freeze)
     elif int_thing == 27:
-        console.col(14, 7)
+        console.col(14)
         console.write(VisibleTiles.Nugget)
     elif int_thing in [28, 29, 30, 31, 33, 37, 39, 41, 44, 67, 224, 225, 226, 227, 228, 229, 230, 231]:
         # Invisible things that stay invisible?
-        console.col(0, 0)
-        console.bak(0, 0)
+        console.col(0)
+        console.bak(0)
         console.write(' ')
     elif int_thing == 32:
         level.Pf[x, y] = 0
         console.write(' ')
     elif int_thing == 34:
-        console.col(12, 7)
+        console.col(12)
         console.write(VisibleTiles.Zap)
     elif int_thing == 35:
-        console.col(14, 7)
+        console.col(14)
         console.write(VisibleTiles.Create)
     elif int_thing == 45:
-        console.col(15, 7)
+        console.col(15)
         console.write(VisibleTiles.Chance)
     elif int_thing in [58, 59, 60]:
-        console.col(11, 7)
+        console.col(11)
         console.write(VisibleTiles.OSpell1)
     elif int_thing == 66:
-        console.col(12, 0)
-        console.bak(4, 7,)
+        console.col(12)
+        console.bak(4)
         console.write(VisibleTiles.EWall)
-        console.bak(0, 0)
+        console.bak(0)
     elif int_thing in [47, 55, 56, 57, 61, 62, 63, 68, 69, 70, 71, 72, 73, 74]:
         console.write(' ')
     elif int_thing in [76, 77, 78, 79, 80]:
-        console.col(7, 7)
+        console.col(7)
         console.write(VisibleTiles.DropRope)
     elif int_thing == 75:
-        console.col(7, 7)
+        console.col(7)
         console.write(VisibleTiles.Rope)
     elif int_thing == 81:
-        console.col(31, 31)
+        console.col(31)
         console.write(VisibleTiles.Amulet)
     elif int_thing == 82:
-        console.col(7, 7)
+        console.col(7)
         console.write(VisibleTiles.ShootRight)
     elif int_thing == 83:
-        console.col(7, 7)
+        console.col(7)
         console.write(VisibleTiles.ShootLeft)
     elif int_thing in [38, 43, 64]: # Breakable Walls?
-        if randint(7) < level.WhipPower:
+        if randrange(7) < level.WhipPower:
             console.write(' ')
             level.Pf[x, y] = 0
             console.sounds(sounds.Whip_Breakable_Destroy())
@@ -627,17 +628,17 @@ def Hit(x: int, y: int, ch: str, level: Level, console: Crt):
         else:
             console.sounds(sounds.Whip_Breakable_Hit())
             if int_thing == 64:
-                console.col(7, 7)
+                console.col(7)
             else:
-                console.col(6, 7)
+                console.col(6)
             console.write(VisibleTiles.Block)
     elif int_thing == 0:
         console.write(' ')
     else:
-        console.col(15, 0)
-        console.bak(6, 7)
+        console.col(15)
+        console.bak(6)
         console.write(ASCII.Char[level.Pf[x, y]].upper())
-        console.bak(0, 0)
+        console.bak(0)
 
 def Secret_Message():
     pass
@@ -654,12 +655,12 @@ def Tome_Message(level: Level, console: Crt):
     Flash(7, 25, ' Your budy surges with electricity as you clutch it! ')
 
 def Tome_Effects(level: Level, console: Crt):
-    console.bak(0, 0)
+    console.bak(0)
     for b in range(14, 0, -1):
         for x in range (XBOT, XTOP):
             for y in range(YBOT, YTOP):
                 if level.Pf[x, y] == 0:
                     console.sounds(sounds.Victory_MacGuffin_2(b, x, y))
                     console.gotoxy(x, y)
-                    console.col(b * 2, 7 if b % 2 == 1 else 0)
+                    console.col(b * 2)
                     console.write(VisibleTiles.Wall)

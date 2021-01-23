@@ -3,6 +3,7 @@ from collections import deque
 from sys import exit
 from typing import  Optional, Union
 from time import sleep
+from enum import Enum
 
 # Library Imports
 import pygame
@@ -15,10 +16,14 @@ import numpy
 
 # Project Imports
 from ascii import ASCII
-from colors import Colors
+from colors import Colors, ContrastLevel
 from sounds import SampleSet
 from keyboard import Keyboard
 from audio import Audio
+
+class ColorMode(Enum):
+    COLOR_PALLETTE = 1
+    BLACK_AND_WHITE = 2
 
 class Crt:
     def __init__(self, widthInTiles: int, heightInTiles: int, fontFile: Union[str, None]):
@@ -46,6 +51,7 @@ class Crt:
         self.fg_color_buffer: numpy.ndarray = numpy.zeros((*self.size, 3), dtype = 'i')
         self.bg_color_buffer: numpy.ndarray = numpy.zeros((*self.size, 3), dtype = 'i')
         self.dirty_blocks = deque([Rect(0, 0, *self.size)])
+        self.color_mode: ColorMode = ColorMode.COLOR_PALLETTE
 
     def tick(self):
         for event in get([
@@ -122,7 +128,7 @@ class Crt:
         self.write(Message)
 
     def window(self, x_min: int, y_min: int, x_max: int, y_max: int):
-        pass
+        self.current_window = Rect(x_min, y_min, x_max - x_min, y_max - y_min)
 
     def gotoxy(self, x: int, y: int):
         self.cursor_x = x
@@ -131,15 +137,59 @@ class Crt:
     def delay(self, ms: int):
         sleep(ms / 1000)
 
-    def col(self, color: Union[int, Color], ifBw: int):
+    def col(self, color: Union[int, Color], contrast_level: Optional[ContrastLevel]):
         if isinstance(color, int):
-            self.foreground = Colors.Code[color % len(Colors.Code)]
+            mod_color = color % len(Colors.Code) # I think colors beyond 15 are meant to blink
+            if self.color_mode == ColorMode.COLOR_PALLETTE:
+                self.foreground = Colors.Code[mod_color]
+            else:
+                if contrast_level == ContrastLevel.DARKEST:
+                    self.foreground = Colors.Black
+                elif contrast_level == ContrastLevel.DARKER:
+                    self.foreground = Colors.DarkGrey
+                elif contrast_level == ContrastLevel.LIGHTER:
+                    self.foreground = Colors.LightGrey
+                elif contrast_level == ContrastLevel.LIGHTEST:
+                    self.foreground = Colors.White
+                elif contrast_level is None:
+                    if mod_color in [0, 7, 8, 15]: # Already greyscale
+                        self.foreground = Colors.Code[mod_color]
+                    elif mod_color in [1, 3]: # Very dark shades
+                        self.foreground = Colors.Black
+                    elif mod_color in [2, 4, 5, 6]: # Dark Shades
+                        self.foreground = Colors.DarkGrey
+                    elif mod_color in [9, 10, 11, 13]: # Light Shades
+                        self.foreground = Colors.LightGrey
+                    elif mod_color in [12, 14]: # Very light colors
+                        self.foreground = Colors.White
         else:
             self.foreground = color
 
-    def bak(self, color: Union[int, Color], bw: int):
+    def bak(self, color: Union[int, Color], contrast_level: Optional[ContrastLevel]):
         if isinstance(color, int):
-            self.background = Colors.Code[color % len(Colors.Code)]
+            mod_color = color % len(Colors.Code) # I think colors beyond 15 are meant to blink
+            if self.color_mode == ColorMode.COLOR_PALLETTE:
+                self.background = Colors.Code[mod_color]
+            else:
+                if contrast_level == ContrastLevel.DARKEST:
+                    self.background = Colors.White
+                elif contrast_level == ContrastLevel.DARKER:
+                    self.background = Colors.White
+                elif contrast_level == ContrastLevel.LIGHTER:
+                    self.background = Colors.Black
+                elif contrast_level == ContrastLevel.LIGHTEST:
+                    self.background = Colors.Black
+                elif contrast_level is None:
+                    if mod_color in [0, 7, 8, 15]: # Already greyscale
+                        self.background = Colors.Code[mod_color]
+                    elif mod_color in [1, 3]: # Very dark shades
+                        self.background = Colors.Black
+                    elif mod_color in [2, 4, 5, 6]: # Dark Shades
+                        self.background = Colors.DarkGrey
+                    elif mod_color in [9, 10, 11, 13]: # Light Shades
+                        self.background = Colors.LightGrey
+                    elif mod_color in [12, 14]: # Very light colors
+                        self.background = Colors.White
         else:
             self.background = color
 

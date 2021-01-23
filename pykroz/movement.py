@@ -1,4 +1,5 @@
-from random import randint
+from colors import Colors
+from random import randint, randrange
 
 from crt import Crt
 from levels import AddScore, Border, Dead, End_Routine, Flash, Game, Go, Level, Restore_Border, Update_Info, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
@@ -134,11 +135,11 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         Next_Level(game, level)
 
         console.sounds(sounds.FootStep)
-        console.bak(level.GemColor, 7)
+        console.bak(level.GemColor)
         for x in range(1, 30):
             console.window(32 - x, 12 - x // 3, 35 + x, 14 + x // 3)
             console.clrscr()
-        console.bak(0, 0)
+        console.bak(0)
         for x in range(1, 30):
             console.window(32 - x, 12 - x // 3, 35 + x, 14 + x // 3)
             console.clrscr()
@@ -152,13 +153,13 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         console.sounds(sounds.FootStep())
         for x in range(1, 600):
             console.gotoxy(level.Px, level.Py)
-            console.col(randint(16), randint(16))
-            console.bak(randint(8), 0)
+            console.col(Colors.Random())
+            console.bak(Colors.RandomDark())
             console.write(VisibleTiles.Player)
             console.sound(x // 2, 1) # sounds.Enter_Level()
         console.gotoxy(level.Px, level.Py)
-        console.col(14, 15)
-        console.bak(0, 0)
+        console.col(14)
+        console.bak(0)
         console.write(VisibleTiles.Player)
         level.I_Score = level.Score
         level.I_Gems = level.Gems
@@ -175,15 +176,15 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
     elif onto == 7: # Chest
         Go(x_way, y_way, Human)
         console.sounds(sounds.Open_Chest())
-        whips = randint(3) + 2
-        gems = randint(game.Difficulty) + 2
+        whips = randrange(3) + 2
+        gems = randrange(game.Difficulty) + 2
         level.Whips += whips
         level.Gems += gems
         AddScore(7, level, console)
-        console.bak(0, 0)
+        console.bak(0)
         console.clearkeys()
         while not console.keypressed():
-            console.col(randint(2) + 14, 15)
+            console.col(randrange(2) + 14)
             console.gotoxy(11, 25)
             console.write('You found {0} gems and {1} whips inside the chest!'.format(gems, whips))
         Restore_Border(level, console)
@@ -276,12 +277,12 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         AddScore(16, level, console)
         for x in range(1, 500):
             console.gotoxy(level.Px, level.Py)
-            console.col(randint(16), randint(16))
-            console.bak(randint(8), randint(8))
+            console.col(Colors.Random())
+            console.bak(Colors.RandomDark())
             console.write(VisibleTiles.Player)
         console.gotoxy(level.Px, level.Py)
-        console.bak(0, 0)
-        console.col(0, 0)
+        console.bak(0)
+        console.col(0)
         console.write(' ')
         console.sounds(sounds.Teleport_Trap())
         level.Pf[level.Px, level.Py] = 0
@@ -295,18 +296,18 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
                 level.Pf[x, y] = 40
         for x in range(1, 500): # 3000 on FastPC
             console.gotoxy(level.Px, level.Py)
-            console.col(randint(16), randint(16))
-            console.bak(randint(8), randint(8))
+            console.col(Colors.Random())
+            console.bak(Colors.RandomDark())
             console.write(VisibleTiles.Player)
         if level.T[5] < 1:
             console.gotoxy(level.Px, level.Py)
-            console.col(14, 15)
-            console.bak(0, 0)
+            console.col(14)
+            console.bak(0)
             console.write(VisibleTiles.Player)
-            console.bak(0, 0)
+            console.bak(0)
         else:
             console.gotoxy(level.Px, level.Py)
-            console.bak(0, 0)
+            console.bak(0)
             console.write(' ')
         console.clearkeys()
         if 16 not in game.FoundSet:
@@ -318,14 +319,14 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         for x in range(3, 35):
             for y in range(45, 52):
                 console.sounds([(x * y, 7), (None, 15)]) # sounds.Whip_Power()
-                console.col(randint(8), randint(8))
+                console.col(Colors.RandomDark())
                 console.gotoxy(level.Px, level.Py)
                 console.write(VisibleTiles.Player)
-        console.bak(0, 0)
-        console.col(14, 15)
+        console.bak(0)
+        console.col(14)
         console.gotoxy(level.Px, level.Py)
         console.write(VisibleTiles.Player)
-        console.bak(0, 0)
+        console.bak(0)
         AddScore(15, level, console)
         Flash(9, 25, 'A Power Ring--your whip is now a little stronger!', level, console)
     elif onto == 19 or onto == 20: # Forest, Tree
@@ -363,7 +364,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
                         # Things that get destroyed by a bomb...
                         if level.Pf[x, y] in [0, 1, 2, 3, 4, 13, 16, 19, 28, 29, 30, 31, 32, 33, 35, 36, 37, 38, 39, 43, 45, 48, 49, 50, 51, 64, 67, 68, 69, 70, 71, 72, 73, 74, 224, 225, 226, 227, 228, 229, 230, 231]:
                             console.gotoxy(x, y)
-                            console.col(12, 15)
+                            console.col(12)
                             console.write(219)
             Update_Info(level, console)
             console.clearkeys()
@@ -388,29 +389,29 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         Go(x_way, y_way, Human, game, level, console)
         console.clearkeys()
         Flash(22, 25, 'Oh no, a Bottomless Pit!', level, console)
-        console.bak(6, 7)
+        console.bak(6)
         console.window(2, 2, 65, 24)
         console.clrscr()
-        console.bak(0, 0)
+        console.bak(0)
         console.window(32, 2, 36, 24)
         console.clrscr()
         console.window(1, 1, 80, 25)
         x = 3000
-        console.col(14, 25)
+        console.col(14) # 25 = blinking?
         for i in range(1, 16):
             if i == 8:
-                console.col(15, 15)
-                console.bak(6, 7)
+                console.col(15)
+                console.bak(6)
                 console.gotoxy(38, 12)
                 console.write('<--- HALF WAY!!!')
-                console.bak(0, 0)
-                console.col(14, 15)
+                console.bak(0)
+                console.col(14)
             if i == 9:
-                console.bak(6, 7)
+                console.bak(6)
                 console.gotoxy(38, 12)
                 console.write('                ')
-                console.bak(0, 0)
-                console.col(14, 15)
+                console.bak(0)
+                console.col(14)
             for y in range(2, 24):
                 x = x - 8
                 console.sound(x, 52 - 3 * i) # sounds.Pit_Falling()
@@ -429,18 +430,18 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         Tome_Message(level, console)
         for _ in range(1, 5):
             Tome_Effects(level, console)
-        console.bak(0, 0)
+        console.bak(0)
         for x in range(1, 24):
             for y in range(5, 1, -1):
                 console.sounds([(x * 45 + y * 10, y * 3), (None, 40)]) # sounds.Victory_MacGuffin()
                 console.gotoxy(51, 13)
-                console.col(randint(16), randint(16))
+                console.col(Colors.Random())
                 console.write(VisibleTiles.Tome)
         console.gotoxy(51, 13)
-        console.col(16, 16)
-        console.bak(2, 7)
+        console.col(16) # 16 = blinking?
+        console.bak(2)
         console.write(VisibleTiles.Stairs)
-        console.bak(0, 0)
+        console.bak(0)
         level.Pf[level.Px + x_way, level.Py + y_way] = 6
         level.Score += 5000
         Update_Info(level, console)
@@ -457,7 +458,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         console.sounds(sounds.FootStep())
         level.Pf[level.Px, level.Py] = 25
         console.gotoxy(level.Px, level.Py)
-        console.col(15, 7)
+        console.col(15)
         console.write(VisibleTiles.Tunnel)
         # After Go() above...
         x = level.Px
@@ -492,12 +493,12 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         for x in range(1, 400): # 2100 on FastPC
             console.sound(randint(1000), 0.2) # sounds.TunnelExit()
             console.gotoxy(level.Px, level.Py)
-            console.col(randint(16), randint(16))
-            console.bak(randint(8), 0)
+            console.col(Colors.Random())
+            console.bak(Colors.RandomDark())
             console.write(VisibleTiles.Player)
         console.gotoxy(level.Px, level.Py)
-        console.col(14, 15)
-        console.bak(0, 0)
+        console.col(14)
+        console.bak(0)
         if level.T[5] < 1:
             console.write(VisibleTiles.Player)
         else:
@@ -534,7 +535,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
                     done = True
                     level.Pf[x, y] = 4
                     console.gotoxy(x, y)
-                    console.col(6, 7)
+                    console.col(6)
                     console.write(VisibleTiles.Block)
             console.sounds(sounds.Quake_Block_Drop())
         console.sounds(sounds.Quake_Finish())
@@ -544,7 +545,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
             Flash(15, 25, 'Oh no, you set off an Earthquake trap!', level, console)
     elif onto == 29: # IBlock
         console.gotoxy(level.Px + x_way, level.Py + y_way)
-        console.col(6, 7)
+        console.col(6)
         console.write(VisibleTiles.Block)
         level.Pf[level.Px + x_way, level.Py + y_way] = 4
         console.sounds(sounds.BlockSound())
@@ -554,7 +555,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
             Flash(13, 25, 'An Invisible Crumbled Wall blocks your way.', level, console)
     elif onto == 30: # IWall
         console.gotoxy(level.Px + x_way, level.Py + y_way)
-        console.col(6, 7)
+        console.col(6)
         console.write(VisibleTiles.Wall)
         level.Pf[level.Px + x_way, level.Py + y_way] = 14
         console.sounds(sounds.BlockSound())
@@ -564,10 +565,10 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
             Flash(17, 25, 'An Invisible Wall blocks your way.', level, console)
     elif onto == 31: # IDoor
         console.gotoxy(level.Px + x_way, level.Py+y_way)
-        console.col(3, 0)
-        console.bak(5, 7)
+        console.col(3)
+        console.bak(5)
         console.write(VisibleTiles.Door)
-        console.bak(0, 0)
+        console.bak(0)
         level.Pf[level.Px + x_way, level.Py + y_way] = 13
         console.sounds(sounds.BlockSound())
         console.clearkeys()
