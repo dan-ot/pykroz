@@ -122,7 +122,7 @@ class Crt:
     def delay(ms: int):
         sleep(ms / 1000)
 
-    def textcolor(self, index: int):
+    def col(self, index: int, ifBw: int):
         self.foreground = Colors.Code[index % len(Colors.Code)]
 
     def textbackground(self, index: int):

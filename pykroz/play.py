@@ -6,7 +6,7 @@ from typing import cast
 import pygame.locals
 
 from crt import Crt
-from levels import Bak, Border, Col, Dead, Define_Levels, Flash, Game, Level, PMOVE, Print, Restore_Border, SaveType, Sign_Off, TMAX, Update_Info, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
+from levels import Bak, Border, Dead, Define_Levels, Flash, Game, Level, PMOVE, Print, Restore_Border, SaveType, Sign_Off, TMAX, Update_Info, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
 from screens import Display_Playfield, GetKey, Hit, Init_Screen, Screen
 from movement import Move, Next_Level
 from titles import Title
@@ -38,7 +38,7 @@ def Player_Move(game: Game, level: Level, console: Crt):
         if ch == pygame.locals.K_n:
             return
         Bak(0, 0, console)
-        Col(15, 15, console)
+        console.col(15, 15)
         console.clearkeys()
         Print(8, 25, ' Pick which letter to RESTORE from: A, B or C?  A  ')
         console.gotoxy(56, 25)
@@ -117,12 +117,12 @@ def Player_Move(game: Game, level: Level, console: Crt):
             Display_Playfield(level, console)
             for x in range (1, 600):
                 console.gotoxy(level.Px, level.Py)
-                Col(randint(16), randint(16), console)
+                console.col(randint(16), randint(16))
                 Bak(randint(8), 0, console)
                 console.write(VisibleTiles.Player)
                 console.sound(x // 2, 0.3) # sounds.Load()
             console.gotoxy(level.Px, level.Py)
-            Col(14, 15, console)
+            console.col(14, 15)
             Bak(0, 0, console)
             console.write(VisibleTiles.Player)
             Bak(0, 0, console)
@@ -139,14 +139,14 @@ def Player_Move(game: Game, level: Level, console: Crt):
         Restore_Border(level, console)
         ch = console.read()
         Bak(0, 0, console)
-        Col(15, 15, console)
+        console.col(15, 15)
         console.clearkeys()
         Print(11, 25, ' Pick which letter to SAVE to: A, B, or C?  A  ')
         console.gotoxy(54, 25)
         ch = console.read()
         which_file = ''
         Restore_Border(level, console)
-        Col(15, 15, console)
+        console.col(15, 15)
         Bak(0, 0, console)
         if ch == pygame.locals.K_ESCAPE:
             Restore_Border(level, console)
@@ -187,20 +187,20 @@ def Player_Move(game: Game, level: Level, console: Crt):
         Update_Info(level, console)
         for x in range(1, 250):
             console.gotoxy(level.Px, level.Py)
-            Col(randint(16), randint(16), console)
+            console.col(randint(16), randint(16))
             Bak(randint(8), randint(8), console)
             console.write(VisibleTiles.Player)
         console.gotoxy(level.Px, level.Py)
         if level.Replacement == 75:
             Bak(0, 0, console)
-            Col(7, 7, console)
+            console.col(7, 7)
             console.write(VisibleTiles.Rope)
         else:
             Bak(0, 0, console)
-            Col(0, 0, console)
+            console.col(0, 0)
             console.write(' ')
         i = 0
-        Col(14, 15, console)
+        console.col(14, 15)
         console.sound(20, 3) # sound.Teleport_Windup()
         while i <= 700:
             i += 1
@@ -212,6 +212,7 @@ def Player_Move(game: Game, level: Level, console: Crt):
                 console.delay(3)
                 console.gotoxy(x, y)
                 console.write(' ')
+        # end Teleport_Windup()
         console.sounds(sounds.Teleport())
         level.Pf[level.Px, level.Py] = level.Replacement
         level.Px = 0
@@ -226,17 +227,17 @@ def Player_Move(game: Game, level: Level, console: Crt):
         console.clearkeys()
         for x in range(1, 500): # 3000 on FastPC
             console.gotoxy(level.Px, level.Py)
-            Col(randint(16), randint(16), console)
+            console.col(randint(16), randint(16))
             Bak(randint(8), randint(8), console)
             console.write(VisibleTiles.Player)
         if level.T[5] < 1:
             console.gotoxy(level.Px, level.Py)
-            Col(14, 15, console)
+            console.col(14, 15)
             Bak(0, 0, console)
             console.write(VisibleTiles.Player)
         else:
             console.gotoxy(level.Px, level.Py)
-            Col(0, 0, console)
+            console.col(0, 0)
             Bak(0, 0, console)
             console.write(' ')
     
@@ -325,7 +326,7 @@ def Move_Slow(game: Game, level: Level, console: Crt):
         occupant = level.Pf[level.Sx[loop], level.Sy[loop]] # What's in the space the monster may have moved to
         # Things that don't stop a monster
         if occupant in [0, 68, 69, 70, 71, 72, 73, 74]:
-            Col(12, 7, console)
+            console.col(12, 7)
             slow = 142 if randint(2) == 0 else 65
             console.write(slow)
             console.sound(20, 0.3) # sounds.Monster_Steps()
@@ -336,7 +337,7 @@ def Move_Slow(game: Game, level: Level, console: Crt):
             level.Sy[loop] += y_dir
             level.Pf[level.Sx[loop], level.Sy[loop]] = 1 # Put the monster back
             console.gotoxy(level.Sx[loop], level.Sy[loop])
-            Col(12, 7, console)
+            console.col(12, 7)
             slow = 142 if randint(2) == 0 else 65
             console.write(slow)
         # Things with mutual destruction
@@ -355,9 +356,9 @@ def Move_Slow(game: Game, level: Level, console: Crt):
 
             # Update Gems display?
             if level.Gems > 9:
-                Col(4, 7, console)
+                console.col(4, 7)
             else:
-                Col(20, 23, console)
+                console.col(20, 23)
                 Bak(7, 0, console)
             console.gotoxy(71, 8)
             console.write('      ')
@@ -366,7 +367,7 @@ def Move_Slow(game: Game, level: Level, console: Crt):
             Bak(0, 0, console)
         # Things a monster eats
         elif occupant in [5, 7, 8, 9, 10, 11, 12, 15, 16, 18, 26, 27, 48, 49, 50, 51, 82, 83]:
-            Col(12, 7, console)
+            console.col(12, 7)
             slow = 142 if randint(2) == 0 else 65
             console.write(slow)
             level.Pf[level.Sx[loop], level.Sy[loop]] = 1
@@ -376,7 +377,7 @@ def Move_Slow(game: Game, level: Level, console: Crt):
             level.Sy[loop] += y_dir
             level.Pf[level.Sx[loop], level.Sy[loop]] = 1
             console.gotoxy(level.Sx[loop], level.Sy[loop])
-            Col(12, 7, console)
+            console.col(12, 7)
             slow = 142 if randint(2) == 0 else 65
             console.write(slow)
         if randint(8) == 1:
@@ -425,7 +426,7 @@ def Move_Medium(game: Game, level: Level, console: Crt):
         occupant = level.Pf[level.Mx[loop], level.My[loop]] # What's in the space the monster may have moved to
         # Things that don't stop a monster
         if occupant in [0, 68, 69, 70, 71, 72, 73, 74]:
-            Col(12, 7, console)
+            console.col(12, 7)
             medium = 148 if randint(2) == 0 else 153
             console.write(medium)
             console.sound(20, 0.3) # sounds.Monster_Steps()
@@ -436,7 +437,7 @@ def Move_Medium(game: Game, level: Level, console: Crt):
             level.My[loop] += y_dir
             level.Pf[level.Mx[loop], level.My[loop]] = 1 # Put the monster back
             console.gotoxy(level.Mx[loop], level.My[loop])
-            Col(12, 7, console)
+            console.col(12, 7)
             medium = 148 if randint(2) == 0 else 153
             console.write(medium)
         # Things with mutual destruction
@@ -455,9 +456,9 @@ def Move_Medium(game: Game, level: Level, console: Crt):
 
             # Update Gems display?
             if level.Gems > 9:
-                Col(4, 7, console)
+                console.col(4, 7)
             else:
-                Col(20, 23, console)
+                console.col(20, 23)
                 Bak(7, 0, console)
             console.gotoxy(71, 8)
             console.write('      ')
@@ -466,7 +467,7 @@ def Move_Medium(game: Game, level: Level, console: Crt):
             Bak(0, 0, console)
         # Things a monster eats
         elif occupant in [5, 7, 8, 9, 10, 11, 12, 15, 16, 18, 26, 27, 48, 49, 50, 51, 82, 83]:
-            Col(12, 7, console)
+            console.col(12, 7)
             medium = 148 if randint(2) == 0 else 153
             console.write(medium)
             level.Pf[level.Mx[loop], level.My[loop]] = 1
@@ -476,7 +477,7 @@ def Move_Medium(game: Game, level: Level, console: Crt):
             level.My[loop] += y_dir
             level.Pf[level.Mx[loop], level.My[loop]] = 1
             console.gotoxy(level.Mx[loop], level.My[loop])
-            Col(12, 7, console)
+            console.col(12, 7)
             medium = 148 if randint(2) == 0 else 153
             console.write(medium)
         if randint(7) == 1:
@@ -525,7 +526,7 @@ def Move_Fast(game: Game, level: Level, console: Crt):
         occupant = level.Pf[level.Fx[loop], level.Fy[loop]] # What's in the space the monster may have moved to
         # Things that don't stop a monster
         if occupant in [0, 68, 69, 70, 71, 72, 73, 74]:
-            Col(12, 7, console)
+            console.col(12, 7)
             console.write(VisibleTiles.FMonster)
             console.sound(20, 0.3) # sounds.Monster_Steps()
             level.Pf[level.Fx[loop], level.Fy[loop]] = 1 # Confirm the move
@@ -535,7 +536,7 @@ def Move_Fast(game: Game, level: Level, console: Crt):
             level.Fy[loop] += y_dir
             level.Pf[level.Fx[loop], level.Fy[loop]] = 1 # Put the monster back
             console.gotoxy(level.Fx[loop], level.Fy[loop])
-            Col(12, 7, console)
+            console.col(12, 7)
             console.write(VisibleTiles.FMonster)
         # Things with mutual destruction
         elif occupant in [4, 38, 43, 64]:
@@ -553,9 +554,9 @@ def Move_Fast(game: Game, level: Level, console: Crt):
 
             # Update Gems display?
             if level.Gems > 9:
-                Col(4, 7, console)
+                console.col(4, 7)
             else:
-                Col(20, 23, console)
+                console.col(20, 23)
                 Bak(7, 0, console)
             console.gotoxy(71, 8)
             console.write('      ')
@@ -564,7 +565,7 @@ def Move_Fast(game: Game, level: Level, console: Crt):
             Bak(0, 0, console)
         # Things a monster eats
         elif occupant in [5, 7, 8, 9, 10, 11, 12, 15, 16, 18, 26, 27, 48, 49, 50, 51, 82, 83]:
-            Col(12, 7, console)
+            console.col(12, 7)
             console.write(VisibleTiles.FMonster)
             level.Pf[level.Fx[loop], level.Fy[loop]] = 1
             console.sounds(sounds.GrabSound())
@@ -573,7 +574,7 @@ def Move_Fast(game: Game, level: Level, console: Crt):
             level.Fy[loop] += y_dir
             level.Pf[level.Fx[loop], level.Fy[loop]] = 1
             console.gotoxy(level.Fx[loop], level.Fy[loop])
-            Col(12, 7, console)
+            console.col(12, 7)
             console.write(VisibleTiles.FMonster)
         if randint(6) == 1:
             Player_Move(game, level, console) # player gets a chance to move after each monster?
@@ -607,12 +608,12 @@ def NewGame(game: Game, level: Level, console: Crt):
     level.I_FoundSet = game.FoundSet
     for x in range(1, 800):
         console.gotoxy(level.Px, level.Py)
-        Col(randint(16), randint(16), console)
+        console.col(randint(16), randint(16))
         Bak(randint(8), 0, console)
         console.write(VisibleTiles.Player)
         console.sound(x // 2) # sounds.NewGame()
     console.gotoxy(level.Px, level.Py)
-    Col(14, 15, console)
+    console.col(14, 15)
     Bak(0, 0, console)
     console.write(VisibleTiles.Player)
     Bak(0, 0, console)
