@@ -37,6 +37,7 @@ class Crt:
         self._keyboard = Keyboard()
         self.foreground = Colors.White
         self.background = Colors.Black
+        self.current_window = Rect(1, 1, 80, 25)
         self.cursor_x = 0
         self.cursor_y = 0
         pygame.display.set_caption('PyKroz')
@@ -93,13 +94,16 @@ class Crt:
         return self._keyboard.get_key_from_queue()
 
     def write(self, message: Union[str, int]):
+        if not self.current_window.collidepoint(self.cursor_x, self.cursor_y):
+            return
         if isinstance(str, message):
-            self.dirty_blocks.append(Rect(self.cursor_x, self.cursor_y, len(message), 1))
-            for c in range(len(message)):
-                self.charbuffer[self.cursor_x + c, self.cursor_y] = ASCII.Ord[message[c]]
+            clipped_message = message[0:(self.current_window.width - self.cursor_x)]
+            self.dirty_blocks.append(Rect(self.cursor_x, self.cursor_y, len(clipped_message), 1))
+            for c in range(len(clipped_message)):
+                self.charbuffer[self.cursor_x + c, self.cursor_y] = ASCII.Ord[clipped_message[c]]
                 self.fg_color_buffer[self.cursor_x + c, self.cursor_y] = self.foreground
                 self.bg_color_buffer[self.cursor_x + c, self.cursor_y] = self.background
-            self.cursor_x += len(message)
+            self.cursor_x += len(clipped_message)
         else:
             self.charbuffer[self.cursor_x, self.cursor_y] = message
             self.fg_color_buffer[self.cursor_x, self.cursor_y] = self.foreground
@@ -146,10 +150,12 @@ class Crt:
         self._audio.sound(self._audio.compose(parts))
 
     def clrscr(self):
-        self.charbuffer.fill(ASCII.Ord[' '])
-        self.fg_color_buffer.fill(255)
-        self.bg_color_buffer.fill(0)
-        self.dirty_blocks.append(Rect(0, 0, *self.size))
+        for x in range(self.current_window.left, self.current_window.left + self.current_window.width):
+            for y in range(self.current_window.top, self.current_window.top + self.current_window.height):
+                self.charbuffer[x, y] = ' '
+                self.fg_color_buffer[x, y] = [255, 255, 255]
+                self.bg_color_buffer[x, y] = [0, 0, 0]
+        self.dirty_blocks.append(self.current_window)
 
     def clearkeys(self):
         self._keyboard.clear_queue()
