@@ -3,13 +3,13 @@ from random import randint
 import pygame.locals
 
 from crt import Crt
-from levels import Bak, Flash, Game, Level, Shareware, VisibleTiles
+from levels import Flash, Game, Level, Shareware, VisibleTiles
 import sounds
 
 def Title(game: Game, level: Level, console: Crt):
     console.clearkeys()
     console.col(15, 15)
-    Bak(0, 0, console)
+    console.bak(0, 0)
     console.clrscr()
     console.gotoxy(28, 2)
     console.writeln('Apogee Software Presents')
@@ -45,11 +45,11 @@ def Title(game: Game, level: Level, console: Crt):
         console.write('Press any key to continue.')
         console.delay(300)
     console.clearkeys()
-    Bak(1, 0, console)
+    console.bak(1, 0)
     console.clrscr()
     console.gotoxy(29, 1)
     console.col(4, 7)
-    Bak(1, 0, console)
+    console.bak(1, 0)
     console.write('▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄')
     console.gotoxy(29, 3)
     console.write('▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄')
@@ -94,7 +94,7 @@ def Title(game: Game, level: Level, console: Crt):
     console.col(28, 16)
     console.write(219)
     console.sounds(sounds.Difficulty_Prompt())
-    Bak(4, 7, console)
+    console.bak(4, 7)
     ch = 0
     selections = set([pygame.locals.K_n, pygame.locals.K_SPACE, pygame.locals.K_e, pygame.locals.K_a, pygame.locals.K_x, pygame.locals.K_RETURN, pygame.locals.K_KP_ENTER])
     while ch not in selections:
@@ -105,11 +105,11 @@ def Title(game: Game, level: Level, console: Crt):
             console.delay(50)
         ch = console.read()
         console.sounds(sounds.Difficulty_Key())
-        Bak(4, 7, console)
+        console.bak(4, 7)
     console.sound(700, 100)
     console.gotoxy(13, 22)
     console.col(0, 0)
-    Bak(1, 0, console)
+    console.bak(1, 0)
     if ch in [pygame.locals.K_n, pygame.locals.K_SPACE, pygame.locals.K_KP_ENTER, pygame.locals.K_RETURN]:
         game.Difficulty = 8
         console.gotoxy(37, 22)
@@ -130,7 +130,7 @@ def Title(game: Game, level: Level, console: Crt):
     console.gotoxy(33, 25)
     console.col(7, 7)
     console.write('Press any key.')
-    Bak(4, 7, console)
+    console.bak(4, 7)
     while not console.keypressed():
         console.gotoxy(29, 2)
         console.col(randint(16), 0)
@@ -142,7 +142,7 @@ def Title(game: Game, level: Level, console: Crt):
 
     start_game = False
     while not start_game:
-        Bak(0, 0, console)
+        console.bak(0, 0)
         console.clrscr()
         console.col(15, 9)
         console.gotoxy(31, 2)
@@ -193,7 +193,7 @@ def Title(game: Game, level: Level, console: Crt):
         console.write('bout the Author')
         console.gotoxy(26, 24)
         console.col(15, 0)
-        Bak(1, 7, console)
+        console.bak(1, 7)
         console.write('Your choice (B/I/M/S/O/A)? B')
         console.gotoxy(console.cursor_x - 1, console.cursor_y)
         console.clearkeys()
@@ -205,7 +205,7 @@ def Title(game: Game, level: Level, console: Crt):
             console.sounds(sounds.Begin_Game())
             start_game = True
         elif ch == pygame.locals.K_i:
-            Bak(1, 0, console)
+            console.bak(1, 0)
             console.clrscr()
             console.clearkeys()
             console.gotoxy(32, 2)
@@ -235,7 +235,7 @@ def Title(game: Game, level: Level, console: Crt):
             console.writeln(' you can easily restore the game at that level and try again.')
             console.writeln('   Registered users will get a "secret code" that makes this game much easier!')
             Flash(27, 25, 'Press any key to continue.', console)
-            Bak(1, 0, console)
+            console.bak(1, 0)
             console.clrscr()
             console.clearkeys()
             console.gotoxy(32, 2)
@@ -262,7 +262,7 @@ def Title(game: Game, level: Level, console: Crt):
             console.writeln('           single gem from you, and the medium speed monsters take two.')
             console.writeln()
             Flash(27, 25, 'Press any key to continue.', console)
-            Bak(1, 0, console)
+            console.bak(1, 0)
             console.clrscr()
             console.clearkeys()
             console.gotoxy(32, 2)
@@ -309,9 +309,9 @@ def Title(game: Game, level: Level, console: Crt):
             console.writeln(' - teleport spells will magically transport you to a random place')
             console.write('      ')
             console.col(14, 7)
-            Bak(4, 0, console)
+            console.bak(4, 0)
             console.write(VisibleTiles.Chest)
-            Bak(1, 0, console)
+            console.bak(1, 0)
             console.col(15, 7)
             console.writeln(' - chests contain a random number of gems and whips')
             console.write('      ')
@@ -320,27 +320,27 @@ def Title(game: Game, level: Level, console: Crt):
             console.col(15, 7)
             console.write(' - collect keys to go through doors (')
             console.col(3, 0)
-            Bak(5, 7, console)
+            console.bak(5, 7)
             console.write(VisibleTiles.Door)
             console.col(15, 7)
-            Bak(1, 0, console)
+            console.bak(1, 0)
             console.writeln(')')
             console.write('      ')
             console.write(VisibleTiles.Power)
             console.writeln(' - collect these power rings to make your whips more powerful')
             console.write('      ')
             console.col(16, 16)
-            Bak(7, 7, console)
+            console.bak(7, 7)
             console.write(VisibleTiles.Stairs)
             console.col(15, 7)
-            Bak(1, 0, console)
+            console.bak(1, 0)
             console.writeln(' - stairs take you to the next level deeper in Kroz')
             console.writeln()
             console.writeln('   There are dozens and dozens of other objects to discover.  The best way')
             console.writeln(' to learn the usefulness of any new object is to touch it and read the brief')
             console.writeln(' message that appears at the bottom of the screen.')
             Flash(27, 25, 'Press any key to continue.', level, console)
-            Bak(1, 0, console)
+            console.bak(1, 0)
             console.clrscr()
             console.clearkeys()
             console.gotoxy(33, 2)
@@ -362,7 +362,7 @@ def Title(game: Game, level: Level, console: Crt):
             console.writeln('    messages by pressing the minus (-) key.  The plus key (+) resets messages.')
             Flash(27, 25, 'Press any key to continue.', level, console)
         elif ch == pygame.locals.K_m:
-            Bak(1, 0, console)
+            console.bak(1, 0)
             console.clrscr()
             console.clearkeys()
             console.gotoxy(29, 2)
@@ -394,7 +394,7 @@ def Title(game: Game, level: Level, console: Crt):
             console.writeln(' orders are always welcome, please send U.S. funds/money orders only.')
             Flash(27, 25, 'Press any key to continue.', level, console)
         elif ch == pygame.locals.K_s:
-            Bak(1, 0, console)
+            console.bak(1, 0)
             console.clrscr()
             console.clearkeys()
             console.gotoxy(29, 2)
@@ -424,7 +424,7 @@ def Title(game: Game, level: Level, console: Crt):
             console.writeln('   Thanks to all the players of Kroz who contributed dozens of suggestions,')
             console.writeln(' ideas and improvements that were incorporated in later versions of Kroz.')
             Flash(27, 25, 'Press any key to continue.', console)
-            Bak(1, 0, console)
+            console.bak(1, 0)
             console.clrscr()
             console.clearkeys()
             console.gotoxy(29, 2)
@@ -455,7 +455,7 @@ def Title(game: Game, level: Level, console: Crt):
             console.writeln('                                                        -- Scott Miller')
             Flash(27, 25, 'Press any key to continue.', console)
         elif ch == pygame.locals.K_o:
-            Bak(1, 0, console)
+            console.bak(1, 0)
             console.clrscr()
             console.clearkeys()
             console.gotoxy(28,2)
@@ -485,7 +485,7 @@ def Title(game: Game, level: Level, console: Crt):
             console.writeln(' permit them to function correctly on any speed IBM PC compatible computer.')
             Flash(27, 25, 'Press any key to continue.', console)
         elif ch == pygame.locals.K_a:
-            Bak(1, 0, console)
+            console.bak(1, 0)
             console.clrscr()
             console.clearkeys()
             console.gotoxy(32, 2)
@@ -518,5 +518,5 @@ def Title(game: Game, level: Level, console: Crt):
         else:
             console.sounds(sounds.Begin_Game())
             start_game = True
-    Bak(0, 0, console)
+    console.bak(0, 0)
     console.clrscr()
