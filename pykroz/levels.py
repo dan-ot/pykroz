@@ -234,9 +234,6 @@ class Game:
         self.FoundSet: list[int] = []
 
 # Procedures
-def Print(XPos: int, YPos: int, Message: str, console: Crt):
-    console.write(XPos - 1, YPos - 1, Message)
-
 def PrintNum(YPos: int, Num: int, level: Level, console: Crt):
     # console.write(70, YPos, "       ")
     strVal = str(Num)
@@ -298,7 +295,7 @@ def Flash(XPos: int, YPos: int, Message: str, level: Level, console: Crt):
             counter = 13
         console.col(counter, 15)
         console.delay(20)
-        Print(XPos, YPos, Message, console)
+        console.print(XPos, YPos, Message)
     Restore_Border(level, console)
 
 def Bak(color: int, bw: int, console: Crt):
@@ -448,7 +445,7 @@ def Won(level: Level, console: Crt):
     console.clearkeys()
     console.col(15, 31)
     Bak(level.Bb, 0, console)
-    Print(5, 1, 'YOUR QUEST FOR THE MAGICAL STAFF OF KROZ WAS SUCCESSFUL!!', console)
+    console.print(5, 1, 'YOUR QUEST FOR THE MAGICAL STAFF OF KROZ WAS SUCCESSFUL!!')
     Bak(0, 0, console)
     High_Score(console, PlayAgain = False)
 
@@ -573,13 +570,13 @@ def Dead(DeadDot: bool, game: Game, level: Level, console: Crt):
     console.clearkeys()
     console.col(16, 16)
     Bak(level.Bb, 7, console)
-    Print(27, 1, 'YOU HAVE DIED!!', console)
+    console.print(27, 1, 'YOU HAVE DIED!!')
     Bak(0, 0, console)
     while not console.keypressed():
         console.col(randint(16), randint(16))
         console.gotoxy(level.Px, level.Py)
         if DeadDot: console.write('*')
-        Print(21, 25, 'Press any key to continue.', console)
+        console.print(21, 25, 'Press any key to continue.')
     Border(level, console)
     High_Score(True, game, level, console)
 
@@ -780,7 +777,7 @@ def End_Routine(level: Level, console: Crt):
         console.write(VisibleTiles.Player)
         console.col(randint(16), randint(16))
         Bak(0, 0, console)
-        Print(15, 25, 'Oh no, something strange is happening!', console)
+        console.print(15, 25, 'Oh no, something strange is happening!')
     for i in range(2200, 20, -1):
         console.sound(randint(i)) # Also sounds.Victory_Strage() - one sound covers the whole sequence
     console.col(14, 15)
@@ -798,7 +795,7 @@ def End_Routine(level: Level, console: Crt):
     console.clearkeys()
     console.col(15, 15)
     Bak(0, 0, console)
-    Print(15, 25, 'Your gems are worth 100 points each...')
+    console.print(15, 25, 'Your gems are worth 100 points each...')
     for i in range(level.Gems):
         level.Score += 10
         Update_Info(level, console)
@@ -808,7 +805,7 @@ def End_Routine(level: Level, console: Crt):
     console.clearkeys()
     console.col(15, 15)
     Bak(0, 0, console)
-    Print(15, 25, 'Your whips are worth 100 points each...')
+    console.print(15, 25, 'Your whips are worth 100 points each...')
     for i in range(level.Whips):
         level.Score += 10
         Update_Info(level, console)
@@ -818,7 +815,7 @@ def End_Routine(level: Level, console: Crt):
     console.clearkeys()
     console.col(15, 15)
     Bak(0, 0, console)
-    Print(9, 25, 'Your Teleport Scrolls are woth 200 points each...')
+    console.print(9, 25, 'Your Teleport Scrolls are woth 200 points each...')
     for i in range(level.Teleports):
         level.Score += 20
         Update_Info(level, console)
@@ -828,7 +825,7 @@ def End_Routine(level: Level, console: Crt):
     console.clearkeys()
     console.col(15, 15)
     Bak(0, 0, console)
-    Print(14, 25, 'Your Keys are worth 10,000 points each...')
+    console.print(14, 25, 'Your Keys are worth 10,000 points each...')
     for i in range(level.Keys):
         level.Score += 1000
         Update_Info(level, console)

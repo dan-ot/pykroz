@@ -2,7 +2,7 @@ from random import randint
 import pygame.locals
 
 from ascii import ASCII
-from levels import AddScore, Bak, Flash, Game, Level, New_Gem_Color, Print, TMAX, TOTOBJECTS, Update_Info, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
+from levels import AddScore, Bak, Flash, Game, Level, New_Gem_Color, TMAX, TOTOBJECTS, Update_Info, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
 from crt import Crt
 import sounds
 
@@ -28,7 +28,7 @@ def Screen(game: Game, console: Crt):
     console.gotoxy(18, 10)
     console.delline()
     console.gotoxy(9, 17)
-    console.textcolor(7)
+    console.col(7, 7)
     console.write('If you have an older PC (like an XT model) choose "S" for Slow.')
     console.gotoxy(10, 19)
     console.write('If you have a PC AT, 80386 chip, etc., choose "F" for Fast.')
@@ -111,15 +111,15 @@ def Init_Screen(game: Game, level: Level, console: Crt):
         console.clrscr()
         console.window(1, 1, 80, 25)
     console.col(14, 7)
-    Print(71, 1, 'Score', console)
-    Print(71, 4, 'Level', console)
-    Print(71, 7, 'Gems', console)
-    Print(71, 10, 'Whips', console)
-    Print(69, 13, 'Teleports', console)
-    Print(71, 16, 'Keys', console)
+    console.print(71, 1, 'Score', console)
+    console.print(71, 4, 'Level', console)
+    console.print(71, 7, 'Gems', console)
+    console.print(71, 10, 'Whips', console)
+    console.print(69, 13, 'Teleports', console)
+    console.print(71, 16, 'Keys', console)
     console.col(11, 7)
     Bak(4, 0, console)
-    Print(70, 19, 'OPTIONS', console)
+    console.print(70, 19, 'OPTIONS', console)
     Bak(1, 0, console)
     console.gotoxy(70, 20)
     console.col(15, 15)

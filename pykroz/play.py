@@ -6,7 +6,7 @@ from typing import cast
 import pygame.locals
 
 from crt import Crt
-from levels import Bak, Border, Dead, Define_Levels, Flash, Game, Level, PMOVE, Print, Restore_Border, SaveType, Sign_Off, TMAX, Update_Info, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
+from levels import Bak, Border, Dead, Define_Levels, Flash, Game, Level, PMOVE, Restore_Border, SaveType, Sign_Off, TMAX, Update_Info, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
 from screens import Display_Playfield, GetKey, Hit, Init_Screen, Screen
 from movement import Move, Next_Level
 from titles import Title
@@ -40,7 +40,7 @@ def Player_Move(game: Game, level: Level, console: Crt):
         Bak(0, 0, console)
         console.col(15, 15)
         console.clearkeys()
-        Print(8, 25, ' Pick which letter to RESTORE from: A, B or C?  A  ')
+        console.print(8, 25, ' Pick which letter to RESTORE from: A, B or C?  A  ')
         console.gotoxy(56, 25)
         ch = console.read()
         Restore_Border(level, console)
@@ -54,7 +54,7 @@ def Player_Move(game: Game, level: Level, console: Crt):
             which_file = 'C'
         else:
             which_file = 'A'
-        Print(20, 25, '  Restoring from file {0}...  '.format(which_file))
+        console.print(20, 25, '  Restoring from file {0}...  '.format(which_file))
         file = Path('DUNGEON{0}.SAV'.format(which_file))
         if file.exists():
             with open(file, 'r') as f:
@@ -141,7 +141,7 @@ def Player_Move(game: Game, level: Level, console: Crt):
         Bak(0, 0, console)
         console.col(15, 15)
         console.clearkeys()
-        Print(11, 25, ' Pick which letter to SAVE to: A, B, or C?  A  ')
+        console.print(11, 25, ' Pick which letter to SAVE to: A, B, or C?  A  ')
         console.gotoxy(54, 25)
         ch = console.read()
         which_file = ''
@@ -171,7 +171,7 @@ def Player_Move(game: Game, level: Level, console: Crt):
             level.I_FoundSet,
             game.MixUp
         )
-        Print(22, 25, '  Saving to file {0}...  '.format(which_file))
+        console.print(22, 25, '  Saving to file {0}...  '.format(which_file))
         file = Path('DUNGEON{0}.SAV'.format(which_file))
         file.touch()
         with open(file, 'w') as f:

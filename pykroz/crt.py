@@ -112,6 +112,11 @@ class Crt:
         self.cursor_x = 0
         self.cursor_y += 1
 
+    def print(self, XPos: int, YPos: int, Message: str):
+        self.cursor_x = XPos
+        self.cursor_y = YPos
+        self.write(Message)
+
     def window(self, x_min: int, y_min: int, x_max: int, y_max: int):
         pass
 
@@ -119,7 +124,7 @@ class Crt:
         self.cursor_x = x
         self.cursor_y = y
 
-    def delay(ms: int):
+    def delay(self, ms: int):
         sleep(ms / 1000)
 
     def col(self, index: int, ifBw: int):
