@@ -234,9 +234,6 @@ class Game:
         self.FoundSet: list[int] = []
 
 # Procedures
-def Print(XPos: int, YPos: int, Message: str, console: Crt):
-    console.write(XPos - 1, YPos - 1, Message)
-
 def PrintNum(YPos: int, Num: int, level: Level, console: Crt):
     # console.write(70, YPos, "       ")
     strVal = str(Num)
@@ -249,26 +246,26 @@ def PrintNum(YPos: int, Num: int, level: Level, console: Crt):
     console.write(69, YPos - 1, strVal)
 
 def Update_Info(level: Level, console: Crt):
-    Bak(7, 0, console)
-    Col(4, 7, console)
+    console.bak(7, 0)
+    console.col(4, 7)
     PrintNum(2, level.Score, 4, 7, console)
     PrintNum(5, level.Level, 4, 7, console)
     if level.Gems > 9:
         PrintNum(8, level.Gems, 7, 7, console)
     else:
-        Col(7, 23, console)
+        console.col(7, 23)
         PrintNum(8, level.Gems, 15, 4, console)
-        Col(4, 7, console)
+        console.col(4, 7)
     PrintNum(11, level.Whips, 4, 7, console)
     PrintNum(14, level.Teleports, 4, 7, console)
     PrintNum(17, level.Keys, 4, 7, console)
-    Bak(0, 0, console)
+    console.bak(0, 0)
 
 def Border(level: Level, console: Crt):
     level.Bc = randrange(8, 15)
     level.Bb = randrange(1, 8)
-    Col(level.Bc, 0, console)
-    Bak(level.Bb, 7, console)
+    console.col(level.Bc, 0)
+    console.bak(level.Bb, 7)
     for x in range(XBOT - 1, XTOP + 2):
         console.gotoxy(x, 25)
         console.write(VisibleTiles.Block)
@@ -279,15 +276,15 @@ def Border(level: Level, console: Crt):
         console.write(VisibleTiles.Block)
         console.gotoxy(66, y)
         console.write(VisibleTiles.Block)
-    Bak(0, 0, console)
+    console.bak(0, 0)
 
 def Restore_Border(level: Level, console: Crt):
     console.gotoxy(2, 25)
-    Col(level.Bc, 0)
-    Bak(level.Bb, 7)
+    console.col(level.Bc, 0)
+    console.bak(level.Bb, 7)
     for _ in range(XBOT - 1, XTOP + 2):
         console.write(VisibleTiles.Block)
-    Bak(0, 0)
+    console.bak(0, 0)
 
 def Flash(XPos: int, YPos: int, Message: str, level: Level, console: Crt):
     counter = 14
@@ -296,22 +293,16 @@ def Flash(XPos: int, YPos: int, Message: str, level: Level, console: Crt):
         counter += 1
         if counter > 15:
             counter = 13
-        Col(counter, 15)
+        console.col(counter, 15)
         console.delay(20)
-        Print(XPos, YPos, Message, console)
+        console.print(XPos, YPos, Message)
     Restore_Border(level, console)
-
-def Col(color: int, bw: int, console: Crt):
-    console.textcolor(color)
-
-def Bak(color: int, bw: int, console: Crt):
-    console.textbackground(color)
 
 def Sign_Off(console: Crt):
     Shareware(console, Wait = False)
     console.clearkeys()
-    Col(7, 7, console)
-    Bak(0, 0, console)
+    console.col(7, 7)
+    console.bak(0, 0)
     console.clrscr()
     console.gotoxy(31, 2)
     console.write('DUNGEONS OF KROZ II')
@@ -320,12 +311,12 @@ def Sign_Off(console: Crt):
     console.writeln()
     console.writeln('Other great games available from Scott Miller:')
     console.writeln()
-    Col(15, 15, console)
+    console.col(15, 15)
     console.writeln('■ The six Kroz games! CAVERNS OF KROZ, KINGDOM OF KROZ, DUNGEONS OF KROZ,')
     console.writeln('     RETURN TO KROZ, TEMPLE OF KROZ and THE FINAL CRUSADE OF KROZ.')
     console.writeln('     Each volume is just $7.50, or order all six for $35!')
     console.writeln()
-    Col(7, 7, console)
+    console.col(7, 7)
     console.writeln('■ SUPERNOVA - Explore a galaxy and save a planet from an exploding star!')
     console.writeln('     An epic adventure rated by Shareware Magazine as one of the best games')
     console.writeln('     ever! Highly advanced game has graphics, sound effects galore, clue')
@@ -337,31 +328,31 @@ def Sign_Off(console: Crt):
     console.writeln('■ WORD WHIZ - New game that challenges your knowledge of the English')
     console.writeln('     language.  Fun to play, yet very education, too.  ($5)')
     console.writeln()
-    Col(15, 15, console)
+    console.col(15, 15)
     console.writeln('■ THE LOST ADVENTURES OF KROZ - All-new seventh Kroz game with 75 of the best')
     console.write  ('     levels yet!  Built-in contest!  New features galore.  ($20)')
-    Col(7, 7, console)
+    console.col(7, 7)
     console.clearkeys()
     console.halt()
 
 def Shareware(console: Crt, Wait: bool):
-    Bak(1, 0, console)
+    console.bak(1, 0)
     console.clrscr()
-    Col(15, 15, console)
+    console.col(15, 15)
     console.gotoxy(22, 1)
     console.writeln('DUNGEONS OF KROZ II ─ HOW TO REGISTER')
     console.gotoxy(1, 2)
     for _ in range(1, 80):
         console.write('─')
     console.gotoxy(1, 3)
-    Col(7, 7, console)
+    console.col(7, 7)
     console.writeln('  This is not a shareware game, but it is user-supported.  If you enjoy this')
     console.writeln('game you are asked by the author to please send a registration check in the')
     console.writeln('amount of $7.50 to Apogee Software.')
     console.writeln('  This registration fee will qualify you to order any of the other Kroz')
     console.writeln('volumes available:')
     console.writeln()
-    Col(15, 7, console)
+    console.col(15, 7)
     console.write('  ■ Caverns of Kroz   - the first discovery of Kroz')
     console.write('  ■ Dungeons of Kroz  - the dark side of Kroz, fast-paced action')
     console.write('  ■ Kingdom of Kroz   - the national contest winner ("Best Game" in 1988)')
@@ -369,37 +360,37 @@ def Shareware(console: Crt, Wait: bool):
     console.write('  ■ Temple of Kroz    - the bizarre side of Kroz, nothing is what it seems')
     console.write('  ■ The Final Crusade of Kroz - the suprising finish?')
     console.writeln()
-    Col(7, 7, console)
+    console.col(7, 7)
     console.writeln('Each game is priced $7.50 each, any three for $20, or all six for only $35.')
     console.writeln('You''ll also get a secret code that makes this game easier to complete,')
     console.writeln('plus a "Hints, Tricks and Scoring Secrets" guide and "The Domain of Kroz" map.')
     console.writeln()
-    Col(7, 7, console)
+    console.col(7, 7)
     console.write('Please make checks payable to:')
-    Col(14, 7, console)
+    console.col(14, 7)
     console.writeln('   Apogee Software    (phone: 214/240-0614)')
     console.gotoxy(31, 21)
     console.writeln('   4206 Mayflower')
-    Col(15, 15, console)
+    console.col(15, 15)
     console.write  ('Address always valid!')
     console.gotoxy(31, 22)
-    Col(14, 7, console)
+    console.col(14, 7)
     console.writeln('  Garland, TX 75043  (USA)')
     console.writeln()
-    Col(7, 7, console)
+    console.col(7, 7)
     console.write('Thank you and enjoy the game.  -- Scott Miller')
     if Wait:
         console.delay(0)
-    Bak(randint(0, 6) + 1, 7)
+    console.bak(randint(0, 6) + 1, 7)
     console.gotoxy(1, 25)
     console.gotoxy(27, 25)
-    Col(16, 16, console)
+    console.col(16, 16)
     console.write('Press any key to continue.')
     console.clearkeys()
     while not console.keypressed():
         pass
     console.clearkeys()
-    Bak(0, 0, console)
+    console.bak(0, 0)
     console.clrscr()
 
 def New_Gem_Color(level: Level):
@@ -449,16 +440,16 @@ def AddScore(What: int, level: Level, console: Crt):
 def Won(level: Level, console: Crt):
     Border(level, console)
     console.clearkeys()
-    Col(15, 31, console)
-    Bak(level.Bb, 0, console)
-    Print(5, 1, 'YOUR QUEST FOR THE MAGICAL STAFF OF KROZ WAS SUCCESSFUL!!', console)
-    Bak(0, 0, console)
+    console.col(15, 31)
+    console.bak(level.Bb, 0)
+    console.print(5, 1, 'YOUR QUEST FOR THE MAGICAL STAFF OF KROZ WAS SUCCESSFUL!!')
+    console.bak(0, 0)
     High_Score(console, PlayAgain = False)
 
 def High_Score(PlayAgain: bool, game: Game, level: Level, console: Crt):
     console.clearkeys()
     console.window(2, 2, XSIZE + 1, YSIZE + 1)
-    Bak(0, 0, console)
+    console.bak(0, 0)
     console.clrscr()
     console.window(1, 1, 80, 25)
     hsFile = Path('DUNGEON2.HS')
@@ -473,10 +464,10 @@ def High_Score(PlayAgain: bool, game: Game, level: Level, console: Crt):
         hsFile.touch()
         with hsFile.open('w') as f:
             json.dump(game.HSList, f, separators=(',', ':'))
-    Col(9, 9, console)
+    console.col(9, 9)
     console.gotoxy(25, 3)
     console.write('DUNGEONS OF KROZ II')
-    Col(11, 7, console)
+    console.col(11, 7)
     console.gotoxy(16, 5)
     console.write('NAME')
     console.gotoxy(34, 5)
@@ -497,9 +488,9 @@ def High_Score(PlayAgain: bool, game: Game, level: Level, console: Crt):
     game.HSList[place] = HSType('', level.Score, level.Level)
     for x in range(len(game.HSList)):
         if x % 2 == 1:
-            Col(12, 7, console)
+            console.col(12, 7)
         else:
-            Col(13, 7, console)
+            console.col(13, 7)
         console.gotoxy(13, x + 6)
         console.write('{0:2}'.format(x))
         console.gotoxy(16, x + 6)
@@ -510,20 +501,20 @@ def High_Score(PlayAgain: bool, game: Game, level: Level, console: Crt):
         console.write('{0}'.format(game.HSList[x].HighLevel))
     console.clearkeys()
     if place < 16:
-        Bak(4, 7, console)
+        console.bak(4, 7)
         console.gotoxy(16, place + 6)
         console.write('               ')
-        Col(4, 0, console)
-        Bak(7, 7, console)
+        console.col(4, 0)
+        console.bak(7, 7)
         console.gotoxy(16, 23)
         console.write('Enter your name then press <enter>.')
-        Col(15, 15, console)
-        Bak(4, 7, console)
+        console.col(15, 15)
+        console.bak(4, 7)
         console.gotoxy(16, place + 6)
         game.HSList[place].Name = console.readln()
         with hsFile.open('w') as f:
             json.dump(game.HSList, f)
-    Bak(0, 0, console)
+    console.bak(0, 0)
     console.gotoxy(16, 23)
     console.write('                                   ')
     for x in range(1000):
@@ -542,8 +533,8 @@ def High_Score(PlayAgain: bool, game: Game, level: Level, console: Crt):
     if ch.upper() is not 'N': 
         game.Restart = True
     else:
-        Bak(0, 0, console)
-        Col(15, 15, console)
+        console.bak(0, 0)
+        console.col(15, 15)
         console.clrscr()
         if not PlayAgain:
             console.gotoxy(1, 2)
@@ -555,34 +546,34 @@ def High_Score(PlayAgain: bool, game: Game, level: Level, console: Crt):
 
 def Dead(DeadDot: bool, game: Game, level: Level, console: Crt):
     if level.Gems > 9:
-        Col(4, 7, console)
+        console.col(4, 7)
     else:
         level.Gems = 0
-        Col(23, 23, console)
-    Bak(7, 0, console)
+        console.col(23, 23)
+    console.bak(7, 0)
     console.gotoxy(71, 8)
     console.write('     ')
     strVal = '{0}'.format(level.Gems)
     console.gotoxy(73 - len(strVal) // 2, 8)
     console.write(strVal)
-    Bak(0, 0, console)
+    console.bak(0, 0)
     if DeadDot:
         for x in range(150, 5, -1):
             console.gotoxy(level.Px, level.Py)
-            Col(x, x, console)
-            Bak(randint(8), 0, console)
+            console.col(x, x)
+            console.bak(randint(8), 0)
             console.write(VisibleTiles.Player)
             console.sound(x * x, 0.5) # sounds.Death()
     console.clearkeys()
-    Col(16, 16, console)
-    Bak(level.Bb, 7, console)
-    Print(27, 1, 'YOU HAVE DIED!!', console)
-    Bak(0, 0, console)
+    console.col(16, 16)
+    console.bak(level.Bb, 7)
+    console.print(27, 1, 'YOU HAVE DIED!!')
+    console.bak(0, 0)
     while not console.keypressed():
-        Col(randint(16), randint(16), console)
+        console.col(randint(16), randint(16))
         console.gotoxy(level.Px, level.Py)
         if DeadDot: console.write('*')
-        Print(21, 25, 'Press any key to continue.', console)
+        console.print(21, 25, 'Press any key to continue.')
     Border(level, console)
     High_Score(True, game, level, console)
 
@@ -742,21 +733,21 @@ def Go(XWay: int, YWay: int, Human: bool, game: Game, level: Level, console: Crt
     else:
         level.Replacement = None
     if previous == 75:
-        Col(7, 7, console)
+        console.col(7, 7)
         console.gotoxy(old_x, old_y)
         console.write(VisibleTiles.Rope)
     level.Pf[level.Px, level.Py] = 40
     if level.T[5] < 1:
         console.gotoxy(level.Px, level.Py)
-        Col(14, 15, console)
-        Bak(0, 0, console)
+        console.col(14, 15)
+        console.bak(0, 0)
         console.write(VisibleTiles.Player)
     else:
         console.gotoxy(level.Px, level.Py)
         console.write(' ')
     if not level.Sideways:
         console.sounds(sounds.FootStep())
-    elif game.Replacement != 75 and Human:
+    elif level.Replacement != 75 and Human:
         console.sounds(sounds.FootStep())
     if console.keypressed() and Human:
         ch = console.read()
@@ -778,30 +769,30 @@ def End_Routine(level: Level, console: Crt):
     for x in range(1, 250):
         console.sound(randint(3000) + x, 0.5) # sounds.Victory_Strange()
         console.gotoxy(level.Px, level.Py)
-        Bak(randint(8), 0, console)
-        Col(14, 15, console)
+        console.bak(randint(8), 0)
+        console.col(14, 15)
         console.write(VisibleTiles.Player)
-        Col(randint(16), randint(16), console)
-        Bak(0, 0, console)
-        Print(15, 25, 'Oh no, something strange is happening!', console)
+        console.col(randint(16), randint(16))
+        console.bak(0, 0)
+        console.print(15, 25, 'Oh no, something strange is happening!')
     for i in range(2200, 20, -1):
         console.sound(randint(i)) # Also sounds.Victory_Strage() - one sound covers the whole sequence
-    Col(14, 15, console)
-    Bak(0, 0, console)
+    console.col(14, 15)
+    console.bak(0, 0)
     for x in range(650):
         console.sound(x * 3, 2) # sounds.Victory_ScramblePlayer()
         console.gotoxy(level.Px, level.Py)
         console.write(220 + randint(4))
     console.gotoxy(level.Px, level.Py)
-    Col(16, 16, console)
-    Bak(2, 7, console)
+    console.col(16, 16)
+    console.bak(2, 7)
     console.write(VisibleTiles.Stairs)
     Restore_Border(level, console)
     Flash(14, 25, 'You are magically transported from Kroz!')
     console.clearkeys()
-    Col(15, 15, console)
-    Bak(0, 0, console)
-    Print(15, 25, 'Your gems are worth 100 points each...')
+    console.col(15, 15)
+    console.bak(0, 0)
+    console.print(15, 25, 'Your gems are worth 100 points each...')
     for i in range(level.Gems):
         level.Score += 10
         Update_Info(level, console)
@@ -809,9 +800,9 @@ def End_Routine(level: Level, console: Crt):
     console.read()
     Restore_Border(level, console)
     console.clearkeys()
-    Col(15, 15, console)
-    Bak(0, 0, console)
-    Print(15, 25, 'Your whips are worth 100 points each...')
+    console.col(15, 15)
+    console.bak(0, 0)
+    console.print(15, 25, 'Your whips are worth 100 points each...')
     for i in range(level.Whips):
         level.Score += 10
         Update_Info(level, console)
@@ -819,9 +810,9 @@ def End_Routine(level: Level, console: Crt):
     console.read()
     Restore_Border(level, console)
     console.clearkeys()
-    Col(15, 15, console)
-    Bak(0, 0, console)
-    Print(9, 25, 'Your Teleport Scrolls are woth 200 points each...')
+    console.col(15, 15)
+    console.bak(0, 0)
+    console.print(9, 25, 'Your Teleport Scrolls are woth 200 points each...')
     for i in range(level.Teleports):
         level.Score += 20
         Update_Info(level, console)
@@ -829,9 +820,9 @@ def End_Routine(level: Level, console: Crt):
     console.read()
     Restore_Border(level, console)
     console.clearkeys()
-    Col(15, 15, console)
-    Bak(0, 0, console)
-    Print(14, 25, 'Your Keys are worth 10,000 points each...')
+    console.col(15, 15)
+    console.bak(0, 0)
+    console.print(14, 25, 'Your Keys are worth 10,000 points each...')
     for i in range(level.Keys):
         level.Score += 1000
         Update_Info(level, console)
@@ -839,26 +830,26 @@ def End_Routine(level: Level, console: Crt):
     console.read()
     Restore_Border(level, console)
     console.clearkeys()
-    Bak(level.GemColor, 7, console)
+    console.bak(level.GemColor, 7)
     for x in range(30):
         console.window(32 - x, 12 - x // 3, 35 + x, 14 + (x // 3))
         console.clrscr()
-    Bak(0, 0, console)
+    console.bak(0, 0)
     for x in range(30):
         console.window(32 - x, 12 - x // 3, 35 + x, 14 + x // 3)
         console.clrscr()
         console.sound(x * 45, 3) # sounds.Level_Wipe()
     console.window(1, 1, 80, 25)
-    Bak(1, 0, console)
+    console.bak(1, 0)
     console.window(2, 2, 65, 24)
     console.clrscr()
-    Col(14, 15, console)
+    console.col(14, 15)
     console.gotoxy(25, 2)
     console.writeln('BACK AT YOUR HUT')
     console.gotoxy(25, 3)
     console.writeln('────────────────')
     console.writeln()
-    Col(15, 7, console)
+    console.col(15, 7)
     console.writeln('   For years you''ve waited for such a wonderful archaeological')
     console.writeln(' discovery. And now you possess one of the greatest finds ever!')
     console.writeln('   The Magical Staff will bring you even more recognition than')
@@ -874,12 +865,12 @@ def End_Routine(level: Level, console: Crt):
     console.writeln(' try for you blood, and what new brilliant treasure does')
     console.writeln(' Kroz protect.  Tomorrow will tell...')
     console.writeln()
-    Col(14, 15, console)
+    console.col(14, 15)
     console.writeln('                         KINGDOM OF KROZ')
-    Col(15, 7, console)
+    console.col(15, 7)
     console.write  ('        ( Now available -- $7.50 or write for details. )')
     console.clearkeys()
     console.window(1, 1, 80, 25)
-    Bak(0, 0, console)
+    console.bak(0, 0)
     Flash(21, 25, 'Press any key, Adventurer.', console)
     Won(level, console)

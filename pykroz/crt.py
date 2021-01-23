@@ -6,7 +6,7 @@ from time import sleep
 
 # Library Imports
 import pygame
-from pygame import Rect
+from pygame import Color, Rect
 import pygame.locals
 import pygame.display
 import pygame.mixer
@@ -112,6 +112,11 @@ class Crt:
         self.cursor_x = 0
         self.cursor_y += 1
 
+    def print(self, XPos: int, YPos: int, Message: str):
+        self.cursor_x = XPos
+        self.cursor_y = YPos
+        self.write(Message)
+
     def window(self, x_min: int, y_min: int, x_max: int, y_max: int):
         pass
 
@@ -119,14 +124,20 @@ class Crt:
         self.cursor_x = x
         self.cursor_y = y
 
-    def delay(ms: int):
+    def delay(self, ms: int):
         sleep(ms / 1000)
 
-    def textcolor(self, index: int):
-        self.foreground = Colors.Code[index % len(Colors.Code)]
+    def col(self, color: Union[int, Color], ifBw: int):
+        if isinstance(color, int):
+            self.foreground = Colors.Code[color % len(Colors.Code)]
+        else:
+            self.foreground = color
 
-    def textbackground(self, index: int):
-        self.background = Colors.Code[index % len(Colors.Code)]
+    def bak(self, color: Union[int, Color], bw: int):
+        if isinstance(color, int):
+            self.background = Colors.Code[color % len(Colors.Code)]
+        else:
+            self.background = color
 
     def sound(self, freq: int, duration: int):
         self._audio.sound(self._audio.tone(freq, duration, self._audio.square_wave))

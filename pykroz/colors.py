@@ -36,3 +36,22 @@ class Colors:
         14: Yellow,
         15: White
     }
+
+    Bw = {
+        0: Black,
+        1: DarkGrey,
+        2: DarkGrey,
+        3: DarkGrey,
+        4: DarkGrey,
+        5: DarkGrey,
+        6: DarkGrey,
+        7: LightGrey,
+        8: DarkGrey,
+        9: LightGrey,
+        10: LightGrey,
+        11: LightGrey,
+        12: LightGrey,
+        13: LightGrey,
+        14: LightGrey,
+        15: White
+    }
