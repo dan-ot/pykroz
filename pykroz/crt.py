@@ -1,5 +1,6 @@
 # Python Imports
 from collections import deque
+from levels import VisibleTiles, XBOT, XSIZE, YBOT, YTOP
 from sys import exit
 from typing import  Optional, Union
 from time import sleep
@@ -86,15 +87,7 @@ class Crt:
 
     def read(self) -> int:
         while not self._keyboard.key_in_queue():
-            for event in get([
-                pygame.locals.QUIT, 
-                pygame.locals.KEYDOWN, 
-                pygame.locals.KEYUP
-            ], pump = True):
-                if event.type == pygame.locals.QUIT:
-                    exit()
-                print(event)
-                self._keyboard.handle(event)
+            self.tick()
         return self._keyboard.get_key_from_queue()
 
     def readkey(self) -> Optional[int]:
@@ -122,6 +115,20 @@ class Crt:
                     else:
                         line += event.unicode
                         self.write(event.unicode)
+            self._audio.tick()
+            while len(self.dirty_blocks) > 0:
+                dirty = self.dirty_blocks.popleft()
+                for x in range(dirty.width):
+                    for y in range(dirty.height):
+                        tx = x + dirty.left
+                        ty = y + dirty.top
+                        self._tiles.draw(
+                            self.charbuffer[tx, ty],
+                            tx * self._tiles.width, ty * self._tiles.height,
+                            pygame.Color(self.fg_color_buffer[tx, ty]),
+                            pygame.Color(self.bg_color_buffer[tx, ty]),
+                            self._screen
+                        )
         return line
 
     def write(self, message: Union[str, int], fore: Optional[Color] = None, back: Optional[Color] = None):
@@ -153,6 +160,24 @@ class Crt:
         self.cursor_x = XPos
         self.cursor_y = YPos
         self.write(Message, fore, back)
+
+    def alert(self, YPos: int, Message: str, bc: Color, bb: Color):
+        left = (XSIZE - len(Message)) // 2 # Half the empty space needed to show the message
+        counter = 0
+        while not self.keypressed():
+            counter = (counter + 1) % 2
+            self.delay(20)
+            self.print(left, YPos, Message, Colors.Code[14 + counter], Colors.Black)
+            self.tick() # keep the message pump and frame rate alive...
+        if YPos == YTOP + 1: # Bottom border alert
+            self.gotoxy(XBOT - 1, YTOP + 1)
+            for _ in range(XSIZE + 1):
+                self.write(VisibleTiles.Block, bc, bb)
+        elif YPos == YBOT - 1: # Top border alert
+            self.gotoxy(XBOT - 1, YBOT - 1)
+            for _ in range(XSIZE + 1):
+                self.write(VisibleTiles.Block, bc, bb)
+
 
     def window(self, x_min: int, y_min: int, x_max: int, y_max: int):
         self.current_window = Rect(x_min, y_min, x_max - x_min, y_max - y_min)

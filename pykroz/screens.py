@@ -1,9 +1,9 @@
 from colors import Colors
-from random import randint, randrange
+from random import randrange
 import pygame.locals
 
 from ascii import ASCII
-from levels import AddScore, Flash, Game, Level, New_Gem_Color, TMAX, TOTOBJECTS, Update_Info, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
+from levels import AddScore, Game, Level, New_Gem_Color, TMAX, TOTOBJECTS, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
 from crt import ColorMode, Crt
 import sounds
 
@@ -231,7 +231,7 @@ def Display_Playfield(level: Level, console: Crt):
                 elif level.Pf[x_loop, y_loop] == 14: # Wall
                     console.write(VisibleTiles.Wall, Colors.Brown)
                 elif level.Pf[x_loop, y_loop] == 15: # SpeedTime
-                    if randint(10) == 0:
+                    if randrange(10) == 0:
                         console.write(VisibleTiles.Chance, Colors.White)
                     else:
                         console.write(VisibleTiles.SpeedTime, Colors.LightCyan)
@@ -310,65 +310,6 @@ def Display_Playfield(level: Level, console: Crt):
                 else:
                     console.write(ASCII.Char[level.Pf[x_loop, y_loop]].upper(), Colors.White, Colors.Brown)
     level.FloorPattern = False
-
-def BadKeySound(console: Crt):
-    console.sounds(sounds.Bad_Key())
-
-def GetKey(game: Game, level: Level, console: Crt) -> int:
-    if console.keypressed():
-        key = console.read()
-        if key == pygame.locals.K_EQUALS or key == pygame.locals.K_KP_PLUS:
-            game.FoundSet = []
-            Flash(13, 25, 'Newly found object descriptions are reset.', level, console)
-            return 0
-        elif key == pygame.locals.K_MINUS or key == pygame.locals.K_KP_MINUS:
-            game.FoundSet = [x for x in range(255)]
-            Flash(10, 25, 'References to new objects will not be displayed.', level, console)
-            return 0
-        elif key == pygame.locals.K_9:
-            level.Pf[level.Px + 1, level.Py] = 6 # Stairs!
-            console.sounds(sounds.Generate_Stairs())
-            return 0
-        elif key == pygame.locals.K_0:
-            level.Gems = 150
-            level.Whips = 99
-            level.Teleports = 99
-            level.Keys = 9
-            Update_Info(level, console)
-            return 0
-        elif key == pygame.locals.K_PAUSE or key == pygame.locals.K_p:
-            return 80
-        elif key == pygame.locals.K_ESCAPE or key == pygame.locals.K_q:
-            return 81
-        elif key == pygame.locals.K_r:
-            return 82
-        elif key == pygame.locals.K_s:
-            return 83
-        elif key == pygame.locals.K_t:
-            return 84
-        elif key == pygame.locals.K_w:
-            return 87
-        elif key == pygame.locals.K_u or key == pygame.locals.K_KP7:
-            return 171
-        elif key == pygame.locals.K_UP or key == pygame.locals.K_i or key == pygame.locals.K_KP8:
-            return 172
-        elif key == pygame.locals.K_o or key == pygame.locals.K_KP9:
-            return 173
-        elif key == pygame.locals.K_LEFT or key == pygame.locals.K_j or key == pygame.locals.K_KP4:
-            return 175
-        elif key == pygame.locals.K_RIGHT or key == pygame.locals.K_k or key == pygame.locals.K_KP6:
-            return 177
-        elif key == pygame.locals.K_n or key == pygame.locals.K_KP1:
-            return 179
-        elif key == pygame.locals.K_DOWN or key == pygame.locals.K_m or key == pygame.locals.K_KP2:
-            return 180
-        elif key == pygame.locals.K_COMMA or key == pygame.locals.K_KP4:
-            return 181
-        else:
-            console.sounds(sounds.Bad_Key())
-            return 0
-    else:
-        return 0
 
 def Hit(x: int, y: int, ch: str, level: Level, console: Crt):
     # Remember what we're overwriting
@@ -507,9 +448,9 @@ def Shoot_Left(x_way: int, y_way: int, Human: bool):
     pass
 
 def Tome_Message(level: Level, console: Crt):
-    Flash(6, 25, ' You reach out to grab the object of your long quest... ', level, console)
-    Flash(19, 25, ' the Magical Staff of Kroz. ', level, console)
-    Flash(7, 25, ' Your budy surges with electricity as you clutch it! ')
+    console.alert(YTOP + 1, ' You reach out to grab the object of your long quest... ', Colors.Code[level.Bc], Colors.Code[level.Bb])
+    console.alert(YTOP + 1, ' the Magical Staff of Kroz. ', Colors.Code[level.Bc], Colors.Code[level.Bb])
+    console.alert(YTOP + 1, ' Your budy surges with electricity as you clutch it! ')
 
 def Tome_Effects(level: Level, console: Crt):
     console.reset_colors()
