@@ -2,13 +2,13 @@ from commands import Command, command_from_key_code
 from colors import Colors
 from pathlib import Path
 import json
-from random import randint, randrange
+from random import randrange
 from typing import cast
 
 import pygame.locals
 
 from crt import Crt
-from levels import Border, Dead, Define_Levels, Flash, Game, Level, PMOVE, Restore_Border, SaveType, Sign_Off, TMAX, Update_Info, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
+from levels import Border, Dead, Define_Levels, Game, Level, PMOVE, Restore_Border, SaveType, Sign_Off, TMAX, Update_Info, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
 from screens import Display_Playfield, Hit, Init_Screen, Screen
 from movement import Move, Next_Level
 from titles import Title
@@ -22,30 +22,26 @@ def Player_Move(game: Game, level: Level, console: Crt):
         console.reset_colors()
         if command == Command.DISCOVERY_CLEAR:
             game.FoundSet = []
-            Flash(13, 25, 'Newly found object descriptions are reset.', level, console)
+            console.alert(YTOP + 1, 'Newly found object descriptions are reset.', Colors.Code[level.Bc], Colors.Code[level.Bb])
         elif command == Command.DISCOVERY_FULL:
             game.FoundSet = [x for x in range(255)]
-            Flash(10, 25, 'References to new objects will not be displayed.', level, console)
+            console.alert(YTOP + 1, 'References to new objects will not be displayed.', Colors.Code[level.Bc], Colors.Code[level.Bb])
         elif command == Command.CREATE_STAIRS:
             level.Pf[level.Px + 1, level.Py] = 6
             console.sounds(sounds.Generate_Stairs())
         elif command == Command.PAUSE:
             console.sounds(sounds.Pause())
             console.clearkeys()
-            Flash(18, 25, ' Press any key to resume game. ', level, console)
-            Restore_Border(level, console)
+            console.alert(YTOP + 1, ' Press any key to resume game. ', Colors.Code[level.Bc], Colors.Code[level.Bb])
         elif command == Command.QUIT:
             console.sounds(sounds.Quit())
             console.clearkeys()
-            Flash(15, 25, ' Are you sure you want to quit (Y/N)? ')
+            console.alert(YTOP + 1, ' Are you sure you want to quit (Y/N)? ', Colors.Code[level.Bc], Colors.Code[level.Bb])
             ch = console.read()
             if ch == pygame.locals.K_y:
                 Sign_Off(console)
-            else:
-                Restore_Border(level, console)
         elif command == Command.RESTORE:
-            Flash(14, 25, ' Are you sure you want to RESTORE (Y/N)? ')
-            Restore_Border(level, console)
+            console.alert(YTOP + 1, ' Are you sure you want to RESTORE (Y/N)? ', Colors.Code[level.Bc], Colors.Code[level.Bb])
             ch = console.read()
             if ch == pygame.locals.K_n:
                 return
@@ -56,7 +52,6 @@ def Player_Move(game: Game, level: Level, console: Crt):
             Restore_Border(level, console)
             which_file = ''
             if ch == pygame.locals.K_ESCAPE:
-                Restore_Border(level, console)
                 return
             elif ch == pygame.locals.K_b:
                 which_file = 'B'
@@ -133,14 +128,12 @@ def Player_Move(game: Game, level: Level, console: Crt):
             else:
                 Restore_Border(level, console)
                 console.sounds(sounds.Load_Error())
-                Flash(14, 25, ' The SAVE file {0} was not found.'.format(which_file), level, console)
+                console.alert(YTOP + 1, ' The SAVE file {0} was not found.'.format(which_file), Colors.Code[level.Bc], Colors.Code[level.Bb])
 
-            Flash(17, 25, 'Press any key to begin this level.', level, console)
-            Restore_Border(level, console)
+            console.alert(YTOP + 1, 'Press any key to begin this level.', Colors.Code[level.Bc], Colors.Code[level.Bb])
 
         elif command == Command.SAVE:
-            Flash(15, 25, ' Are you sure you want to SAVE (Y/N)? ')
-            Restore_Border(level, console)
+            console.alert(YTOP + 1, ' Are you sure you want to SAVE (Y/N)? ', Colors.Code[level.Bc], Colors.Code[level.Bb])
             ch = console.read()
             console.reset_colors()
             console.clearkeys()
@@ -150,7 +143,6 @@ def Player_Move(game: Game, level: Level, console: Crt):
             which_file = ''
             Restore_Border(level, console)
             if ch == pygame.locals.K_ESCAPE:
-                Restore_Border(level, console)
                 return
             elif ch == pygame.locals.K_b:
                 which_file = 'B'
@@ -198,8 +190,8 @@ def Player_Move(game: Game, level: Level, console: Crt):
             console.sound(20, 3) # sound.Teleport_Windup()
             while i <= 700:
                 i += 1
-                x = randint(XSIZE) + XBOT
-                y = randint(YSIZE) + YBOT
+                x = randrange(XSIZE) + XBOT
+                y = randrange(YSIZE) + YBOT
                 if level.Pf[x, y] in [0, 32, 33, 37, 39, 41, 44, 47, 55, 56, 57, 61, 62, 63, 67, 68, 69, 70, 71, 72, 73, 74, 224, 225, 226, 227, 228, 229, 230, 231]:
                     console.gotoxy(x, y)
                     console.write(1, Colors.Yellow)
@@ -211,8 +203,8 @@ def Player_Move(game: Game, level: Level, console: Crt):
             level.Pf[level.Px, level.Py] = level.Replacement
             level.Px = 0
             while level.Px == 0:
-                x = randint(XSIZE) + XBOT
-                y = randint(YSIZE) + YBOT
+                x = randrange(XSIZE) + XBOT
+                y = randrange(YSIZE) + YBOT
                 if level.Pf[x, y] == 0:
                     level.Px = 0
                     level.Py = 0
@@ -538,7 +530,7 @@ def Move_Fast(game: Game, level: Level, console: Crt):
             level.Pf[level.Fx[loop], level.Fy[loop]] = 1
             console.gotoxy(level.Fx[loop], level.Fy[loop])
             console.write(VisibleTiles.FMonster_1, Colors.LightBlue)
-        if randint(6) == 1:
+        if randrange(6) == 1:
             Player_Move(game, level, console) # player gets a chance to move after each monster?
 
 def Move_MBlock():
@@ -576,7 +568,7 @@ def NewGame(game: Game, level: Level, console: Crt):
     console.gotoxy(level.Px, level.Py)
     console.write(VisibleTiles.Player, Colors.Yellow)
     console.clearkeys()
-    Flash(17, 25, 'Press any key to begin this level.')
+    console.alert(YTOP + 1, 'Press any key to begin this level.', Colors.Code[level.Bc], Colors.Code[level.Bb])
     while not game.Restart:
         Player_Move(game, level, console)
         if console.keypressed():

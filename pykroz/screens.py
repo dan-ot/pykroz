@@ -1,9 +1,9 @@
 from colors import Colors
-from random import randint, randrange
+from random import randrange
 import pygame.locals
 
 from ascii import ASCII
-from levels import AddScore, Flash, Game, Level, New_Gem_Color, TMAX, TOTOBJECTS, Update_Info, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
+from levels import AddScore, Game, Level, New_Gem_Color, TMAX, TOTOBJECTS, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
 from crt import ColorMode, Crt
 import sounds
 
@@ -231,7 +231,7 @@ def Display_Playfield(level: Level, console: Crt):
                 elif level.Pf[x_loop, y_loop] == 14: # Wall
                     console.write(VisibleTiles.Wall, Colors.Brown)
                 elif level.Pf[x_loop, y_loop] == 15: # SpeedTime
-                    if randint(10) == 0:
+                    if randrange(10) == 0:
                         console.write(VisibleTiles.Chance, Colors.White)
                     else:
                         console.write(VisibleTiles.SpeedTime, Colors.LightCyan)
@@ -448,9 +448,9 @@ def Shoot_Left(x_way: int, y_way: int, Human: bool):
     pass
 
 def Tome_Message(level: Level, console: Crt):
-    Flash(6, 25, ' You reach out to grab the object of your long quest... ', level, console)
-    Flash(19, 25, ' the Magical Staff of Kroz. ', level, console)
-    Flash(7, 25, ' Your budy surges with electricity as you clutch it! ')
+    console.alert(YTOP + 1, ' You reach out to grab the object of your long quest... ', Colors.Code[level.Bc], Colors.Code[level.Bb])
+    console.alert(YTOP + 1, ' the Magical Staff of Kroz. ', Colors.Code[level.Bc], Colors.Code[level.Bb])
+    console.alert(YTOP + 1, ' Your budy surges with electricity as you clutch it! ')
 
 def Tome_Effects(level: Level, console: Crt):
     console.reset_colors()

@@ -281,17 +281,6 @@ def Restore_Border(level: Level, console: Crt):
     for _ in range(XBOT - 1, XTOP + 2):
         console.write(VisibleTiles.Block, Colors.Code[level.Bc], Colors.Code[level.Bb])
 
-def Flash(XPos: int, YPos: int, Message: str, level: Level, console: Crt):
-    counter = 14
-    console.clearkeys()
-    while not console.keypressed():
-        counter += 1
-        if counter > 15:
-            counter = 13
-        console.delay(20)
-        console.print(XPos, YPos, Message, Colors.Code[counter])
-    Restore_Border(level, console)
-
 def Sign_Off(console: Crt):
     Shareware(console, Wait = False)
     console.clearkeys()
@@ -498,10 +487,10 @@ def High_Score(PlayAgain: bool, game: Game, level: Level, console: Crt):
         level.Fx[x] = 0
         level.Fy[x] = 0
     if PlayAgain:
-        Flash(14, 25, 'Do you want to play another game (Y/N)?', level, console)
+        console.alert(YTOP + 1, 'Do you want to play another game (Y/N)?', Colors.Code[level.Bc], Colors.Code[level.Bb])
         ch = pygame.key.name(console.read())
     else:
-        Flash(21, 25, 'Press any key to continue.', level, console)
+        console.alert(YTOP + 1, 'Press any key to continue.', Colors.Code[level.Bc], Colors.Code[level.Bb])
         ch = 'N'
     if ch.upper() is not 'N': 
         game.Restart = True
@@ -741,7 +730,7 @@ def End_Routine(level: Level, console: Crt):
     console.gotoxy(level.Px, level.Py)
     console.write(VisibleTiles.Stairs, Colors.Black, Colors.Green) # Flashing, when possible
     Restore_Border(level, console)
-    Flash(14, 25, 'You are magically transported from Kroz!')
+    console.alert(YTOP + 1, 'You are magically transported from Kroz!', Colors.Code[level.Bc], Colors.Code[level.Bb])
     console.clearkeys()
     console.reset_colors()
     console.print(15, 25, 'Your gems are worth 100 points each...')
@@ -813,5 +802,5 @@ def End_Routine(level: Level, console: Crt):
     console.clearkeys()
     console.window(1, 1, 80, 25)
     console.default_colors(back = Colors.Black)
-    Flash(21, 25, 'Press any key, Adventurer.', console)
+    console.alert(YTOP + 1, 'Press any key, Adventurer.', Colors.Code[level.Bc], Colors.Code[level.Bb])
     Won(level, console)

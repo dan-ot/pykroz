@@ -167,7 +167,7 @@ class Crt:
         while not self.keypressed():
             counter = (counter + 1) % 2
             self.delay(20)
-            self.print(left, YPos, Message, Colors.Code[14 + counter])
+            self.print(left, YPos, Message, Colors.Code[14 + counter], Colors.Black)
             self.tick() # keep the message pump and frame rate alive...
         if YPos == YTOP + 1: # Bottom border alert
             self.gotoxy(XBOT - 1, YTOP + 1)
