@@ -1,3 +1,6 @@
+from enum import Enum
+from random import choice, randrange
+from typing import Sequence
 from pygame import Color
 
 class Colors:    
@@ -18,6 +21,19 @@ class Colors:
     Yellow = Color("#ffff55")
     White = Color("#ffffff")
 
+    def Random() -> Color:
+        return Colors.Code[randrange(len(Colors.Code))]
+
+    def RandomDark() -> int:
+        return choice([0, 1, 2, 3, 4, 5, 6, 8])
+
+    def RandomLight() -> int:
+        return choice([7, 9, 10, 11, 12, 13, 14, 15])
+
+    def RandomExcept(exclude: Sequence[int]) -> int:
+        cols = set(Colors.Code.keys)
+        return choice(cols.difference(exclude))
+
     Code = {
         0: Black,
         1: Blue,
@@ -37,21 +53,12 @@ class Colors:
         15: White
     }
 
-    Bw = {
-        0: Black,
-        1: DarkGrey,
-        2: DarkGrey,
-        3: DarkGrey,
-        4: DarkGrey,
-        5: DarkGrey,
-        6: DarkGrey,
-        7: LightGrey,
-        8: DarkGrey,
-        9: LightGrey,
-        10: LightGrey,
-        11: LightGrey,
-        12: LightGrey,
-        13: LightGrey,
-        14: LightGrey,
-        15: White
-    }
+
+class ContrastLevel(Enum):
+    DARKEST = 1
+    DARKER = 2
+    LIGHTER = 3
+    LIGHTEST = 4
+
+    def Random():
+        return ContrastLevel(randrange(len(ContrastLevel)) + 1)
