@@ -107,10 +107,10 @@ class VisibleTiles:
 # Constants
 TOTOBJECTS = 83
 
-XBOT = 1
-XTOP = 64
-YBOT = 1
-YTOP = 23
+XBOT = 2
+XTOP = 65
+YBOT = 2
+YTOP = 24
 YSIZE = YTOP - YBOT + 1 # 23 by default
 XSIZE = XTOP - XBOT + 1 # 64 by default
 TMAX = 9
@@ -289,7 +289,7 @@ def Flash(XPos: int, YPos: int, Message: str, level: Level, console: Crt):
         if counter > 15:
             counter = 13
         console.delay(20)
-        console.print(XPos, YPos, Message, Colors[counter])
+        console.print(XPos, YPos, Message, Colors.Code[counter])
     Restore_Border(level, console)
 
 def Sign_Off(console: Crt):
