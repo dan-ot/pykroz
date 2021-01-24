@@ -1,3 +1,4 @@
+from commands import Command, command_from_key_code
 from colors import Colors
 from pathlib import Path
 import json
@@ -8,257 +9,269 @@ import pygame.locals
 
 from crt import Crt
 from levels import Border, Dead, Define_Levels, Flash, Game, Level, PMOVE, Restore_Border, SaveType, Sign_Off, TMAX, Update_Info, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
-from screens import Display_Playfield, GetKey, Hit, Init_Screen, Screen
+from screens import Display_Playfield, Hit, Init_Screen, Screen
 from movement import Move, Next_Level
 from titles import Title
 from layouts import Level1
 import sounds
 
 def Player_Move(game: Game, level: Level, console: Crt):
-    # Translate keypress to interal message
-    key = GetKey(game, level, console)
-    console.reset_colors()
-    if key == 80: # Pause
-        console.sounds(sounds.Pause())
-        console.clearkeys()
-        Flash(18, 25, ' Press any key to resume game. ', level, console)
-        Restore_Border(level, console)
-    elif key == 81: # Quit
-        console.sounds(sounds.Quit())
-        console.clearkeys()
-        Flash(15, 25, ' Are you sure you want to quit (Y/N)? ')
-        ch = console.read()
-        if ch == pygame.locals.K_y:
-            Sign_Off(console)
-        else:
+    # Handle internal messages
+    command = command_from_key_code(console.readkey())
+    if command is not None:
+        console.reset_colors()
+        if command == Command.DISCOVERY_CLEAR:
+            game.FoundSet = []
+            Flash(13, 25, 'Newly found object descriptions are reset.', level, console)
+        elif command == Command.DISCOVERY_FULL:
+            game.FoundSet = [x for x in range(255)]
+            Flash(10, 25, 'References to new objects will not be displayed.', level, console)
+        elif command == Command.CREATE_STAIRS:
+            level.Pf[level.Px + 1, level.Py] = 6
+            console.sounds(sounds.Generate_Stairs())
+        elif command == Command.PAUSE:
+            console.sounds(sounds.Pause())
+            console.clearkeys()
+            Flash(18, 25, ' Press any key to resume game. ', level, console)
             Restore_Border(level, console)
-    elif key == 82: # Restore
-        Flash(14, 25, ' Are you sure you want to RESTORE (Y/N)? ')
-        Restore_Border(level, console)
-        ch = console.read()
-        if ch == pygame.locals.K_n:
-            return
-        console.clearkeys()
-        console.print(8, 25, ' Pick which letter to RESTORE from: A, B or C?  A  ')
-        console.gotoxy(56, 25)
-        ch = console.read()
-        Restore_Border(level, console)
-        which_file = ''
-        if ch == pygame.locals.K_ESCAPE:
+        elif command == Command.QUIT:
+            console.sounds(sounds.Quit())
+            console.clearkeys()
+            Flash(15, 25, ' Are you sure you want to quit (Y/N)? ')
+            ch = console.read()
+            if ch == pygame.locals.K_y:
+                Sign_Off(console)
+            else:
+                Restore_Border(level, console)
+        elif command == Command.RESTORE:
+            Flash(14, 25, ' Are you sure you want to RESTORE (Y/N)? ')
             Restore_Border(level, console)
-            return
-        elif ch == pygame.locals.K_b:
-            which_file = 'B'
-        elif ch == pygame.locals.K_c:
-            which_file = 'C'
-        else:
-            which_file = 'A'
-        console.print(20, 25, '  Restoring from file {0}...  '.format(which_file))
-        file = Path('DUNGEON{0}.SAV'.format(which_file))
-        if file.exists():
-            with open(file, 'r') as f:
-                save_stuff = cast(SaveType, json.load(f))
-                level.Level = save_stuff.S_Level
-                level.Score = save_stuff.S_Score
-                level.Gems = save_stuff.S_Gems
-                level.Whips = save_stuff.S_Whips
-                level.Teleports = save_stuff.S_Teleports
-                level.Keys = save_stuff.S_Keys
-                level.WhipPower = save_stuff.S_WhipPower
-                game.Difficulty = save_stuff.S_Difficulty
-                level.Px = save_stuff.S_Px
-                level.Py = save_stuff.S_Py
-                game.FoundSet = save_stuff.S_FoundSet
-                game.MixUp = save_stuff.S_MixUp
-            level.I_Score = level.Score
-            level.I_Gems = level.Gems
-            level.I_Whips = level.Whips
-            level.I_Teleports = level.Teleports
-            level.I_Keys = level.Keys
-            level.I_WhipPower = level.WhipPower
-            level.I_Difficulty = game.Difficulty
-            level.I_Px = level.Px
-            level.I_Py = level.Py
-            level.I_FoundSet = game.FoundSet
-            Update_Info(level, console)
+            ch = console.read()
+            if ch == pygame.locals.K_n:
+                return
+            console.clearkeys()
+            console.print(8, 25, ' Pick which letter to RESTORE from: A, B or C?  A  ')
+            console.gotoxy(56, 25)
+            ch = console.read()
+            Restore_Border(level, console)
+            which_file = ''
+            if ch == pygame.locals.K_ESCAPE:
+                Restore_Border(level, console)
+                return
+            elif ch == pygame.locals.K_b:
+                which_file = 'B'
+            elif ch == pygame.locals.K_c:
+                which_file = 'C'
+            else:
+                which_file = 'A'
+            console.print(20, 25, '  Restoring from file {0}...  '.format(which_file))
+            file = Path('DUNGEON{0}.SAV'.format(which_file))
+            if file.exists():
+                with open(file, 'r') as f:
+                    save_stuff = cast(SaveType, json.load(f))
+                    level.Level = save_stuff.S_Level
+                    level.Score = save_stuff.S_Score
+                    level.Gems = save_stuff.S_Gems
+                    level.Whips = save_stuff.S_Whips
+                    level.Teleports = save_stuff.S_Teleports
+                    level.Keys = save_stuff.S_Keys
+                    level.WhipPower = save_stuff.S_WhipPower
+                    game.Difficulty = save_stuff.S_Difficulty
+                    level.Px = save_stuff.S_Px
+                    level.Py = save_stuff.S_Py
+                    game.FoundSet = save_stuff.S_FoundSet
+                    game.MixUp = save_stuff.S_MixUp
+                level.I_Score = level.Score
+                level.I_Gems = level.Gems
+                level.I_Whips = level.Whips
+                level.I_Teleports = level.Teleports
+                level.I_Keys = level.Keys
+                level.I_WhipPower = level.WhipPower
+                level.I_Difficulty = game.Difficulty
+                level.I_Px = level.Px
+                level.I_Py = level.Py
+                level.I_FoundSet = game.FoundSet
+                Update_Info(level, console)
+                console.delay(1000)
+                level.Sideways = False
+                level.Evaporate = 0
+                level.GenNum = 0
+                level.HideLevel = False
+                level.HideCreate = False
+                level.HideStairs = False
+                level.HideTrap = False
+                level.HideRock = False
+                level.HideGems = False
+                level.HideMBlock = False
+                level.HideOpenWall = False
+                level.Bonus = 0
+                level.GravOn = False
+                level.GravCounter = 0
+                level.TreeRate = -1
+                level.T[1] = 4
+                level.T[2] = 6
+                level.T[3] = 7
+                level.T[8] = 7
+                level.T[4] = 0
+                level.T[5] = 0
+                level.T[6] = 0
+                level.Replacement = None
+
+                Next_Level(game, level)
+
+                console.window(2, 2, XSIZE + 1, YSIZE + 1)
+                console.clrscr()
+                console.window(1, 1, 80, 25)
+                Border(level, console)
+                Display_Playfield(level, console)
+                for x in range (1, 600):
+                    console.gotoxy(level.Px, level.Py)
+                    console.write(VisibleTiles.Player, Colors.Code[Colors.Random()], Colors.Code[Colors.RandomDark()])
+                    console.sound(x // 2, 0.3) # sounds.Load()
+                console.gotoxy(level.Px, level.Py)
+                console.write(VisibleTiles.Player, Colors.Yellow)
+            else:
+                Restore_Border(level, console)
+                console.sounds(sounds.Load_Error())
+                Flash(14, 25, ' The SAVE file {0} was not found.'.format(which_file), level, console)
+
+            Flash(17, 25, 'Press any key to begin this level.', level, console)
+            Restore_Border(level, console)
+
+        elif command == Command.SAVE:
+            Flash(15, 25, ' Are you sure you want to SAVE (Y/N)? ')
+            Restore_Border(level, console)
+            ch = console.read()
+            console.reset_colors()
+            console.clearkeys()
+            console.print(11, 25, ' Pick which letter to SAVE to: A, B, or C?  A  ')
+            console.gotoxy(54, 25)
+            ch = console.read()
+            which_file = ''
+            Restore_Border(level, console)
+            if ch == pygame.locals.K_ESCAPE:
+                Restore_Border(level, console)
+                return
+            elif ch == pygame.locals.K_b:
+                which_file = 'B'
+            elif ch == pygame.locals.K_c:
+                which_file = 'C'
+            else:
+                which_file = 'A'
+            save_stuff = SaveType(
+                level.Level,
+                level.I_Score,
+                level.I_Gems,
+                level.I_Whips,
+                level.I_Teleports,
+                level.I_Keys,
+                level.I_WhipPower,
+                level.I_Difficulty,
+                level.I_Px,
+                level.I_Py,
+                level.I_FoundSet,
+                game.MixUp
+            )
+            console.print(22, 25, '  Saving to file {0}...  '.format(which_file))
+            file = Path('DUNGEON{0}.SAV'.format(which_file))
+            file.touch()
+            with open(file, 'w') as f:
+                json.dump(save_stuff, f)
             console.delay(1000)
-            level.Sideways = False
-            level.Evaporate = 0
-            level.GenNum = 0
-            level.HideLevel = False
-            level.HideCreate = False
-            level.HideStairs = False
-            level.HideTrap = False
-            level.HideRock = False
-            level.HideGems = False
-            level.HideMBlock = False
-            level.HideOpenWall = False
-            level.Bonus = 0
-            level.GravOn = False
-            level.GravCounter = 0
-            level.TreeRate = -1
-            level.T[1] = 4
-            level.T[2] = 6
-            level.T[3] = 7
-            level.T[8] = 7
-            level.T[4] = 0
-            level.T[5] = 0
-            level.T[6] = 0
-            level.Replacement = None
-
-            Next_Level(game, level)
-
-            console.window(2, 2, XSIZE + 1, YSIZE + 1)
-            console.clrscr()
-            console.window(1, 1, 80, 25)
-            Border(level, console)
-            Display_Playfield(level, console)
-            for x in range (1, 600):
+            Restore_Border(level, console)
+        
+        elif command == Command.TELEPORT:
+            if level.Teleports < 1:
+                console.sounds(sounds.NoneSound())
+                return
+            level.Teleports -= 1
+            Update_Info(level, console)
+            for x in range(1, 250):
                 console.gotoxy(level.Px, level.Py)
                 console.write(VisibleTiles.Player, Colors.Code[Colors.Random()], Colors.Code[Colors.RandomDark()])
-                console.sound(x // 2, 0.3) # sounds.Load()
             console.gotoxy(level.Px, level.Py)
-            console.write(VisibleTiles.Player, Colors.Yellow)
-        else:
-            Restore_Border(level, console)
-            console.sounds(sounds.Load_Error())
-            Flash(14, 25, ' The SAVE file {0} was not found.'.format(which_file), level, console)
-
-        Flash(17, 25, 'Press any key to begin this level.', level, console)
-        Restore_Border(level, console)
-
-    elif key == 83: # Save
-        Flash(15, 25, ' Are you sure you want to SAVE (Y/N)? ')
-        Restore_Border(level, console)
-        ch = console.read()
-        console.reset_colors()
-        console.clearkeys()
-        console.print(11, 25, ' Pick which letter to SAVE to: A, B, or C?  A  ')
-        console.gotoxy(54, 25)
-        ch = console.read()
-        which_file = ''
-        Restore_Border(level, console)
-        if ch == pygame.locals.K_ESCAPE:
-            Restore_Border(level, console)
-            return
-        elif ch == pygame.locals.K_b:
-            which_file = 'B'
-        elif ch == pygame.locals.K_c:
-            which_file = 'C'
-        else:
-            which_file = 'A'
-        save_stuff = SaveType(
-            level.Level,
-            level.I_Score,
-            level.I_Gems,
-            level.I_Whips,
-            level.I_Teleports,
-            level.I_Keys,
-            level.I_WhipPower,
-            level.I_Difficulty,
-            level.I_Px,
-            level.I_Py,
-            level.I_FoundSet,
-            game.MixUp
-        )
-        console.print(22, 25, '  Saving to file {0}...  '.format(which_file))
-        file = Path('DUNGEON{0}.SAV'.format(which_file))
-        file.touch()
-        with open(file, 'w') as f:
-            json.dump(save_stuff, f)
-        console.delay(1000)
-        Restore_Border(level, console)
-    
-    elif key == 84: # Teleport
-        if level.Teleports < 1:
-            console.sounds(sounds.NoneSound())
-            return
-        level.Teleports -= 1
-        Update_Info(level, console)
-        for x in range(1, 250):
-            console.gotoxy(level.Px, level.Py)
-            console.write(VisibleTiles.Player, Colors.Code[Colors.Random()], Colors.Code[Colors.RandomDark()])
-        console.gotoxy(level.Px, level.Py)
-        if level.Replacement == 75:
-            console.write(VisibleTiles.Rope, Colors.LightGrey)
-        else:
-            console.write(' ')
-        i = 0
-        console.sound(20, 3) # sound.Teleport_Windup()
-        while i <= 700:
-            i += 1
-            x = randint(XSIZE) + XBOT
-            y = randint(YSIZE) + YBOT
-            if level.Pf[x, y] in [0, 32, 33, 37, 39, 41, 44, 47, 55, 56, 57, 61, 62, 63, 67, 68, 69, 70, 71, 72, 73, 74, 224, 225, 226, 227, 228, 229, 230, 231]:
-                console.gotoxy(x, y)
-                console.write(1, Colors.Yellow)
-                console.delay(3)
-                console.gotoxy(x, y)
+            if level.Replacement == 75:
+                console.write(VisibleTiles.Rope, Colors.LightGrey)
+            else:
                 console.write(' ')
-        # end Teleport_Windup()
-        console.sounds(sounds.Teleport())
-        level.Pf[level.Px, level.Py] = level.Replacement
-        level.Px = 0
-        while level.Px == 0:
-            x = randint(XSIZE) + XBOT
-            y = randint(YSIZE) + YBOT
-            if level.Pf[x, y] == 0:
-                level.Px = 0
-                level.Py = 0
-                level.Pf[level.Px, level.Py] = 40
-        level.Replacement = None
-        console.clearkeys()
-        for x in range(1, 500): # 3000 on FastPC
-            console.gotoxy(level.Px, level.Py)
-            console.write(VisibleTiles.Player, Colors.Code[Colors.Random()], Colors.Code[Colors.RandomDark()])
-        if level.T[5] < 1:
-            console.gotoxy(level.Px, level.Py)
-            console.write(VisibleTiles.Player, Colors.Yellow)
-        else:
-            console.gotoxy(level.Px, level.Py)
-            console.write(' ')
-    
-    elif key == 87: # Whip
-        if level.Whips < 1:
-            console.sounds(sounds.NoneSound())
-            return
-        level.Whips -= 1
-        console.sound(70, 0.3) # sounds.Whip()
-        if level.Py > YBOT and level.Px > XBOT:
-            Hit(level.Px - 1, level.Py - 1, '\\', level, console)
-        if level.Px > XBOT:
-            Hit(level.Px - 1, level.Py, '─', level, console)
-        if level.Py < YTOP and level.Px > XBOT:
-            Hit(level.Px - 1, level.Py + 1, '/')
-        if level.Py < YTOP:
-            Hit(level.Px, level.Py + 1, '│', level, console)
-        if level.Py < YTOP and level.Px < XTOP:
-            Hit(level.Px + 1, level.Py + 1, '\\')
-        if level.Px < XTOP:
-            Hit(level.Px + 1, level.Py, '─', level, console)
-        if level.Py > YBOT and level.Px < XTOP:
-            Hit(level.Px + 1, level.Py - 1, '/')
-        if level.Py > YBOT:
-            Hit(level.Px, level.Py - 1, '│', level, console)
-        Update_Info(level, console)
-        console.clearkeys()
+            i = 0
+            console.sound(20, 3) # sound.Teleport_Windup()
+            while i <= 700:
+                i += 1
+                x = randint(XSIZE) + XBOT
+                y = randint(YSIZE) + YBOT
+                if level.Pf[x, y] in [0, 32, 33, 37, 39, 41, 44, 47, 55, 56, 57, 61, 62, 63, 67, 68, 69, 70, 71, 72, 73, 74, 224, 225, 226, 227, 228, 229, 230, 231]:
+                    console.gotoxy(x, y)
+                    console.write(1, Colors.Yellow)
+                    console.delay(3)
+                    console.gotoxy(x, y)
+                    console.write(' ')
+            # end Teleport_Windup()
+            console.sounds(sounds.Teleport())
+            level.Pf[level.Px, level.Py] = level.Replacement
+            level.Px = 0
+            while level.Px == 0:
+                x = randint(XSIZE) + XBOT
+                y = randint(YSIZE) + YBOT
+                if level.Pf[x, y] == 0:
+                    level.Px = 0
+                    level.Py = 0
+                    level.Pf[level.Px, level.Py] = 40
+            level.Replacement = None
+            console.clearkeys()
+            for x in range(1, 500): # 3000 on FastPC
+                console.gotoxy(level.Px, level.Py)
+                console.write(VisibleTiles.Player, Colors.Code[Colors.Random()], Colors.Code[Colors.RandomDark()])
+            if level.T[5] < 1:
+                console.gotoxy(level.Px, level.Py)
+                console.write(VisibleTiles.Player, Colors.Yellow)
+            else:
+                console.gotoxy(level.Px, level.Py)
+                console.write(' ')
+        
+        elif command == Command.WHIP:
+            if level.Whips < 1:
+                console.sounds(sounds.NoneSound())
+                return
+            level.Whips -= 1
+            console.sound(70, 0.3) # sounds.Whip()
+            if level.Py > YBOT and level.Px > XBOT:
+                Hit(level.Px - 1, level.Py - 1, '\\', level, console)
+            if level.Px > XBOT:
+                Hit(level.Px - 1, level.Py, '─', level, console)
+            if level.Py < YTOP and level.Px > XBOT:
+                Hit(level.Px - 1, level.Py + 1, '/')
+            if level.Py < YTOP:
+                Hit(level.Px, level.Py + 1, '│', level, console)
+            if level.Py < YTOP and level.Px < XTOP:
+                Hit(level.Px + 1, level.Py + 1, '\\')
+            if level.Px < XTOP:
+                Hit(level.Px + 1, level.Py, '─', level, console)
+            if level.Py > YBOT and level.Px < XTOP:
+                Hit(level.Px + 1, level.Py - 1, '/')
+            if level.Py > YBOT:
+                Hit(level.Px, level.Py - 1, '│', level, console)
+            Update_Info(level, console)
+            console.clearkeys()
 
-    elif key == 172: # North
-        Move(0, -1, PMOVE, game, level, console)
-    elif key == 180: # South
-        Move(0, 1, PMOVE, game, level, console)
-    elif key == 177: # East
-        Move(1, 0, PMOVE, game, level, console)
-    elif key == 175: # West
-        Move(-1, 0, PMOVE, game, level, console)
-    elif key == 171: # Northwest
-        Move(-1, -1, PMOVE, game, level, console)
-    elif key == 173: # Northeast
-        Move(1, -1, PMOVE, game, level, console)
-    elif key == 179: # Southwest
-        Move(-1, 1, PMOVE, game, level, console)
-    elif key == 181: # Southeast
-        Move(1, 1, PMOVE, game, level, console)
+        elif command == Command.MOVE_NORTH:
+            Move(0, -1, PMOVE, game, level, console)
+        elif command == Command.MOVE_SOUTH:
+            Move(0, 1, PMOVE, game, level, console)
+        elif command == Command.MOVE_EAST:
+            Move(1, 0, PMOVE, game, level, console)
+        elif command == Command.MOVE_WEST:
+            Move(-1, 0, PMOVE, game, level, console)
+        elif command == Command.MOVE_NORTHWEST:
+            Move(-1, -1, PMOVE, game, level, console)
+        elif command == Command.MOVE_NORTHEAST:
+            Move(1, -1, PMOVE, game, level, console)
+        elif command == Command.MOVE_SOUTHWEST:
+            Move(-1, 1, PMOVE, game, level, console)
+        elif command == Command.MOVE_SOUTHEAST:
+            Move(1, 1, PMOVE, game, level, console)
+    else: # command is None
+        console.sounds(sounds.Bad_Key())
 
 def Move_Slow(game: Game, level: Level, console: Crt):
     if level.T[6] > 0: # FastTime is on
