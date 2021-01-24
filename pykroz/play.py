@@ -17,8 +17,8 @@ import sounds
 def Player_Move(game: Game, level: Level, console: Crt):
     # Translate keypress to interal message
     key = GetKey(game, level, console)
+    console.reset_colors()
     if key == 80: # Pause
-        console.bak(0)
         console.sounds(sounds.Pause())
         console.clearkeys()
         Flash(18, 25, ' Press any key to resume game. ', level, console)
@@ -38,8 +38,6 @@ def Player_Move(game: Game, level: Level, console: Crt):
         ch = console.read()
         if ch == pygame.locals.K_n:
             return
-        console.bak(0)
-        console.col(15)
         console.clearkeys()
         console.print(8, 25, ' Pick which letter to RESTORE from: A, B or C?  A  ')
         console.gotoxy(56, 25)
@@ -111,22 +109,16 @@ def Player_Move(game: Game, level: Level, console: Crt):
             Next_Level(game, level)
 
             console.window(2, 2, XSIZE + 1, YSIZE + 1)
-            console.bak(0)
             console.clrscr()
             console.window(1, 1, 80, 25)
             Border(level, console)
             Display_Playfield(level, console)
             for x in range (1, 600):
                 console.gotoxy(level.Px, level.Py)
-                console.col(Colors.Random())
-                console.bak(Colors.RandomDark())
-                console.write(VisibleTiles.Player)
+                console.write(VisibleTiles.Player, Colors.Code[Colors.Random()], Colors.Code[Colors.RandomDark()])
                 console.sound(x // 2, 0.3) # sounds.Load()
             console.gotoxy(level.Px, level.Py)
-            console.col(14)
-            console.bak(0)
-            console.write(VisibleTiles.Player)
-            console.bak(0)
+            console.write(VisibleTiles.Player, Colors.Yellow)
         else:
             Restore_Border(level, console)
             console.sounds(sounds.Load_Error())
@@ -139,16 +131,13 @@ def Player_Move(game: Game, level: Level, console: Crt):
         Flash(15, 25, ' Are you sure you want to SAVE (Y/N)? ')
         Restore_Border(level, console)
         ch = console.read()
-        console.bak(0)
-        console.col(15)
+        console.reset_colors()
         console.clearkeys()
         console.print(11, 25, ' Pick which letter to SAVE to: A, B, or C?  A  ')
         console.gotoxy(54, 25)
         ch = console.read()
         which_file = ''
         Restore_Border(level, console)
-        console.col(15)
-        console.bak(0)
         if ch == pygame.locals.K_ESCAPE:
             Restore_Border(level, console)
             return
@@ -188,20 +177,13 @@ def Player_Move(game: Game, level: Level, console: Crt):
         Update_Info(level, console)
         for x in range(1, 250):
             console.gotoxy(level.Px, level.Py)
-            console.col(Colors.Random())
-            console.bak(Colors.RandomDark())
-            console.write(VisibleTiles.Player)
+            console.write(VisibleTiles.Player, Colors.Code[Colors.Random()], Colors.Code[Colors.RandomDark()])
         console.gotoxy(level.Px, level.Py)
         if level.Replacement == 75:
-            console.bak(0)
-            console.col(7)
-            console.write(VisibleTiles.Rope)
+            console.write(VisibleTiles.Rope, Colors.LightGrey)
         else:
-            console.bak(0)
-            console.col(0)
             console.write(' ')
         i = 0
-        console.col(14)
         console.sound(20, 3) # sound.Teleport_Windup()
         while i <= 700:
             i += 1
@@ -209,7 +191,7 @@ def Player_Move(game: Game, level: Level, console: Crt):
             y = randint(YSIZE) + YBOT
             if level.Pf[x, y] in [0, 32, 33, 37, 39, 41, 44, 47, 55, 56, 57, 61, 62, 63, 67, 68, 69, 70, 71, 72, 73, 74, 224, 225, 226, 227, 228, 229, 230, 231]:
                 console.gotoxy(x, y)
-                console.write(1)
+                console.write(1, Colors.Yellow)
                 console.delay(3)
                 console.gotoxy(x, y)
                 console.write(' ')
@@ -228,18 +210,12 @@ def Player_Move(game: Game, level: Level, console: Crt):
         console.clearkeys()
         for x in range(1, 500): # 3000 on FastPC
             console.gotoxy(level.Px, level.Py)
-            console.col(Colors.Random())
-            console.bak(Colors.RandomDark())
-            console.write(VisibleTiles.Player)
+            console.write(VisibleTiles.Player, Colors.Code[Colors.Random()], Colors.Code[Colors.RandomDark()])
         if level.T[5] < 1:
             console.gotoxy(level.Px, level.Py)
-            console.col(14)
-            console.bak(0)
-            console.write(VisibleTiles.Player)
+            console.write(VisibleTiles.Player, Colors.Yellow)
         else:
             console.gotoxy(level.Px, level.Py)
-            console.col(0)
-            console.bak(0)
             console.write(' ')
     
     elif key == 87: # Whip
@@ -327,9 +303,8 @@ def Move_Slow(game: Game, level: Level, console: Crt):
         occupant = level.Pf[level.Sx[loop], level.Sy[loop]] # What's in the space the monster may have moved to
         # Things that don't stop a monster
         if occupant in [0, 68, 69, 70, 71, 72, 73, 74]:
-            console.col(12)
             slow = 142 if randrange(2) == 0 else 65
-            console.write(slow)
+            console.write(VisibleTiles.SMonster_1 if randrange(2) == 0 else VisibleTiles.SMonster_2, Colors.LightRed)
             console.sound(20, 0.3) # sounds.Monster_Steps()
             level.Pf[level.Sx[loop], level.Sy[loop]] = 1 # Confirm the move
         # Things a monster can't move through
@@ -338,9 +313,7 @@ def Move_Slow(game: Game, level: Level, console: Crt):
             level.Sy[loop] += y_dir
             level.Pf[level.Sx[loop], level.Sy[loop]] = 1 # Put the monster back
             console.gotoxy(level.Sx[loop], level.Sy[loop])
-            console.col(12)
-            slow = 142 if randrange(2) == 0 else 65
-            console.write(slow)
+            console.write(VisibleTiles.SMonster_1 if randrange(2) == 0 else VisibleTiles.SMonster_2, Colors.LightRed)
         # Things with mutual destruction
         elif occupant in [4, 38, 43, 64]:
             level.Pf[level.Sx[loop], level.Sy[loop]] = 0
@@ -356,21 +329,16 @@ def Move_Slow(game: Game, level: Level, console: Crt):
                 Dead(True, game, level, console)
 
             # Update Gems display?
-            if level.Gems > 9:
-                console.col(4)
-            else:
-                console.col(20) # 20 = blinking?
-                console.bak(7)
             console.gotoxy(71, 8)
             console.write('      ')
             console.gotoxy(73 - len(str(level.Gems)) // 2, 8)
-            console.write('{0}'.format(level.Gems))
-            console.bak(0)
+            if level.Gems > 9:
+                console.write('{0}'.format(level.Gems), Colors.Red, Colors.LightGrey)
+            else:
+                console.write('{0}'.format(level.Gems), Colors.LightRed, Colors.DarkGrey) # Flashing when possible
         # Things a monster eats
         elif occupant in [5, 7, 8, 9, 10, 11, 12, 15, 16, 18, 26, 27, 48, 49, 50, 51, 82, 83]:
-            console.col(12)
-            slow = 142 if randrange(2) == 0 else 65
-            console.write(slow)
+            console.write(VisibleTiles.SMonster_1 if randrange(2) == 0 else VisibleTiles.SMonster_2, Colors.LightRed)
             level.Pf[level.Sx[loop], level.Sy[loop]] = 1
             console.sounds(sounds.GrabSound())
         else:
@@ -378,9 +346,7 @@ def Move_Slow(game: Game, level: Level, console: Crt):
             level.Sy[loop] += y_dir
             level.Pf[level.Sx[loop], level.Sy[loop]] = 1
             console.gotoxy(level.Sx[loop], level.Sy[loop])
-            console.col(12)
-            slow = 142 if randrange(2) == 0 else 65
-            console.write(slow)
+            console.write(VisibleTiles.SMonster_1 if randrange(2) == 0 else VisibleTiles.SMonster_2, Colors.LightRed)
         if randrange(8) == 1:
             Player_Move(game, level, console) # player gets a chance to move after each monster?
 
@@ -427,9 +393,7 @@ def Move_Medium(game: Game, level: Level, console: Crt):
         occupant = level.Pf[level.Mx[loop], level.My[loop]] # What's in the space the monster may have moved to
         # Things that don't stop a monster
         if occupant in [0, 68, 69, 70, 71, 72, 73, 74]:
-            console.col(12)
-            medium = 148 if randrange(2) == 0 else 153
-            console.write(medium)
+            console.write(VisibleTiles.MMonster_1 if randrange(2) == 0 else VisibleTiles.MMonster_2, Colors.LightGreen)
             console.sound(20, 0.3) # sounds.Monster_Steps()
             level.Pf[level.Mx[loop], level.My[loop]] = 1 # Confirm the move
         # Things a monster can't move through
@@ -438,9 +402,7 @@ def Move_Medium(game: Game, level: Level, console: Crt):
             level.My[loop] += y_dir
             level.Pf[level.Mx[loop], level.My[loop]] = 1 # Put the monster back
             console.gotoxy(level.Mx[loop], level.My[loop])
-            console.col(12)
-            medium = 148 if randrange(2) == 0 else 153
-            console.write(medium)
+            console.write(VisibleTiles.MMonster_1 if randrange(2) == 0 else VisibleTiles.MMonster_2, Colors.LightGreen)
         # Things with mutual destruction
         elif occupant in [4, 38, 43, 64]:
             level.Pf[level.Mx[loop], level.My[loop]] = 0
@@ -456,21 +418,16 @@ def Move_Medium(game: Game, level: Level, console: Crt):
                 Dead(True, game, level, console)
 
             # Update Gems display?
-            if level.Gems > 9:
-                console.col(4)
-            else:
-                console.col(20) # 20 = blinking?
-                console.bak(7)
             console.gotoxy(71, 8)
             console.write('      ')
             console.gotoxy(73 - len(str(level.Gems)) // 2, 8)
-            console.write('{0}'.format(level.Gems))
-            console.bak(0)
+            if level.Gems > 9:
+                console.write('{0}'.format(level.Gems), Colors.Red, Colors.LightGrey)
+            else:
+                console.write('{0}'.format(level.Gems), Colors.LightRed, Colors.DarkGrey) # Flashing when possible
         # Things a monster eats
         elif occupant in [5, 7, 8, 9, 10, 11, 12, 15, 16, 18, 26, 27, 48, 49, 50, 51, 82, 83]:
-            console.col(12)
-            medium = 148 if randrange(2) == 0 else 153
-            console.write(medium)
+            console.write(VisibleTiles.MMonster_1 if randrange(2) == 0 else VisibleTiles.MMonster_2, Colors.LightGreen)
             level.Pf[level.Mx[loop], level.My[loop]] = 1
             console.sounds(sounds.GrabSound())
         else:
@@ -478,9 +435,7 @@ def Move_Medium(game: Game, level: Level, console: Crt):
             level.My[loop] += y_dir
             level.Pf[level.Mx[loop], level.My[loop]] = 1
             console.gotoxy(level.Mx[loop], level.My[loop])
-            console.col(12)
-            medium = 148 if randrange(2) == 0 else 153
-            console.write(medium)
+            console.write(VisibleTiles.MMonster_1 if randrange(2) == 0 else VisibleTiles.MMonster_2, Colors.LightGreen)
         if randrange(7) == 1:
             Player_Move(game, level, console) # player gets a chance to move after each monster?
 
@@ -527,8 +482,7 @@ def Move_Fast(game: Game, level: Level, console: Crt):
         occupant = level.Pf[level.Fx[loop], level.Fy[loop]] # What's in the space the monster may have moved to
         # Things that don't stop a monster
         if occupant in [0, 68, 69, 70, 71, 72, 73, 74]:
-            console.col(12)
-            console.write(VisibleTiles.FMonster)
+            console.write(VisibleTiles.FMonster_1, Colors.LightBlue)
             console.sound(20, 0.3) # sounds.Monster_Steps()
             level.Pf[level.Fx[loop], level.Fy[loop]] = 1 # Confirm the move
         # Things a monster can't move through
@@ -537,8 +491,7 @@ def Move_Fast(game: Game, level: Level, console: Crt):
             level.Fy[loop] += y_dir
             level.Pf[level.Fx[loop], level.Fy[loop]] = 1 # Put the monster back
             console.gotoxy(level.Fx[loop], level.Fy[loop])
-            console.col(12)
-            console.write(VisibleTiles.FMonster)
+            console.write(VisibleTiles.FMonster_1, Colors.LightBlue)
         # Things with mutual destruction
         elif occupant in [4, 38, 43, 64]:
             level.Pf[level.Fx[loop], level.Fy[loop]] = 0
@@ -554,20 +507,16 @@ def Move_Fast(game: Game, level: Level, console: Crt):
                 Dead(True, game, level, console)
 
             # Update Gems display?
-            if level.Gems > 9:
-                console.col(4)
-            else:
-                console.col(20)
-                console.bak(7)
             console.gotoxy(71, 8)
             console.write('      ')
             console.gotoxy(73 - len(str(level.Gems)) // 2, 8)
-            console.write('{0}'.format(level.Gems))
-            console.bak(0)
+            if level.Gems > 9:
+                console.write('{0}'.format(level.Gems), Colors.Red, Colors.LightGrey)
+            else:
+                console.write('{0}'.format(level.Gems), Colors.LightRed, Colors.DarkGrey) # Flashing when possible
         # Things a monster eats
         elif occupant in [5, 7, 8, 9, 10, 11, 12, 15, 16, 18, 26, 27, 48, 49, 50, 51, 82, 83]:
-            console.col(12)
-            console.write(VisibleTiles.FMonster)
+            console.write(VisibleTiles.FMonster_1, Colors.LightBlue)
             level.Pf[level.Fx[loop], level.Fy[loop]] = 1
             console.sounds(sounds.GrabSound())
         else:
@@ -575,8 +524,7 @@ def Move_Fast(game: Game, level: Level, console: Crt):
             level.Fy[loop] += y_dir
             level.Pf[level.Fx[loop], level.Fy[loop]] = 1
             console.gotoxy(level.Fx[loop], level.Fy[loop])
-            console.col(12)
-            console.write(VisibleTiles.FMonster)
+            console.write(VisibleTiles.FMonster_1, Colors.LightBlue)
         if randint(6) == 1:
             Player_Move(game, level, console) # player gets a chance to move after each monster?
 
@@ -590,6 +538,7 @@ def Run(console: Crt):
     NewGame(game, level, console)
     
 def NewGame(game: Game, level: Level, console: Crt):
+    console.reset_colors()
     Title(game, level, console)
     Border(level, console)
     Init_Screen(game, level, console)
@@ -609,15 +558,10 @@ def NewGame(game: Game, level: Level, console: Crt):
     level.I_FoundSet = game.FoundSet
     for x in range(1, 800):
         console.gotoxy(level.Px, level.Py)
-        console.col(Colors.Random())
-        console.bak(Colors.RandomDark())
-        console.write(VisibleTiles.Player)
+        console.write(VisibleTiles.Player, Colors.Code[Colors.Random()], Colors.Code[Colors.RandomDark()])
         console.sound(x // 2) # sounds.NewGame()
     console.gotoxy(level.Px, level.Py)
-    console.col(14)
-    console.bak(0)
-    console.write(VisibleTiles.Player)
-    console.bak(0)
+    console.write(VisibleTiles.Player, Colors.Yellow)
     console.clearkeys()
     Flash(17, 25, 'Press any key to begin this level.')
     while not game.Restart:

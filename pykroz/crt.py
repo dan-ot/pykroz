@@ -11,6 +11,7 @@ from pygame import Color, Rect
 import pygame.locals
 import pygame.display
 import pygame.mixer
+import pygame.key
 from pygame.event import get
 import numpy
 
@@ -99,6 +100,30 @@ class Crt:
     def readkey(self) -> Optional[int]:
         return self._keyboard.get_key_from_queue()
 
+    def readln(self) -> str:
+        line = ''
+        done = False
+        while not done:
+            for event in get([
+                pygame.locals.QUIT, 
+                pygame.locals.KEYDOWN, 
+                pygame.locals.KEYUP
+            ], pump = True):
+                if event.type == pygame.locals.QUIT:
+                    exit()
+                elif event.type == pygame.locals.KEYDOWN:
+                    if event.key in [pygame.locals.K_ESCAPE, pygame.locals.K_RETURN, pygame.locals.K_KP_ENTER]:
+                        done = True
+                    elif event.key in [pygame.locals.K_BACKSPACE, pygame.locals.K_DELETE]:
+                        line = line[:-1]
+                        self.cursor_x -= 1
+                        self.write(' ')
+                        self.cursor_x -= 1
+                    else:
+                        line += event.unicode
+                        self.write(event.unicode)
+        return line
+
     def write(self, message: Union[str, int], fore: Optional[Color] = None, back: Optional[Color] = None):
         if not self.current_window.collidepoint(self.cursor_x, self.cursor_y):
             return
@@ -167,71 +192,15 @@ class Crt:
         if back is not None:
             self.background = translate_color(back)
 
-    def col(self, color: Union[int, Color], contrast_level: Optional[ContrastLevel]):
-        if isinstance(color, int):
-            mod_color = color % len(Colors.Code) # I think colors beyond 15 are meant to blink
-            if self.color_mode == ColorMode.COLOR_PALLETTE:
-                self.foreground = Colors.Code[mod_color]
-            else:
-                if contrast_level == ContrastLevel.DARKEST:
-                    self.foreground = Colors.Black
-                elif contrast_level == ContrastLevel.DARKER:
-                    self.foreground = Colors.DarkGrey
-                elif contrast_level == ContrastLevel.LIGHTER:
-                    self.foreground = Colors.LightGrey
-                elif contrast_level == ContrastLevel.LIGHTEST:
-                    self.foreground = Colors.White
-                elif contrast_level is None:
-                    if mod_color in [0, 7, 8, 15]: # Already greyscale
-                        self.foreground = Colors.Code[mod_color]
-                    elif mod_color in [1, 3]: # Very dark shades
-                        self.foreground = Colors.Black
-                    elif mod_color in [2, 4, 5, 6]: # Dark Shades
-                        self.foreground = Colors.DarkGrey
-                    elif mod_color in [9, 10, 11, 13]: # Light Shades
-                        self.foreground = Colors.LightGrey
-                    elif mod_color in [12, 14]: # Very light colors
-                        self.foreground = Colors.White
-        else:
-            self.foreground = color
-
-    def bak(self, color: Union[int, Color], contrast_level: Optional[ContrastLevel]):
-        if isinstance(color, int):
-            mod_color = color % len(Colors.Code) # I think colors beyond 15 are meant to blink
-            if self.color_mode == ColorMode.COLOR_PALLETTE:
-                self.background = Colors.Code[mod_color]
-            else:
-                if contrast_level == ContrastLevel.DARKEST:
-                    self.background = Colors.White
-                elif contrast_level == ContrastLevel.DARKER:
-                    self.background = Colors.White
-                elif contrast_level == ContrastLevel.LIGHTER:
-                    self.background = Colors.Black
-                elif contrast_level == ContrastLevel.LIGHTEST:
-                    self.background = Colors.Black
-                elif contrast_level is None:
-                    if mod_color in [0, 7, 8, 15]: # Already greyscale
-                        self.background = Colors.Code[mod_color]
-                    elif mod_color in [1, 3]: # Very dark shades
-                        self.background = Colors.Black
-                    elif mod_color in [2, 4, 5, 6]: # Dark Shades
-                        self.background = Colors.DarkGrey
-                    elif mod_color in [9, 10, 11, 13]: # Light Shades
-                        self.background = Colors.LightGrey
-                    elif mod_color in [12, 14]: # Very light colors
-                        self.background = Colors.White
-        else:
-            self.background = color
-
     def sound(self, freq: int, duration: int):
         self._audio.sound(self._audio.tone(freq, duration, self._audio.square_wave))
 
     def sounds(self, parts: SampleSet):
         self._audio.sound(self._audio.compose(parts))
 
-    def clrscr(self):
+    def clrscr(self, color: Optional[Color]):
         fg = [*self.foreground[0:3]]
-        bg = [*self.background[0:3]]
+        bg = [*self.background[0:3]] if color is None else [*color[0:3]]
         for x in range(self.current_window.left, self.current_window.left + self.current_window.width):
             for y in range(self.current_window.top, self.current_window.top + self.current_window.height):
                 self.charbuffer[x, y] = ' '
