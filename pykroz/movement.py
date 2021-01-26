@@ -51,7 +51,7 @@ def Next_Level(game: Game, level: Level):
         Create_Playfield(game, level)
 
 def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console: Crt):
-    if level.Sideways and y_way == -1 and level.Replacement != 75 and (not level.Pf[level.Px + x_way, level.Py + y_way] in [75, 76, 77, 78, 79, 80]):
+    if level.Sideways and y_way == -1 and level.Replacement != What.Rope and (not level.Pf[level.Px + x_way][level.Py + y_way] in WhatSets.becomes_replacement_with_sideways):
         game.OneMove = False
         return
     if level.Px + x_way < XBOT or level.Px + x_way > XTOP or level.Py + y_way < YBOT or level.Py + y_way > YTOP:
@@ -62,7 +62,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
             if not What.Nothing in game.FoundSet:
                 game.FoundSet.add(What.Nothing)
                 console.alert(YTOP + 1, 'An Electrified Wall blocks your way.', Colors.Code[level.Bc], Colors.Code[level.Bb])
-    onto = level.Pf[level.Px + x_way, level.Py + y_way]
+    onto = level.Pf[level.Px + x_way][level.Py + y_way]
     if onto == What.Nothing:
         Go(x_way, y_way, Human)
     elif onto in [What.SlowMonster, What.MediumMonster, What.FastMonster]: # Monsters
@@ -277,15 +277,15 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         console.gotoxy(level.Px, level.Py)
         console.write(' ')
         console.sounds(sounds.Teleport_Trap())
-        level.Pf[level.Px, level.Py] = What.Nothing
+        level.Pf[level.Px][level.Py] = What.Nothing
         level.Px = 0
         while level.Px == 0:
             x = randrange(XSIZE) + XBOT
             y = randrange(YSIZE) + YBOT
-            if level.Pf[x, y] == What.Nothing:
+            if level.Pf[x][y] == What.Nothing:
                 level.Px = x
                 level.Py = y
-                level.Pf[x, y] = What.Player
+                level.Pf[x][y] = What.Player
         for x in range(1, 500): # 3000 on FastPC
             console.gotoxy(level.Px, level.Py)
             console.write(VisibleTiles.Player, Colors.Code[Colors.Random()], Colors.Code[Colors.RandomDark()])
@@ -344,7 +344,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
                 for x in range(level.Px - xl, level.Px + xr):
                     for y in range(level.Py - yl, level.Py + yr):
                         # Things that get destroyed by a bomb...
-                        if level.Pf[x, y] in WhatSets.destroyed_by_bomb:
+                        if level.Pf[x][y] in WhatSets.destroyed_by_bomb:
                             console.gotoxy(x, y)
                             console.write(219, Colors.LightRed)
             Update_Info(level, console)
@@ -408,7 +408,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
                 console.write(VisibleTiles.Tome, Colors.Code[Colors.Random()])
         console.gotoxy(51, 13)
         console.write(VisibleTiles.Stairs, Colors.Black, Colors.Green) # Flashing when possible
-        level.Pf[level.Px + x_way, level.Py + y_way] = What.Stairs
+        level.Pf[level.Px + x_way][level.Py + y_way] = What.Stairs
         level.Score += 5000
         Update_Info(level, console)
         console.clearkeys()
@@ -422,14 +422,14 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         console.sounds(sounds.FootStep())
         console.delay(500)
         console.sounds(sounds.FootStep())
-        level.Pf[level.Px, level.Py] = What.Tunnel
+        level.Pf[level.Px][level.Py] = What.Tunnel
         console.gotoxy(level.Px, level.Py)
         console.write(VisibleTiles.Tunnel, Colors.White)
         # After Go() above...
         x = level.Px
         y = level.Py
         # Find a different tunnel
-        while level.Pf[x, y] != What.Tunnel and px_old + x_way != x or py_old + y_way != y:
+        while level.Pf[x][y] != What.Tunnel and px_old + x_way != x or py_old + y_way != y:
             console.sound(randrange(3000) + 100, 0.2) # sounds.Tunnelling()
             x = randrange(XSIZE) + XBOT
             y = randrange(YSIZE) + YBOT
@@ -439,7 +439,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
             console.sound(randrange(3000) + 100, 0.2) # sounds.Tunnelling()
             a = randrange(3) - 1
             b = randrange(3) - 1
-            if level.Pf[x + a, y + b] in WhatSets.doesnt_block_tunnel_exit and not done:
+            if level.Pf[x + a][y + b] in WhatSets.doesnt_block_tunnel_exit and not done:
                 if not x + a < XBOT or x + a > XTOP or y + b < YBOT or y + b > YTOP:
                     done = True
                     x = x + a
@@ -450,11 +450,11 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
             y = py_old
         level.Px = x
         level.Py = y
-        if level.Pf[level.Px, level.Py] in WhatSets.becomes_replacement_with_tunnelling:
-            level.Replacement = level.Pf[level.Px, level.Py]
+        if level.Pf[level.Px][level.Py] in WhatSets.becomes_replacement_with_tunnelling:
+            level.Replacement = level.Pf[level.Px][level.Py]
         else:
             level.Replacement = None
-        level.Pf[level.Px, level.Py] = What.Player
+        level.Pf[level.Px][level.Py] = What.Player
         for x in range(1, 400): # 2100 on FastPC
             console.sound(randrange(1000), 0.2) # sounds.TunnelExit()
             console.gotoxy(level.Px, level.Py)
@@ -492,9 +492,9 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
             while randrange(100) != 0 or not done:
                 x = randrange(XSIZE) + XBOT
                 y = randrange(YSIZE) + YBOT
-                if level.Pf[x, y] in WhatSets.crushed_in_an_earthquake:
+                if level.Pf[x][y] in WhatSets.crushed_in_an_earthquake:
                     done = True
-                    level.Pf[x, y] = What.Breakable_Wall
+                    level.Pf[x][y] = What.Breakable_Wall
                     console.gotoxy(x, y)
                     console.write(VisibleTiles.Breakable_Wall, Colors.Brown)
             console.sounds(sounds.Quake_Block_Drop())
@@ -506,7 +506,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
     elif onto == What.Invisible_Breakable_Wall: # IBlock
         console.gotoxy(level.Px + x_way, level.Py + y_way)
         console.write(VisibleTiles.Breakable_Wall, Colors.Brown)
-        level.Pf[level.Px + x_way, level.Py + y_way] = What.Breakable_Wall
+        level.Pf[level.Px + x_way][level.Py + y_way] = What.Breakable_Wall
         console.sounds(sounds.BlockSound())
         console.clearkeys()
         if What.Invisible_Breakable_Wall not in game.FoundSet:
@@ -515,7 +515,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
     elif onto == What.Invisible_Wall: # IWall
         console.gotoxy(level.Px + x_way, level.Py + y_way)
         console.write(VisibleTiles.Wall, Colors.Brown)
-        level.Pf[level.Px + x_way, level.Py + y_way] = What.Wall
+        level.Pf[level.Px + x_way][level.Py + y_way] = What.Wall
         console.sounds(sounds.BlockSound())
         console.clearkeys()
         if What.Invisible_Wall not in game.FoundSet:
@@ -524,7 +524,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
     elif onto == What.Invisible_Door: # IDoor
         console.gotoxy(level.Px + x_way, level.Py+y_way)
         console.write(VisibleTiles.Door, Colors.Cyan, Colors.Magenta)
-        level.Pf[level.Px + x_way, level.Py + y_way] = What.Door
+        level.Pf[level.Px + x_way][level.Py + y_way] = What.Door
         console.sounds(sounds.BlockSound())
         console.clearkeys()
         if What.Invisible_Door not in game.FoundSet:
@@ -536,8 +536,8 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         Go(x_way, y_way, Human, game, level, console)
         for x in range(XBOT, XTOP):
             for y in range(YBOT, YTOP):
-                if level.Pf[x, y] == What.Trap_2:
-                    level.Pf[x, y] = What.Nothing
+                if level.Pf[x][y] == What.Trap_2:
+                    level.Pf[x][y] = What.Nothing
     else:
         if Human:
             console.sounds(sounds.BlockSound())

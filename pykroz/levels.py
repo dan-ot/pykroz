@@ -1,5 +1,5 @@
 # System Libraries
-from pieces import VisibleTiles, What, parse
+from pieces import VisibleTiles, What, WhatSets, parse
 from typing import List, Optional, Union
 from random import randrange
 from pathlib import Path
@@ -474,7 +474,7 @@ def Convert_Format(level: Level):
     level.GravOn = False
     for x in range(66):
         for y in range(25):
-            level.Pf[x, y] = What.Nothing
+            level.Pf[x][y] = What.Nothing
     for m in range(1000):
         level.Sx[m] = 0
         level.Sy[m] = 0
@@ -505,7 +505,7 @@ def Convert_Format(level: Level):
                 level.Px = XLoop + 1
                 level.Py = YLoop + 1
             
-            level.Pf[XLoop + 1, YLoop + 1] = what
+            level.Pf[XLoop + 1][YLoop + 1] = what
 
 def Go(XWay: int, YWay: int, Human: bool, game: Game, level: Level, console: Crt):
     if level.Sideways and YWay == -1 and not game.OneMove and level.Replacement != What.Rope:
@@ -514,19 +514,19 @@ def Go(XWay: int, YWay: int, Human: bool, game: Game, level: Level, console: Crt
     old_x = level.Px
     old_y = level.Py
 
-    level.Pf[level.Px, level.Py] = level.Replacement
-    console.gotoxy(level.Pf, level.Py)
+    level.Pf[level.Px][level.Py] = level.Replacement
+    console.gotoxy(level.Px, level.Py)
     console.write(' ')
     level.Px += XWay
     level.Py += YWay
-    if level.Pf[level.Px, level.Py] in [What.Rope, What.W_FiftyFive, What.W_FiftySix, What.W_FiftySeven]:
-        level.Replacement = level.Pf[level.Px, level.Py]
+    if level.Pf[level.Px][level.Py] in WhatSets.becomes_replacement_with_go:
+        level.Replacement = level.Pf[level.Px][level.Py]
     else:
         level.Replacement = None
     if previous == What.Rope:
         console.gotoxy(old_x, old_y)
         console.write(VisibleTiles.Rope, Colors.LightGrey)
-    level.Pf[level.Px, level.Py] = What.Player
+    level.Pf[level.Px][level.Py] = What.Player
     if level.T[5] < 1:
         console.gotoxy(level.Px, level.Py)
         console.write(VisibleTiles.Player, Colors.Yellow, Colors.Black)

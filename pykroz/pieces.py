@@ -284,6 +284,22 @@ class WhatSets():
         What.W_FiftySeven
     }
 
+    becomes_replacement_with_go = {
+        What.Rope,
+        What.W_FiftyFive,
+        What.W_FiftySix,
+        What.W_FiftySeven
+    }
+
+    becomes_replacement_with_sideways = {
+        What.Rope,
+        What.DropRope_1,
+        What.DropRope_2,
+        What.DropRope_3,
+        What.DropRope_4,
+        What.DropRope_5
+    }
+
     crushed_in_an_earthquake = {
         What.Nothing,
         What.SlowMonster,
@@ -509,6 +525,140 @@ class WhatSets():
         What.MBlock,
         What.ZBlock,
         What.Breakable_Wall_Grey
+    }
+
+    teleport_animate_through = {
+        What.Nothing,
+        What.Stop,
+        What.Trap_2,
+        What.Trap_3,
+        What.Trap_4,
+        What.ShowGems,
+        What.BlockSpell,
+        What.W_FourtySeven,
+        What.W_FiftyFive,
+        What.W_FiftySix,
+        What.W_FiftySeven,
+        What.W_SixtyOne,
+        What.W_SixtyTwo,
+        What.W_SixtyThree,
+        What.Trap_5,
+        What.W_SixtyEight,
+        What.W_SixtyNine,
+        What.W_Seventy,
+        What.W_SeventyOne,
+        What.W_SeventyTwo,
+        What.W_SeventyThree,
+        What.W_SeventyFour,
+        What.Trap_6,
+        What.Trap_7,
+        What.Trap_8,
+        What.Trap_9,
+        What.Trap_10,
+        What.Trap_11,
+        What.Trap_12,
+        What.Trap_13
+    }
+
+    monster_empty_spaces = {
+        What.Nothing,
+        What.W_SixtyEight,
+        What.W_SixtyNine,
+        What.W_Seventy,
+        What.W_SeventyOne,
+        What.W_SeventyTwo,
+        What.W_SeventyThree,
+        What.W_SeventyFour
+    }
+
+    monster_blocked = {
+        What.SlowMonster,
+        What.MediumMonster,
+        What.FastMonster,
+        What.Stairs,
+        What.Door,
+        What.Wall,
+        What.River,
+        What.Forest,
+        What.Tree,
+        What.Bomb,
+        What.Lava,
+        What.Pit,
+        What.Tome,
+        What.Tunnel,
+        What.Quake,
+        What.Invisible_Breakable_Wall,
+        What.Invisible_Wall,
+        What.Invisible_Door,
+        What.Stop,
+        What.Trap_2,
+        What.Zap,
+        What.Create,
+        What.Generator,
+        What.Trap_3,
+        What.Trap_4,
+        What.ShowGems,
+        What.W_FourtyTwo,
+        What.BlockSpell,
+        What.Chance,
+        What.Statue,
+        What.W_FourtySeven,
+        What.Wall_2,
+        What.Wall_3,
+        What.Wall_Grey,
+        What.W_FiftyFive,
+        What.W_FiftySix,
+        What.OSpell1_1,
+        What.OSpell1_2,
+        What.OSpell1_3,
+        What.W_SixtyOne,
+        What.W_SixtyTwo,
+        What.W_SixtyThree,
+        What.W_SixtyFive,
+        What.EWall,
+        What.Trap_5,
+        What.Rope,
+        What.DropRope_1,
+        What.DropRope_2,
+        What.DropRope_3,
+        What.DropRope_4,
+        What.DropRope_5,
+        What.Trap_6,
+        What.Trap_7,
+        What.Trap_8,
+        What.Trap_9,
+        What.Trap_10,
+        What.Trap_11,
+        What.Trap_12,
+        What.Trap_13
+    }
+
+    monster_self_destruct = {
+        What.Breakable_Wall,
+        What.MBlock,
+        What.ZBlock,
+        What.Breakable_Wall_Grey
+    }
+
+    monster_eats = {
+        What.Whip,
+        What.Chest,
+        What.SlowTime,
+        What.Gem,
+        What.Invisibility,
+        What.TeleportScroll,
+        What.Key,
+        What.SpeedTime,
+        What.TeleportTrap,
+        What.WhipPower,
+        What.Freeze,
+        What.Nugget,
+        What.W_FourtyEight,
+        What.W_FourtyNine,
+        What.W_Fifty,
+        What.W_FiftyOne,
+        What.ShootRight,
+        What.ShootLeft
     }
 
 def parse(chr: str) -> What:
