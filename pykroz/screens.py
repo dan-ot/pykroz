@@ -1,3 +1,4 @@
+from pieces import What, WhatSets
 from colors import Colors
 from random import randrange
 import pygame.locals
@@ -76,9 +77,9 @@ def Init_Screen(game: Game, level: Level, console: Crt):
     level.GravCounter = 0
     level.TreeRate = -1
     if game.Difficulty == 2 or game.Difficulty == 9:
-        game.FoundSet = [x for x in range(0, 255)]
+        game.FoundSet = set([w for w in What])
     else:
-        game.FoundSet = []
+        game.FoundSet = set()
     level.GenNum = 0
     level.Sideways = False
     game.OneMove = False
@@ -88,7 +89,7 @@ def Init_Screen(game: Game, level: Level, console: Crt):
         level.Whips = 30
         level.Teleports = 15
         level.Keys = 2
-        game.FoundSet = [x for x in range(0, TOTOBJECTS)]
+        game.FoundSet = WhatSets.auto_discover_on_mixup.copy()
     level.Px = randrange(XSIZE) + XBOT
     level.Py = randrange(YSIZE) + YBOT
     level.BTime = 2 # 9 for FastPC?
@@ -156,8 +157,8 @@ def Create_Playfield(game: Game, level: Level):
     New_Gem_Color(level)
     for x in range(XBOT, XTOP):
         for y in range(YBOT, YTOP):
-            level.Pf[x, y] = 0
-    level.Pf[level.Px, level.Py] = 40
+            level.Pf[x, y] = What.Nothing
+    level.Pf[level.Px, level.Py] = What.Player
     Parse_Field(game, level)
     for obj in range(TOTOBJECTS):
         if level.Parsed[obj] > 0:
@@ -166,7 +167,7 @@ def Create_Playfield(game: Game, level: Level):
                 while not done:
                     x_spot = randrange(XSIZE) + XBOT
                     y_spot = randrange(YSIZE) + YBOT
-                    if level.Pf[x_spot, y_spot] == 0:
+                    if level.Pf[x_spot][y_spot] == What.Nothing:
                         if obj == 1:
                             level.SNum += 1
                             level.Sx[level.SNum] = x_spot
@@ -188,88 +189,88 @@ def Display_Playfield(level: Level, console: Crt):
         for y_loop in range(YBOT, YTOP):
             if (level.Pf[x_loop, y_loop] > 0 or level.FloorPattern) and (not level.HideLevel):
                 console.gotoxy(x_loop, y_loop)
-                if level.Pf[x_loop, y_loop] == 0: # Floor
+                if level.Pf[x_loop, y_loop] == What.Nothing: # Floor
                     console.write(VisibleTiles.Tile, Colors.Code[level.Cf1], Colors.Code[level.Bf1])
-                elif level.Pf[x_loop, y_loop] == 1: # Slow Monster
+                elif level.Pf[x_loop, y_loop] == What.SlowMonster: # Slow Monster
                     console.write(VisibleTiles.SMonster_1, Colors.LightRed)
-                elif level.Pf[x_loop, y_loop] == 2: # Medium Monster
+                elif level.Pf[x_loop, y_loop] == What.MediumMonster: # Medium Monster
                     console.write(VisibleTiles.MMonster_1, Colors.LightGreen)
-                elif level.Pf[x_loop, y_loop] == 3: # Fast Monster
+                elif level.Pf[x_loop, y_loop] == What.FastMonster: # Fast Monster
                     console.write(VisibleTiles.FMonster_1, Colors.LightBlue)
-                elif level.Pf[x_loop, y_loop] == 4: # Block
+                elif level.Pf[x_loop, y_loop] == What.Breakable_Wall: # Block
                     if level.Level != 71:
                         console.write(VisibleTiles.Breakable_Wall, Colors.Brown)
-                elif level.Pf[x_loop, y_loop] == 5: # Whip
+                elif level.Pf[x_loop, y_loop] == What.Whip: # Whip
                     console.write(VisibleTiles.Whip, Colors.White)
-                elif level.Pf[x_loop, y_loop] == 6: # Stairs
+                elif level.Pf[x_loop, y_loop] == What.Stairs: # Stairs
                     if not level.HideStairs:
                         console.write(VisibleTiles.Stairs, Colors.Black, Colors.LightGrey) # Flashing, when possible
-                elif level.Pf[x_loop, y_loop] == 7: # Chest
+                elif level.Pf[x_loop, y_loop] == What.Chest: # Chest
                     if randrange(20) == 0:
                         console.write(VisibleTiles.Chance, Colors.White)
                     else:
                         console.write(VisibleTiles.Chest, Colors.Yellow, Colors.Red)
-                elif level.Pf[x_loop, y_loop] == 8: # Slow Time
+                elif level.Pf[x_loop, y_loop] == What.SlowTime: # Slow Time
                     if randrange(35) == 0:
                         console.write(VisibleTiles.Chance, Colors.Yellow)
                     else:
                         console.write(VisibleTiles.SlowTime, Colors.LightCyan)
-                elif level.Pf[x_loop, y_loop] == 9: # Gem
+                elif level.Pf[x_loop, y_loop] == What.Gem: # Gem
                     if not level.HideGems:
                         console.write(VisibleTiles.Gem, Colors.Code[level.GemColor])
-                elif level.Pf[x_loop, y_loop] == 10: # Invisible
+                elif level.Pf[x_loop, y_loop] == What.Invisibility: # Invisible
                     console.write(VisibleTiles.Invisible, Colors.Blue)
-                elif level.Pf[x_loop, y_loop] == 11: # Teleport
+                elif level.Pf[x_loop, y_loop] == What.TeleportScroll: # Teleport
                     console.write(VisibleTiles.Teleport, Colors.LightMagenta)
-                elif level.Pf[x_loop, y_loop] == 12: # Key
+                elif level.Pf[x_loop, y_loop] == What.Key: # Key
                     if randrange(25) == 0:
                         console.write(VisibleTiles.Chance, Colors.White)
                     else:
                         console.write(VisibleTiles.Key, Colors.LightRed)
-                elif level.Pf[x_loop, y_loop] == 13: # Door
+                elif level.Pf[x_loop, y_loop] == What.Door: # Door
                     console.write(VisibleTiles.Door, Colors.Cyan, Colors.Magenta)
-                elif level.Pf[x_loop, y_loop] == 14: # Wall
+                elif level.Pf[x_loop, y_loop] == What.Wall: # Wall
                     console.write(VisibleTiles.Wall, Colors.Brown)
-                elif level.Pf[x_loop, y_loop] == 15: # SpeedTime
+                elif level.Pf[x_loop, y_loop] == What.SpeedTime: # SpeedTime
                     if randrange(10) == 0:
                         console.write(VisibleTiles.Chance, Colors.White)
                     else:
                         console.write(VisibleTiles.SpeedTime, Colors.LightCyan)
-                elif level.Pf[x_loop, y_loop] == 16: # Trap
+                elif level.Pf[x_loop, y_loop] == What.TeleportTrap: # Trap
                     if not level.HideTrap:
                         console.write(VisibleTiles.Trap, Colors.LightGrey)
-                elif level.Pf[x_loop, y_loop] == 17: # River
+                elif level.Pf[x_loop, y_loop] == What.River: # River
                     if randrange(15) == 0:
                         console.write(VisibleTiles.Lava, Colors.White, Colors.Red)
                     else:
                         console.write(VisibleTiles.River, Colors.LightBlue, Colors.Blue)
-                elif level.Pf[x_loop, y_loop] == 18: # Power
+                elif level.Pf[x_loop, y_loop] == What.WhipPower: # Power
                     if randrange(15) == 0:
                         console.write(VisibleTiles.Chance, Colors.White)
                     else:
                         console.write(VisibleTiles.Power, Colors.White)
-                elif level.Pf[x_loop, y_loop] == 19: # Forest
+                elif level.Pf[x_loop, y_loop] == What.Forest: # Forest
                     console.write(VisibleTiles.Forest, Colors.Green)
-                elif level.Pf[x_loop, y_loop] == 20 or level.Pf[x_loop, y_loop] == 252: # Tree
+                elif level.Pf[x_loop, y_loop] == What.Tree or level.Pf[x_loop, y_loop] == What.Tree_2: # Tree
                     console.write(VisibleTiles.Tree, Colors.Brown, Colors.Green)
-                elif level.Pf[x_loop, y_loop] == 21: # Bomb
+                elif level.Pf[x_loop, y_loop] == What.Bomb: # Bomb
                     if randrange(40) == 0:
                         console.write(VisibleTiles.Chance, Colors.White)
                     else:
                         console.write(VisibleTiles.Bomb, Colors.White)
-                elif level.Pf[x_loop, y_loop] == 22: # Lava
+                elif level.Pf[x_loop, y_loop] == What.Lava: # Lava
                     console.write(VisibleTiles.Lava, Colors.LightRed, Colors.Red)
-                elif level.Pf[x_loop, y_loop] == 23: # Pit
+                elif level.Pf[x_loop, y_loop] == What.Pit: # Pit
                     console.write(VisibleTiles.Pit, Colors.LightGrey)
-                elif level.Pf[x_loop, y_loop] == 24: # Tome
+                elif level.Pf[x_loop, y_loop] == What.Tome: # Tome
                     console.write(VisibleTiles.Tome, Colors.White, Colors.Magenta) # Flashing when possible
-                elif level.Pf[x_loop, y_loop] == 25: # Tunnel
+                elif level.Pf[x_loop, y_loop] == What.Tunnel: # Tunnel
                     console.write(VisibleTiles.Tunnel, Colors.White)
-                elif level.Pf[x_loop, y_loop] == 26: # Freeze
+                elif level.Pf[x_loop, y_loop] == What.Freeze: # Freeze
                     console.write(VisibleTiles.Freeze, Colors.LightGreen)
-                elif level.Pf[x_loop, y_loop] == 27: # Nugget
+                elif level.Pf[x_loop, y_loop] == What.Nugget: # Nugget
                     console.write(VisibleTiles.Nugget, Colors.Yellow)
-                elif level.Pf[x_loop, y_loop] == 28: # Quake
+                elif level.Pf[x_loop, y_loop] == What.Quake: # Quake
                     if randrange(15) == 0:
                         console.write(VisibleTiles.Chance, Colors.White)
                 # 29: IBlock
@@ -277,44 +278,44 @@ def Display_Playfield(level: Level, console: Crt):
                 # 31: IDoor
                 # 32: Stop
                 # 33: Trap2
-                elif level.Pf[x_loop, y_loop] == 34: # Zap
+                elif level.Pf[x_loop, y_loop] == What.Zap: # Zap
                     console.write(VisibleTiles.Zap, Colors.LightRed)
-                elif level.Pf[x_loop, y_loop] == 35: # Create
+                elif level.Pf[x_loop, y_loop] == What.Create: # Create
                     if not level.HideCreate:
                         console.write(VisibleTiles.Chance, Colors.White)
-                elif level.Pf[x_loop, y_loop] == 36: # Generator
+                elif level.Pf[x_loop, y_loop] == What.Generator: # Generator
                     console.write(VisibleTiles.Generator, Colors.Yellow) # Flashing when possible
                 # 37: Trap3
-                elif level.Pf[x_loop, y_loop] == 38: # MBlock
+                elif level.Pf[x_loop, y_loop] == What.MBlock: # MBlock
                     if not level.HideMBlock:
                         console.write(VisibleTiles.MBlock, Colors.Brown)
                 # 39: Trap4
-                elif level.Pf[x_loop, y_loop] == 40: # Player
+                elif level.Pf[x_loop, y_loop] == What.Player: # Player
                     console.write(VisibleTiles.Stairs, Colors.Black, Colors.LightGrey) # Flashing when possible
                 # 41: ShowGems
                 # 42:
-                elif level.Pf[x_loop, y_loop] == 43: # ZBlock
+                elif level.Pf[x_loop, y_loop] == What.ZBlock: # ZBlock
                     console.write(VisibleTiles.ZBlock, Colors.Brown)
                 # 44: BlockSpell
-                elif level.Pf[x_loop, y_loop] == 45: # Chance
+                elif level.Pf[x_loop, y_loop] == What.Chance: # Chance
                     console.write(VisibleTiles.Chance, Colors.White)
-                elif level.Pf[x_loop, y_loop] == 46: # Statue
+                elif level.Pf[x_loop, y_loop] == What.Statue: # Statue
                     console.write(VisibleTiles.Statue, Colors.White) # Flashing, when possible
                 # 67: Trap5
-                elif level.Pf[x_loop, y_loop] == 222: # ??
+                elif level.Pf[x_loop, y_loop] == What.ExclamationPoint: # ??
                     console.write('!', Colors.White, Colors.Brown)
                 # 224...231: Traps
-                elif level.Pf[x_loop, y_loop] in [29, 30, 31, 32, 33, 37, 39, 41, 42, 44, 67, 224, 225, 226, 227, 228, 229, 230, 231]:
+                elif level.Pf[x_loop, y_loop] in WhatSets.invisible:
                     # Explained in comments above
                     pass
                 else:
-                    console.write(ASCII.Char[level.Pf[x_loop, y_loop]].upper(), Colors.White, Colors.Brown)
+                    console.write(ASCII.Char[int(level.Pf[x_loop, y_loop])].upper(), Colors.White, Colors.Brown)
     level.FloorPattern = False
 
 def Hit(x: int, y: int, ch: str, level: Level, console: Crt):
     # Remember what we're overwriting
-    int_thing = level.Pf[x, y]
-    char_thing = ASCII.Char[int_thing]
+    what_thing = level.Pf[x][y]
+    char_thing = ASCII.Char[int(what_thing)]
 
     # Swing the whip
     console.reset_colors()
@@ -324,18 +325,18 @@ def Hit(x: int, y: int, ch: str, level: Level, console: Crt):
 
     # React to the hit, or restore the original, as appropriate
     console.gotoxy(x, y)
-    if int_thing in [1, 2, 3]: # Monsters, they get killed
-        level.Pf[x, y] = 0
+    if what_thing in WhatSets.monsters: # Monsters, they get killed
+        level.Pf[x, y] = What.Nothing
         console.write(' ')
-        level.Score += int_thing
+        level.Score += int(what_thing)
         console.sounds(sounds.Whip_Hit())
-    elif int_thing in [4, 19, 20, 252]: # Impediments, they might break
-        i = level.WhipPower if int_thing != 19 else 8
-        if int_thing == 4:
+    elif what_thing in WhatSets.breakable_obstacles: # Impediments, they might break
+        i = level.WhipPower if what_thing != What.Forest else 8
+        if what_thing == What.Breakable_Wall:
             char_thing = VisibleTiles.Breakable_Wall
-        elif int_thing == 19:
+        elif what_thing == What.Forest:
             char_thing = VisibleTiles.Forest
-        elif int_thing == 20 or int_thing == 252:
+        elif what_thing == What.Tree or what_thing == What.Tree_2:
             char_thing = VisibleTiles.Tree
         if randrange(7) < i: # A whip-power in 7 chance...
             console.write(' ')
@@ -347,96 +348,96 @@ def Hit(x: int, y: int, ch: str, level: Level, console: Crt):
                 console.write(char_thing, Colors.Brown, Colors.Green)
             elif char_thing == VisibleTiles.Forest:
                 console.write(char_thing, Colors.Green)
-    elif int_thing == 6: # Stairs
+    elif what_thing == What.Stairs: # Stairs
         console.write(VisibleTiles.Stairs, Colors.Black, Colors.LightGrey) # Flashing when possible
-    elif int_thing in [10, 15, 16, 18, 36, 48, 49, 50, 51]: # Things that break
-        level.Pf[x, y] = 0
+    elif what_thing in WhatSets.breakable_things: # Things that break
+        level.Pf[x, y] = What.Nothing
         console.write(' ')
         console.sounds(sounds.Whip_Breakable_Hit())
-        if int_thing == 36:
+        if what_thing == What.Generator:
             console.sounds(sounds.Whip_Breakable_Destroy())
-            AddScore(36)
+            AddScore(What.Generator, level, console)
             level.GenNum -= 1
 
     # Things that don't break - if any were hidden under Chance symbols, they're revealed
-    elif int_thing == 5:
+    elif what_thing == What.Whip:
         console.write(VisibleTiles.Whip, Colors.White)
-    elif int_thing == 7:
+    elif what_thing == What.Chest:
         console.write(VisibleTiles.Chest, Colors.Yellow, Colors.Red)
-    elif int_thing == 8:
+    elif what_thing == What.SlowTime:
         console.write(VisibleTiles.SlowTime, Colors.LightCyan)
-    elif int_thing == 9:
+    elif what_thing == What.Gem:
         console.write(VisibleTiles.Gem, Colors.Code[level.GemColor])
-    elif int_thing == 11:
+    elif what_thing == What.TeleportScroll:
         console.write(VisibleTiles.Teleport, Colors.LightMagenta)
-    elif int_thing == 12:
+    elif what_thing == What.Key:
         console.write(VisibleTiles.Key, Colors.LightRed)
-    elif int_thing == 13:
+    elif what_thing == What.Door:
         console.write(VisibleTiles.Door, Colors.Cyan, Colors.Magenta)
-    elif int_thing in [14, 52, 53]: # Invisible walls become visible?
+    elif what_thing in WhatSets.wall_variants: # Invisible walls become visible?
         console.write(VisibleTiles.Wall, Colors.Brown)
-    elif int_thing == 54:
+    elif what_thing == What.Wall_Grey:
         console.write(VisibleTiles.Wall, Colors.LightGrey)
-    elif int_thing == 17:
+    elif what_thing == What.River:
         console.write(VisibleTiles.River, Colors.LightBlue, Colors.Blue)
-    elif int_thing == 21:
+    elif what_thing == What.Bomb:
         console.write(VisibleTiles.Bomb, Colors.White)
-    elif int_thing == 22:
+    elif what_thing == What.Lava:
         console.write(VisibleTiles.Lava, Colors.LightRed, Colors.Red)
-    elif int_thing == 23:
-        console.write(VisibleTiles.Wall, Colors.LightGrey)
-    elif int_thing == 24:
+    elif what_thing == What.Pit:
+        console.write(VisibleTiles.Pit, Colors.LightGrey)
+    elif what_thing == What.Tome:
         console.write(VisibleTiles.Tome, Colors.White, Colors.Magenta) # Flashing when possible
-    elif int_thing == 25:
+    elif what_thing == What.Tunnel:
         console.write(VisibleTiles.Tunnel, Colors.White)
-    elif int_thing == 26:
+    elif what_thing == What.Freeze:
         console.write(VisibleTiles.Freeze, Colors.LightCyan)
-    elif int_thing == 27:
+    elif what_thing == What.Nugget:
         console.write(VisibleTiles.Nugget, Colors.Yellow)
-    elif int_thing in [28, 29, 30, 31, 33, 37, 39, 41, 44, 67, 224, 225, 226, 227, 228, 229, 230, 231]:
+    elif what_thing in WhatSets.invisible_to_whip:
         # Invisible things that stay invisible?
         console.write(' ', Colors.Black, Colors.Black)
-    elif int_thing == 32:
-        level.Pf[x, y] = 0
+    elif what_thing == What.Stop:
+        level.Pf[x, y] = What.Nothing
         console.write(' ')
-    elif int_thing == 34:
+    elif what_thing == What.Zap:
         console.write(VisibleTiles.Zap, Colors.LightRed)
-    elif int_thing == 35:
+    elif what_thing == What.Create:
         console.write(VisibleTiles.Create, Colors.Yellow)
-    elif int_thing == 45:
+    elif what_thing == What.Chance:
         console.write(VisibleTiles.Chance, Colors.White)
-    elif int_thing in [58, 59, 60]:
+    elif what_thing in WhatSets.ospell_1s:
         console.write(VisibleTiles.OSpell1, Colors.LightCyan)
-    elif int_thing == 66:
+    elif what_thing == What.EWall:
         console.write(VisibleTiles.EWall, Colors.LightRed, Colors.Red)
-    elif int_thing in [47, 55, 56, 57, 61, 62, 63, 68, 69, 70, 71, 72, 73, 74]:
+    elif what_thing in WhatSets.invisible_to_whip_2:
         console.write(' ')
-    elif int_thing in [76, 77, 78, 79, 80]:
+    elif what_thing in WhatSets.drop_ropes:
         console.write(VisibleTiles.DropRope, Colors.LightGrey)
-    elif int_thing == 75:
+    elif what_thing == What.Rope:
         console.write(VisibleTiles.Rope, Colors.LightGrey)
-    elif int_thing == 81:
+    elif what_thing == What.Amulet:
         console.write(VisibleTiles.Amulet, Colors.White) # Flashing when possible
-    elif int_thing == 82:
+    elif what_thing == What.ShootRight:
         console.write(VisibleTiles.ShootRight, Colors.LightGrey)
-    elif int_thing == 83:
+    elif what_thing == What.ShootLeft:
         console.write(VisibleTiles.ShootLeft, Colors.LightGrey)
-    elif int_thing in [38, 43, 64]: # Breakable Walls?
+    elif what_thing in WhatSets.breakable_wall_variants: # Breakable Walls?
         if randrange(7) < level.WhipPower:
             console.write(' ')
             level.Pf[x, y] = 0
             console.sounds(sounds.Whip_Breakable_Destroy())
-            AddScore(38)
+            AddScore(What.MBlock, level, console)
         else:
             console.sounds(sounds.Whip_Breakable_Hit())
-            if int_thing == 64:
+            if what_thing == What.Breakable_Wall_Grey:
                 console.write(VisibleTiles.Breakable_Wall, Colors.LightGrey)
             else:
                 console.write(VisibleTiles.Breakable_Wall, Colors.Brown)
-    elif int_thing == 0:
+    elif what_thing == What.Nothing:
         console.write(' ')
     else:
-        console.write(ASCII.Char[level.Pf[x, y]].upper(), Colors.White, Colors.Brown)
+        console.write(ASCII.Char[int(level.Pf[x][y])].upper(), Colors.White, Colors.Brown)
 
 def Secret_Message():
     pass
@@ -457,7 +458,7 @@ def Tome_Effects(level: Level, console: Crt):
     for b in range(14, 0, -1):
         for x in range (XBOT, XTOP):
             for y in range(YBOT, YTOP):
-                if level.Pf[x, y] == 0:
+                if level.Pf[x][y] == What.Nothing:
                     console.sounds(sounds.Victory_MacGuffin_2(b, x, y))
                     console.gotoxy(x, y)
                     console.write(VisibleTiles.Wall, Colors.Code[(b * 2) % len(Colors.Code)])

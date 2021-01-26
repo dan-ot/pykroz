@@ -81,7 +81,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, level: Level, console:
         Go(x_way, y_way, Human)
         if console.keypressed():
             _ = console.read()
-    elif onto in [What.Breakable_Wall, What.Breakable_Wall_2, What.Breakable_Wall_3]: # Block
+    elif onto in [What.Breakable_Wall, What.ZBlock, What.Breakable_Wall_Grey]: # Block
         console.sounds(sounds.BlockSound())
         AddScore(What.Breakable_Wall, level, console)
         console.clearkeys()

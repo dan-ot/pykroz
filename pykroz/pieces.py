@@ -97,7 +97,7 @@ class VisibleTiles(Enum):
     Trap13     = ASCII.Char[0]
     Message    = ASCII.Char[5]
 
-class What(Enum):
+class What(int, Enum):
     Nothing = 0
     SlowMonster = 1
     MediumMonster = 2
@@ -132,40 +132,40 @@ class What(Enum):
     Invisible_Door = 31
     Stop = 32
     Trap_2 = 33
-    W_ThirtyFour = 34
+    Zap = 34
     Create = 35
     Generator = 36
-    W_ThirtySeven = 37
+    Trap_3 = 37
     MBlock = 38
-    W_ThirtyNine = 39
+    Trap_4 = 39
     Player = 40
-    W_FourtyOne = 41
+    ShowGems = 41
     W_FourtyTwo = 42
-    Breakable_Wall_2 = 43
-
-    W_FourtyFive = 45
-
-
+    ZBlock = 43
+    BlockSpell = 44
+    Chance = 45
+    Statue = 46
+    W_FourtySeven = 47
     W_FourtyEight = 48
     W_FourtyNine = 49
     W_Fifty = 50
     W_FiftyOne = 51
-
-
-
+    Wall_2 = 52
+    Wall_3 = 53
+    Wall_Grey = 54
     W_FiftyFive = 55
     W_FiftySix = 56
     W_FiftySeven = 57
-
-
-
-
-
-
-    Breakable_Wall_3 = 64
-
-    W_SixtySix = 66
-    W_SixtySeven = 67
+    OSpell1_1 = 58
+    OSpell1_2 = 59
+    OSpell1_3 = 60
+    W_SixtyOne = 61
+    W_SixtyTwo = 62
+    W_SixtyThree = 63
+    Breakable_Wall_Grey = 64
+    W_SixtyFive = 65
+    EWall = 66
+    Trap_5 = 67
     W_SixtyEight = 68
     W_SixtyNine = 69
     W_Seventy = 70
@@ -174,18 +174,28 @@ class What(Enum):
     W_SeventyThree = 73
     W_SeventyFour = 74
     Rope = 75
+    DropRope_1 = 76
+    DropRope_2 = 77
+    DropRope_3 = 78
+    DropRope_4 = 79
+    DropRope_5 = 80
+    Amulet = 81
+    ShootRight = 82
+    ShootLeft = 83
     # . . . 
     ExclamationPoint = 222
 
     
-    W_TwoTwentyFour = 224
-    W_TwoTwentyFive = 225
-    W_TwoTwentySix = 226
-    W_TwoTwentySeven = 227
-    W_TwoTwentyEight = 228
-    W_TwoTwentyNine = 229
-    W_TwoThirty = 230
-    W_TwoThirtyOne = 231
+    Trap_6 = 224
+    Trap_7 = 225
+    Trap_8 = 226
+    Trap_9 = 227
+    Trap_10 = 228
+    Trap_11 = 229
+    Trap_12 = 230
+    Trap_13 = 231
+
+    Tree_2 = 252
     Writing = 300
 
 class WhatSets():
@@ -201,7 +211,7 @@ class WhatSets():
         What.Freeze,
         What.Quake,
         What.Generator,
-        What.W_SixtySix
+        What.EWall
     }
 
     destroyed_by_bomb = {
@@ -220,17 +230,17 @@ class WhatSets():
         What.Stop,
         What.Create,
         What.Generator,
-        What.W_ThirtySeven,
+        What.Trap_3,
         What.MBlock,
-        What.W_ThirtyNine,
-        What.Breakable_Wall_2,
-        What.W_FourtyFive,
+        What.Trap_4,
+        What.ZBlock,
+        What.Chance,
         What.W_FourtyEight,
         What.W_FourtyNine,
         What.W_Fifty,
         What.W_FiftyOne,
-        What.Breakable_Wall_3,
-        What.W_SixtySeven,
+        What.Breakable_Wall_Grey,
+        What.Trap_5,
         What.W_SixtyEight,
         What.W_SixtyNine,
         What.W_Seventy,
@@ -238,34 +248,34 @@ class WhatSets():
         What.W_SeventyTwo,
         What.W_SeventyThree,
         What.W_SeventyFour,
-        What.W_TwoTwentyFour,
-        What.W_TwoTwentyFive,
-        What.W_TwoTwentySix,
-        What.W_TwoTwentySeven,
-        What.W_TwoTwentyEight,
-        What.W_TwoTwentyNine,
-        What.W_TwoThirty,
-        What.W_TwoThirtyOne
+        What.Trap_6,
+        What.Trap_7,
+        What.Trap_8,
+        What.Trap_9,
+        What.Trap_10,
+        What.Trap_11,
+        What.Trap_12,
+        What.Trap_13
     }
 
     doesnt_block_tunnel_exit = {
         What.Nothing,
         What.Stop,
         What.Trap_2,
-        What.W_ThirtySeven,
-        What.W_ThirtyNine,
+        What.Trap_3,
+        What.Trap_4,
         What.W_FiftyFive,
         What.W_FiftySix,
         What.W_FiftySeven,
-        What.W_SixtySeven,
-        What.W_TwoTwentyFour,
-        What.W_TwoTwentyFive,
-        What.W_TwoTwentySix,
-        What.W_TwoTwentySeven,
-        What.W_TwoTwentyEight,
-        What.W_TwoTwentyNine,
-        What.W_TwoThirty,
-        What.W_TwoThirtyOne
+        What.Trap_5,
+        What.Trap_6,
+        What.Trap_7,
+        What.Trap_8,
+        What.Trap_9,
+        What.Trap_10,
+        What.Trap_11,
+        What.Trap_12,
+        What.Trap_13
     }
 
     becomes_replacement_with_tunnelling = {
@@ -290,17 +300,215 @@ class WhatSets():
         What.Freeze,
         What.Stop,
         What.Trap_2,
-        What.W_ThirtySeven,
-        What.W_ThirtyNine,
-        What.W_SixtySeven,
-        What.W_TwoTwentyFour,
-        What.W_TwoTwentyFive,
-        What.W_TwoTwentySix,
-        What.W_TwoTwentySeven,
-        What.W_TwoTwentyEight,
-        What.W_TwoTwentyNine,
-        What.W_TwoThirty,
-        What.W_TwoThirtyOne
+        What.Trap_3,
+        What.Trap_4,
+        What.Trap_5,
+        What.Trap_6,
+        What.Trap_7,
+        What.Trap_8,
+        What.Trap_9,
+        What.Trap_10,
+        What.Trap_11,
+        What.Trap_12,
+        What.Trap_13
+    }
+
+    auto_discover_on_mixup = {
+        What.Nothing,
+        What.SlowMonster,
+        What.MediumMonster,
+        What.FastMonster,
+        What.Breakable_Wall,
+        What.Whip,
+        What.Stairs,
+        What.Chest,
+        What.SlowTime,
+        What.Gem,
+        What.Invisibility,
+        What.TeleportScroll,
+        What.Key,
+        What.Door,
+        What.Wall,
+        What.SpeedTime,
+        What.TeleportTrap,
+        What.River,
+        What.WhipPower,
+        What.Forest,
+        What.Tree,
+        What.Bomb,
+        What.Lava,
+        What.Pit,
+        What.Tome,
+        What.Tunnel,
+        What.Freeze,
+        What.Nugget,
+        What.Quake,
+        What.Invisible_Breakable_Wall,
+        What.Invisible_Wall,
+        What.Invisible_Door,
+        What.Stop,
+        What.Trap_2,
+        What.Zap,
+        What.Create,
+        What.Generator,
+        What.Trap_3,
+        What.MBlock,
+        What.Trap_4,
+        What.Player,
+        What.ShowGems,
+        What.W_FourtyTwo,
+        What.ZBlock,
+        What.BlockSpell,
+        What.Chance,
+        What.Statue,
+        What.W_FourtySeven,
+        What.W_FourtyEight,
+        What.W_FourtyNine,
+        What.W_Fifty,
+        What.W_FiftyOne,
+        What.Wall_2,
+        What.Wall_3,
+        What.Wall_Grey,
+        What.W_FiftyFive,
+        What.W_FiftySix,
+        What.W_FiftySeven,
+        What.OSpell1_1,
+        What.OSpell1_2,
+        What.OSpell1_3,
+        What.W_SixtyOne,
+        What.W_SixtyTwo,
+        What.W_SixtyThree,
+        What.Breakable_Wall_Grey,
+        What.W_SixtyFive,
+        What.EWall,
+        What.Trap_5,
+        What.W_SixtyEight,
+        What.W_SixtyNine,
+        What.W_Seventy,
+        What.W_SeventyOne,
+        What.W_SeventyTwo,
+        What.W_SeventyThree,
+        What.W_SeventyFour,
+        What.Rope,
+        What.DropRope_1,
+        What.DropRope_2,
+        What.DropRope_3,
+        What.DropRope_4,
+        What.DropRope_5,
+        What.Amulet,
+        What.ShootRight,
+        What.ShootLeft
+    }
+
+    invisible = {
+        What.Invisible_Breakable_Wall,
+        What.Invisible_Wall,
+        What.Invisible_Door,
+        What.Stop,
+        What.Trap_2,
+        What.Trap_3,
+        What.Trap_4,
+        What.ShowGems,
+        What.W_FourtyTwo,
+        What.BlockSpell,
+        What.Trap_5,
+        What.Trap_6,
+        What.Trap_7,
+        What.Trap_8,
+        What.Trap_9,
+        What.Trap_10,
+        What.Trap_11,
+        What.Trap_12,
+        What.Trap_13
+    }
+
+    monsters = {
+        What.SlowMonster,
+        What.MediumMonster,
+        What.FastMonster
+    }
+
+    breakable_obstacles = {
+        What.Breakable_Wall,
+        What.Forest,
+        What.Tree,
+        What.Tree_2
+    }
+
+    breakable_things = {
+        What.Invisibility,
+        What.SpeedTime,
+        What.TeleportTrap,
+        What.WhipPower,
+        What.Generator,
+        What.W_FourtyEight,
+        What.W_FourtyNine,
+        What.W_Fifty,
+        What.W_FiftyOne
+    }
+
+    wall_variants = {
+        What.Wall,
+        What.Wall_2,
+        What.Wall_3
+    }
+
+    invisible_to_whip = {
+        What.Quake,
+        What.Invisible_Breakable_Wall,
+        What.Invisible_Wall,
+        What.Invisible_Door,
+        What.Trap_2,
+        What.Trap_3,
+        What.Trap_4,
+        What.ShowGems,
+        What.BlockSpell,
+        What.Trap_5,
+        What.Trap_6,
+        What.Trap_7,
+        What.Trap_8,
+        What.Trap_9,
+        What.Trap_10,
+        What.Trap_11,
+        What.Trap_12,
+        What.Trap_13
+    }
+
+    ospell_1s = {
+        What.OSpell1_1,
+        What.OSpell1_2,
+        What.OSpell1_3
+    }
+
+    invisible_to_whip_2 = {
+        What.W_FourtySeven,
+        What.W_FiftyFive,
+        What.W_FiftySix,
+        What.W_FiftySeven,
+        What.W_SixtyOne,
+        What.W_SixtyTwo,
+        What.W_SixtyThree,
+        What.W_SixtyEight,
+        What.W_SixtyNine,
+        What.W_Seventy,
+        What.W_SeventyOne,
+        What.W_SeventyTwo,
+        What.W_SeventyThree,
+        What.W_SeventyFour
+    }
+
+    drop_ropes = {
+        What.DropRope_1,
+        What.DropRope_2,
+        What.DropRope_3,
+        What.DropRope_4,
+        What.DropRope_5
+    }
+
+    breakable_wall_variants = {
+        What.MBlock,
+        What.ZBlock,
+        What.Breakable_Wall_Grey
     }
 
 def parse(chr: str) -> What:
@@ -373,13 +581,13 @@ def parse(chr: str) -> What:
     elif chr == '@':
         return What.Trap_2
     elif chr == '%':
-        return What.W_ThirtyFour
+        return What.Zap
     elif chr == ']':
         return What.Create
     elif chr == 'G':
         return What.Generator
     elif chr == '(':
-        return What.W_ThirtySeven
+        return What.Trap_3
     elif chr == 'P':
         return What.Player
     elif chr == '!':
