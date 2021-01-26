@@ -198,7 +198,7 @@ def Display_Playfield(level: Level, console: Crt):
                     console.write(VisibleTiles.FMonster_1, Colors.LightBlue)
                 elif level.Pf[x_loop, y_loop] == 4: # Block
                     if level.Level != 71:
-                        console.write(VisibleTiles.Block, Colors.Brown)
+                        console.write(VisibleTiles.Breakable_Wall, Colors.Brown)
                 elif level.Pf[x_loop, y_loop] == 5: # Whip
                     console.write(VisibleTiles.Whip, Colors.White)
                 elif level.Pf[x_loop, y_loop] == 6: # Stairs
@@ -332,7 +332,7 @@ def Hit(x: int, y: int, ch: str, level: Level, console: Crt):
     elif int_thing in [4, 19, 20, 252]: # Impediments, they might break
         i = level.WhipPower if int_thing != 19 else 8
         if int_thing == 4:
-            char_thing = VisibleTiles.Block
+            char_thing = VisibleTiles.Breakable_Wall
         elif int_thing == 19:
             char_thing = VisibleTiles.Forest
         elif int_thing == 20 or int_thing == 252:
@@ -430,9 +430,9 @@ def Hit(x: int, y: int, ch: str, level: Level, console: Crt):
         else:
             console.sounds(sounds.Whip_Breakable_Hit())
             if int_thing == 64:
-                console.write(VisibleTiles.Block, Colors.LightGrey)
+                console.write(VisibleTiles.Breakable_Wall, Colors.LightGrey)
             else:
-                console.write(VisibleTiles.Block, Colors.Brown)
+                console.write(VisibleTiles.Breakable_Wall, Colors.Brown)
     elif int_thing == 0:
         console.write(' ')
     else:
