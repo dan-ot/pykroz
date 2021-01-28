@@ -284,14 +284,6 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         level.Px = empty_x
         level.Py = empty_y
         playfield[empty_x, empty_y] = What.Player
-        # level.Px = 0
-        # while level.Px == 0:
-        #     x = randrange(XSIZE) + XBOT
-        #     y = randrange(YSIZE) + YBOT
-        #     if level.Pf[x][y] == What.Nothing:
-        #         level.Px = x
-        #         level.Py = y
-        #         level.Pf[x][y] = What.Player
         for x in range(1, 500): # 3000 on FastPC
             console.gotoxy(level.Px, level.Py)
             console.write(VisibleTiles.Player, Colors.Code[Colors.Random()], Colors.Code[Colors.RandomDark()])
@@ -419,7 +411,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         Update_Info(level, console)
         console.clearkeys()
         console.alert(YTOP + 1, 'The Magical Staff of Kroz is finally yours--50,000 points!', Colors.Code[level.Bc], Colors.Code[level.Bb])
-        console.alert(YTOP + 1, 'Congratulations, Adventurer, you finally did it!!!', Colors.Code[level.Bc], Colors.Code[level.bb])
+        console.alert(YTOP + 1, 'Congratulations, Adventurer, you finally did it!!!', Colors.Code[level.Bc], Colors.Code[level.Bb])
     elif onto == What.Tunnel: # Tunnel
         px_old = level.Px
         py_old = level.Py
