@@ -1,4 +1,5 @@
 # System Libraries
+from playfield import Playfield
 from pieces import VisibleTiles, What, WhatSets, parse
 from typing import List, Optional, Union
 from random import randrange
@@ -11,7 +12,6 @@ import pygame.key
 from pygame import Color
 
 # Project Libraries
-from ascii import ASCII
 from crt import Crt
 import sounds
 from colors import Colors
@@ -81,8 +81,6 @@ class Level:
         self.Px: int = 0
         self.Py: int = 0
         self.Replacement: Union[What, None] = None # What the player is standing on...
-        # enum of playfield space occupants
-        self.Pf: list[list[What]] = [[What.Nothing for _ in range(66)] for _ in range(25)]
         # string definition of the levels for parsing
         self.Fp: list[str] = ['{0:{width}}'.format(' ', width = XSIZE) for _ in range(YSIZE)]
         self.Parsed: list[int] = [0 for _ in range(TOTOBJECTS)]
@@ -461,20 +459,17 @@ def Define_Levels(game: Game):
     game.Df[26] = '   100 20    25  2  1  2 20  1  2             10     1        5   785    10    15               '
     game.Df[28] = '133133133        3  3    80420  1  1                                           10  5            '
 
-def Convert_Format(level: Level):
+def Convert_Format(level: Level, playfield: Playfield):
     level.SNum = 0
     level.MNum = 0
     level.FNum = 0
-    BNum = 0
     level.GenNum = 0
     level.T[9] = -1
     level.LavaFlow = False
     level.TreeRate = 0
     level.GravCounter = 0
     level.GravOn = False
-    for x in range(66):
-        for y in range(25):
-            level.Pf[x][y] = What.Nothing
+    playfield.parse(level.Fp)
     for m in range(1000):
         level.Sx[m] = 0
         level.Sy[m] = 0
@@ -483,50 +478,49 @@ def Convert_Format(level: Level):
         level.Fx[m] = 0
         level.Fy[m] = 0
     New_Gem_Color(level)
-    for YLoop in range(YSIZE):
-        for XLoop in range(XSIZE):
-            tempstr = level.Fp[YLoop][XLoop]
-            what = parse(tempstr)
-            if what == What.SlowMonster:
-                level.SNum += 1
-                level.Sx[level.SNum] = XLoop + 1
-                level.Sy[level.SNum] = YLoop + 1
-            elif what == What.MediumMonster:
-                level.MNum += 1
-                level.Mx[level.MNum] = XLoop + 1
-                level.My[level.MNum] = YLoop + 1
-            elif what == What.FastMonster:
-                level.FNum += 1
-                level.Fx[level.FNum] = XLoop + 1
-                level.Fy[level.FNum] = YLoop + 1
-            elif what == What.Generator:
-                level.GenNum += 1
-            elif what == What.Player:
-                level.Px = XLoop + 1
-                level.Py = YLoop + 1
-            
-            level.Pf[XLoop + 1][YLoop + 1] = what
+    for (x, y, monster) in playfield.coords_of([What.SlowMonster, What.MediumMonster, What.FastMonster, What.Generator]):
+        if monster == What.SlowMonster:
+            level.SNum += 1
+            level.Sx[level.SNum] = x
+            level.Sy[level.SNum] = y
+        elif monster == What.MediumMonster:
+            level.MNum += 1
+            level.Mx[level.MNum] = x
+            level.My[level.MNum] = y
+        elif monster == What.FastMonster:
+            level.FNum += 1
+            level.Fx[level.FNum] = x
+            level.Fy[level.FNum] = y
+        elif monster == What.Generator:
+            level.GenNum += 1
+    
+    players = playfield.coords_of(What.Player)
+    if len(players) != 1:
+        raise ValueError("Inappropriate number of players: {0}, expected 1.".format(len(players)))
+    [(player_x, player_y, _)] = players
+    level.Px = player_x
+    level.Py = player_y
 
-def Go(XWay: int, YWay: int, Human: bool, game: Game, level: Level, console: Crt):
+def Go(XWay: int, YWay: int, Human: bool, game: Game, playfield: Playfield, level: Level, console: Crt):
     if level.Sideways and YWay == -1 and not game.OneMove and level.Replacement != What.Rope:
         return
     previous = level.Replacement
     old_x = level.Px
     old_y = level.Py
 
-    level.Pf[level.Px][level.Py] = level.Replacement
+    playfield[level.Px, level.Py] = level.Replacement
     console.gotoxy(level.Px, level.Py)
     console.write(' ')
     level.Px += XWay
     level.Py += YWay
-    if level.Pf[level.Px][level.Py] in WhatSets.becomes_replacement_with_go:
-        level.Replacement = level.Pf[level.Px][level.Py]
+    if playfield[level.Px, level.Py] in WhatSets.becomes_replacement_with_go:
+        level.Replacement = playfield[level.Px, level.Py]
     else:
-        level.Replacement = None
+        level.Replacement = What.Nothing
     if previous == What.Rope:
         console.gotoxy(old_x, old_y)
         console.write(VisibleTiles.Rope, Colors.LightGrey)
-    level.Pf[level.Px][level.Py] = What.Player
+    playfield[level.Px, level.Py] = What.Player
     if level.T[5] < 1:
         console.gotoxy(level.Px, level.Py)
         console.write(VisibleTiles.Player, Colors.Yellow, Colors.Black)

@@ -521,6 +521,12 @@ class WhatSets():
         What.DropRope_5
     }
 
+    blocks = {
+        What.Breakable_Wall,
+        What.ZBlock,
+        What.Breakable_Wall_Grey
+    }
+
     breakable_wall_variants = {
         What.MBlock,
         What.ZBlock,
