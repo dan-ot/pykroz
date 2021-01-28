@@ -439,7 +439,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
             console.sound(randrange(3000) + 100, 0.2) # sounds.Tunnelling()
             a = randrange(3) - 1
             b = randrange(3) - 1
-            if playfield[tx + a][ty + b] in WhatSets.doesnt_block_tunnel_exit and not done:
+            if playfield[tx + a, ty + b] in WhatSets.doesnt_block_tunnel_exit and not done:
                 if playfield.bounds().collidepoint(tx + a, ty + b):
                     done = True
                     x = tx + a
