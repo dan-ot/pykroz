@@ -1,8 +1,8 @@
-from colors import Colors
 from random import randrange
 
 import pygame.locals
 
+from colors import Colors
 from crt import Crt
 from levels import Game, Level, Shareware, VisibleTiles, YTOP
 import sounds
@@ -411,7 +411,7 @@ def Title(game: Game, level: Level, console: Crt):
             console.writeln(' Morning News, one of the nation''s largest newspapers.  He also co-authored')
             console.writeln(' a video game strategy book titled, "Shootout: Beating the Video Games."')
             console.writeln(' Scott has written articles for COMPUTE!''s PC and PCjr Magazine and is a')
-            console.writeln(' software reviewer with COMPUTE! Publications.');        
+            console.writeln(' software reviewer with COMPUTE! Publications.')
             console.writeln()
             console.writeln('   Hobbies include softball, running, tennis, karate (1st degree black belt),')
             console.writeln(' drumming, rock music, science fiction, and creating new computer games.')
