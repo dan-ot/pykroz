@@ -34,24 +34,24 @@ PMOVE = True
 # Types
 class HSType:
     def __init__(self, name: str, highScore: int, highLevel: int):
-        self.Name = name
-        self.HighScore = highScore
-        self.HighLevel = highLevel
+        self.name = name
+        self.high_score = highScore
+        self.high_level = highLevel
 
 class SaveType:
     def __init__(self):
-        self.S_Level: int = 1
-        self.S_Score: int = 0
-        self.S_Gems: int = 0
-        self.S_Whips: int = 0
-        self.S_Teleports: int = 0
-        self.S_Keys: int = 0
-        self.S_WhipPower: int = 0
-        self.S_Difficulty: int = 0
-        self.S_Px: int = 0
-        self.S_Py: int = 0
-        self.S_FoundSet: list[int] = []
-        self.S_MixUp: bool = False
+        self.level: int = 1
+        self.score: int = 0
+        self.gems: int = 0
+        self.whips: int = 0
+        self.teleports: int = 0
+        self.keys: int = 0
+        self.whip_power: int = 0
+        self.difficulty: int = 0
+        self.px: int = 0
+        self.py: int = 0
+        self.found_set: list[int] = []
+        self.mix_up: bool = False
 
 # Unit-level State
 class Level:
@@ -108,21 +108,7 @@ class Level:
         self.HideMBlock: bool = False
         self.GenFactor: int = 0
         self.BTime: int = 0
-        # Monster delay speeds
-        self.MTime: int = 0
-        self.FTime: int = 0
-        self.SkipTime: int = 0
-        # Save/Restore Variables
-        self.I_Score: int = 0
-        self.I_Gems: int = 0
-        self.I_Whips: int = 0
-        self.I_Teleports: int = 0
-        self.I_Keys: int = 0
-        self.I_WhipPower: int = 0
-        self.I_Px: int = 0
-        self.I_Py: int = 0
-        self.I_FoundSet: set[What] = set()
-        self.I_Difficulty: int = 0
+        self.initial: SaveType = SaveType()
 
 class LiteralLevel():
     def __init__(self, lines: Sequence[str]):
@@ -314,7 +300,7 @@ def High_Score(PlayAgain: bool, game: Game, player: PlayerState, level: Level, c
     place = 1
     stop = False
     while (stop is False and place <= 15):
-        if player.score > game.HSList[place].HighScore:
+        if player.score > game.HSList[place].high_score:
             stop = True
             place += 1
         if stop is False and place > 15:
@@ -332,11 +318,11 @@ def High_Score(PlayAgain: bool, game: Game, player: PlayerState, level: Level, c
         console.gotoxy(13, x + 6)
         console.write('{0:2}'.format(x))
         console.gotoxy(16, x + 6)
-        console.write(game.HSList[x].Name)
+        console.write(game.HSList[x].name)
         console.gotoxy(36, x + 6)
-        console.write('{0}0'.format(game.HSList[x].HighScore) if game.HSList[x].HighScore > 0 else '0')
+        console.write('{0}0'.format(game.HSList[x].high_score) if game.HSList[x].high_score > 0 else '0')
         console.gotoxy(50, x + 6)
-        console.write('{0}'.format(game.HSList[x].HighLevel))
+        console.write('{0}'.format(game.HSList[x].high_level))
     console.clearkeys()
     if place < 16:
         console.gotoxy(16, place + 6)
@@ -345,7 +331,7 @@ def High_Score(PlayAgain: bool, game: Game, player: PlayerState, level: Level, c
         console.write('Enter your name then press <enter>.', Colors.Red, Colors.LightGrey)
         console.gotoxy(16, place + 6)
         console.default_colors(Colors.White, Colors.Red)
-        game.HSList[place].Name = console.readln()
+        game.HSList[place].name = console.readln()
         with hsFile.open('w') as f:
             json.dump(game.HSList, f)
     console.reset_colors()

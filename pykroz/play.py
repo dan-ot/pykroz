@@ -68,27 +68,27 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
             if file.exists():
                 with open(file, 'r') as f:
                     save_stuff = cast(SaveType, json.load(f))
-                    player.level = save_stuff.S_Level
-                    player.score = save_stuff.S_Score
-                    player.gems = save_stuff.S_Gems
-                    player.whips = save_stuff.S_Whips
-                    player.teleports = save_stuff.S_Teleports
-                    player.keys = save_stuff.S_Keys
-                    player.whip_power = save_stuff.S_WhipPower
-                    game.Difficulty = save_stuff.S_Difficulty
-                    player.position = (save_stuff.S_Px, save_stuff.S_Py)
-                    game.FoundSet = save_stuff.S_FoundSet
-                    game.MixUp = save_stuff.S_MixUp
-                level.I_Score = player.score
-                level.I_Gems = player.gems
-                level.I_Whips = player.whips
-                level.I_Teleports = player.teleports
-                level.I_Keys = player.keys
-                level.I_WhipPower = player.whip_power
-                level.I_Difficulty = game.Difficulty
-                level.I_Px = player.position[0]
-                level.I_Py = player.position[1]
-                level.I_FoundSet = game.FoundSet
+                    player.level = save_stuff.level
+                    player.score = save_stuff.score
+                    player.gems = save_stuff.gems
+                    player.whips = save_stuff.whips
+                    player.teleports = save_stuff.teleports
+                    player.keys = save_stuff.keys
+                    player.whip_power = save_stuff.whip_power
+                    game.Difficulty = save_stuff.difficulty
+                    player.position = (save_stuff.px, save_stuff.py)
+                    game.FoundSet = set(map(lambda t: What(t), save_stuff.found_set))
+                    game.MixUp = save_stuff.mix_up
+                level.initial.score = player.score
+                level.initial.gems = player.gems
+                level.initial.whips = player.whips
+                level.initial.teleports = player.teleports
+                level.initial.keys = player.keys
+                level.initial.whip_power = player.whip_power
+                level.initial.difficulty = game.Difficulty
+                level.initial.px = player.position[0]
+                level.initial.py = player.position[1]
+                level.initial.found_set = list(game.FoundSet)
                 Update_Info(level, console)
                 console.delay(1000)
                 level.Sideways = False
@@ -153,20 +153,19 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
                 which_file = 'C'
             else:
                 which_file = 'A'
-            save_stuff = SaveType(
-                player.level,
-                level.I_Score,
-                level.I_Gems,
-                level.I_Whips,
-                level.I_Teleports,
-                level.I_Keys,
-                level.I_WhipPower,
-                level.I_Difficulty,
-                level.I_Px,
-                level.I_Py,
-                level.I_FoundSet,
-                game.MixUp
-            )
+            save_stuff = SaveType()
+            save_stuff.level = player.level
+            save_stuff.score = level.initial.score
+            save_stuff.gems = level.initial.gems
+            save_stuff.whips = level.initial.whips
+            save_stuff.teleports = level.initial.teleports
+            save_stuff.keys = level.initial.keys
+            save_stuff.whip_power = level.initial.whip_power
+            save_stuff.difficulty = level.initial.difficulty
+            save_stuff.px = level.initial.px
+            save_stuff.py = level.initial.py
+            save_stuff.found_set = list(level.initial.found_set)
+            save_stuff.mix_up = game.MixUp
             console.print(22, 25, '  Saving to file {0}...  '.format(which_file))
             file = Path('DUNGEON{0}.SAV'.format(which_file))
             file.touch()
@@ -549,16 +548,16 @@ def NewGame(game: Game, playfield: Playfield, player: PlayerState, level: Level,
     player.level = 1
     Next_Level(player, playfield, level)
     Display_Playfield(playfield, level, console)
-    level.I_Score = player.score
-    level.I_Gems = player.gems
-    level.I_Whips = player.whips
-    level.I_Teleports = player.teleports
-    level.I_Keys = player.keys
-    level.I_WhipPower = player.whip_power
-    level.I_Difficulty = game.Difficulty
-    level.I_Px = player.position[0]
-    level.I_Py = player.position[1]
-    level.I_FoundSet = game.FoundSet.copy()
+    level.initial.score = player.score
+    level.initial.gems = player.gems
+    level.initial.whips = player.whips
+    level.initial.teleports = player.teleports
+    level.initial.keys = player.keys
+    level.initial.whip_power = player.whip_power
+    level.initial.difficulty = game.Difficulty
+    level.initial.px = player.position[0]
+    level.initial.py = player.position[1]
+    level.initial.found_set = list(game.FoundSet)
     for x in range(1, 800):
         console.gotoxy(*player.position)
         console.write(VisibleTiles.Player, Colors.Random(), Colors.RandomDark())

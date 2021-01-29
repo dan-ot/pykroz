@@ -138,16 +138,16 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
             console.sound(x // 2, 1) # sounds.Enter_Level()
         console.gotoxy(*player.position)
         console.write(VisibleTiles.Player, Colors.Yellow)
-        level.I_Score = player.score
-        level.I_Gems = player.gems
-        level.I_Whips = player.whips
-        level.I_Teleports = player.teleports
-        level.I_Keys = player.keys
-        level.I_WhipPower = player.whip_power
-        level.I_Difficulty = game.Difficulty
-        level.I_Px = player.position[0]
-        level.I_Py = player.position[1]
-        level.I_FoundSet = game.FoundSet.copy()
+        level.initial.score = player.score
+        level.initial.gems = player.gems
+        level.initial.whips = player.whips
+        level.initial.teleports = player.teleports
+        level.initial.keys = player.keys
+        level.initial.whip_power = player.whip_power
+        level.initial.difficulty = game.Difficulty
+        level.initial.px = player.position[0]
+        level.initial.py = player.position[1]
+        level.initial.found_set = list(game.FoundSet)
         if player.level == 30:
             console.alert(YTOP + 1, 'You have finally reached the last dungeon of Kroz!', level.Bc, level.Bb)
     elif onto == What.Chest: # Chest
