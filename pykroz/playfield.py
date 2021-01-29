@@ -10,6 +10,7 @@ class Playfield(Sequence):
         self.__width = width
         self.__height = height
         self.__data = [What.Nothing for _ in range(width * height)]
+        self.replacement = What.Nothing
 
     def __len__(self) -> int:
         return len(self.__data)

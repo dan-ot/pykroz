@@ -1,4 +1,6 @@
 # System Libraries
+from pygame.event import post
+from playerstate import PlayerState
 from playfield import Playfield
 from pieces import VisibleTiles, What, WhatSets, parse
 from typing import List, Optional, Union
@@ -55,13 +57,6 @@ class SaveType:
 # Unit-level State
 class Level:
     def __init__(self):
-        self.Score: int = 0
-        self.WhipPower: int = 0
-        self.Level: int = 0
-        self.Gems: int = 0
-        self.Whips: int = 0
-        self.Teleports: int = 0
-        self.Keys: int = 0
         self.Bc: int = 0
         self.Bb: int = 0
         self.GemColor: int = 0
@@ -77,10 +72,6 @@ class Level:
         self.Fx: list[int] = [0 for _ in range(1000)]
         self.Fy: list[int] = [0 for _ in range(1000)]
         self.FNum: int = 0
-        # player
-        self.Px: int = 0
-        self.Py: int = 0
-        self.Replacement: Union[What, None] = None # What the player is standing on...
         # string definition of the levels for parsing
         self.Fp: list[str] = ['{0:{width}}'.format(' ', width = XSIZE) for _ in range(YSIZE)]
         self.Parsed: list[int] = [0 for _ in range(TOTOBJECTS)]
@@ -148,28 +139,28 @@ class Game:
         self.FoundSet: set[What] = set()
 
 # Procedures
-def PrintNum(YPos: int, Num: int, level: Level, console: Crt, fore: Optional[Color] = None, back: Optional[Color] = None):
+def PrintNum(YPos: int, Num: int, player: PlayerState, console: Crt, fore: Optional[Color] = None, back: Optional[Color] = None):
     # console.write(70, YPos, "       ")
     strVal = str(Num)
-    if (YPos == 2 and level.Score > 0):
+    if (YPos == 2 and player.score > 0):
         strVal += "0"
     if (YPos == 11):
-        if (level.WhipPower >= 3):
-            strVal = strVal + "+" + str(level.WhipPower)
+        if (player.whip_power >= 3):
+            strVal = strVal + "+" + str(player.whip_power)
     strVal = f"{strVal:^7}"
     console.write(69, YPos - 1, strVal, fore, back)
 
-def Update_Info(level: Level, console: Crt):
+def Update_Info(player: PlayerState, console: Crt):
     console.default_colors(Colors.Red, Colors.LightGrey)
-    PrintNum(2, level.Score, level, console)
-    PrintNum(5, level.Level, level, console)
-    if level.Gems > 9:
-        PrintNum(8, level.Gems, level, console)
+    PrintNum(2, player.score, player, console)
+    PrintNum(5, player.level, player, console)
+    if player.gems > 9:
+        PrintNum(8, player.gems, player, console)
     else:
-        PrintNum(8, level.Gems, level, console, Colors.LightRed, Colors.DarkGrey) # Flashing Red when it can be managed
-    PrintNum(11, level.Whips, level, console)
-    PrintNum(14, level.Teleports, level, console)
-    PrintNum(17, level.Keys, level, console)
+        PrintNum(8, player.gems, player, console, Colors.LightRed, Colors.DarkGrey) # Flashing Red when it can be managed
+    PrintNum(11, player.whips, player, console)
+    PrintNum(14, player.teleports, player, console)
+    PrintNum(17, player.keys, player, console)
     console.reset_colors()
 
 def Border(level: Level, console: Crt):
@@ -279,44 +270,9 @@ def Shareware(console: Crt, Wait: bool):
 def New_Gem_Color(level: Level):
     level.GemColor = Colors.RandomExcept([8])
 
-def AddScore(What: What, level: Level, console: Crt):
-    if What >= 1 and What <=3: # Monsters
-        level.Score += What
-    elif What == 4 or What == 14: # Block
-        if level.Score > 2:
-            level.Score -= 2
-    elif What == 5: # Whip
-        level.Score += 1
-    elif What == 6: # Stairs
-        level.Score += level.Level
-    elif What == 7: # Chest
-        level.Score += 5
-    elif What == 9: # Gem
-        level.Score += 1
-    elif What == 10: # Invisible
-        level.Score += 10
-    elif What == 11: # Teleport
-        level.Score += 1
-    elif What == 15: # SpeedTime
-        level.Score += 2
-    elif What == 16: # Trap
-        if level.Score > 5:
-            level.Score -= 5
-    elif What == 22: # Lava
-        level.Score += 25
-    elif What == 20: # Border
-        if level.Score > level.Level:
-            level.Score -= level.Level // 2
-    elif What == 27: # Nugget
-        level.Score += 50
-    elif What == 35: # Create
-        level.Score += level.Level * 2
-    elif What == 36: # Generator
-        level.Score += 50
-    elif What == 38: # MBlock
-        level.Score += 1
-
-    Update_Info(level, console)
+def AddScore(what: What, player: PlayerState, console: Crt):
+    player.add_score(what)
+    Update_Info(player, console)
 
 def Won(level: Level, console: Crt):
     Border(level, console)
@@ -324,7 +280,7 @@ def Won(level: Level, console: Crt):
     console.print(5, 1, 'YOUR QUEST FOR THE MAGICAL STAFF OF KROZ WAS SUCCESSFUL!!', Colors.White, Colors.Code[level.Bb]) # Flashing when possible
     High_Score(console, PlayAgain = False)
 
-def High_Score(PlayAgain: bool, game: Game, level: Level, console: Crt):
+def High_Score(PlayAgain: bool, game: Game, player: PlayerState, level: Level, console: Crt):
     console.clearkeys()
     console.window(2, 2, XSIZE + 1, YSIZE + 1)
     console.reset_colors()
@@ -354,14 +310,14 @@ def High_Score(PlayAgain: bool, game: Game, level: Level, console: Crt):
     place = 1
     stop = False
     while (stop is False and place <= 15):
-        if level.Score > game.HSList[place].HighScore: stop = True
+        if player.score > game.HSList[place].HighScore: stop = True
         place += 1
         if stop is False and place > 15: place = 100
     place -= 1
     if place < 16:
         for x in range (15, place, -1):
             game.HSList[x] = game.HSList[x - 1]
-    game.HSList[place] = HSType('', level.Score, level.Level)
+    game.HSList[place] = HSType('', player.score, player.level)
     for x in range(len(game.HSList)):
         if x % 2 == 1:
             console.default_colors(Colors.LightRed)
@@ -415,30 +371,30 @@ def High_Score(PlayAgain: bool, game: Game, level: Level, console: Crt):
             console.writeln('DUNGEONS OF KROZ II')
         Sign_Off(console)
 
-def Dead(DeadDot: bool, game: Game, level: Level, console: Crt):
-    if level.Gems > 9:
+def Dead(DeadDot: bool, game: Game, player: PlayerState, level: Level, console: Crt):
+    if player.gems > 9:
         console.default_colors(Colors.Red, Colors.LightGrey)
     else:
-        level.Gems = 0
+        player.ems = 0
         console.default_colors(Colors.LightRed, Colors.DarkGrey) # Flashing, when possible
     console.gotoxy(71, 8)
     console.write('     ')
-    strVal = '{0}'.format(level.Gems)
+    strVal = '{0}'.format(player.gems)
     console.gotoxy(73 - len(strVal) // 2, 8)
     console.write(strVal)
     if DeadDot:
         for x in range(150, 5, -1):
-            console.gotoxy(level.Px, level.Py)
+            console.gotoxy(*player.position)
             console.write(VisibleTiles.Player, Colors.Code[x], Colors.Code[Colors.RandomDark()])
             console.sound(x * x, 0.5) # sounds.Death()
     console.clearkeys()
     console.print(27, 1, 'YOU HAVE DIED!!', Colors.Black, Colors.Code[level.Bb]) # Flashing, when possible
     while not console.keypressed():
-        console.gotoxy(level.Px, level.Py)
+        console.gotoxy(*player.position)
         if DeadDot: console.write('*', Colors.Code[Colors.Random()], Colors.Black)
         console.print(21, 25, 'Press any key to continue.')
     Border(level, console)
-    High_Score(True, game, level, console)
+    High_Score(True, game, player, level, console)
 
 def Define_Levels(game: Game):
     for i in range(1, 30):
@@ -459,7 +415,7 @@ def Define_Levels(game: Game):
     game.Df[26] = '   100 20    25  2  1  2 20  1  2             10     1        5   785    10    15               '
     game.Df[28] = '133133133        3  3    80420  1  1                                           10  5            '
 
-def Convert_Format(level: Level, playfield: Playfield):
+def Convert_Format(player: PlayerState, level: Level, playfield: Playfield):
     level.SNum = 0
     level.MNum = 0
     level.FNum = 0
@@ -498,38 +454,35 @@ def Convert_Format(level: Level, playfield: Playfield):
     if len(players) != 1:
         raise ValueError("Inappropriate number of players: {0}, expected 1.".format(len(players)))
     [(player_x, player_y, _)] = players
-    level.Px = player_x
-    level.Py = player_y
+    player.position = (player_x, player_y)
 
-def Go(XWay: int, YWay: int, Human: bool, game: Game, playfield: Playfield, level: Level, console: Crt):
-    if level.Sideways and YWay == -1 and not game.OneMove and level.Replacement != What.Rope:
+def Go(XWay: int, YWay: int, Human: bool, game: Game, playfield: Playfield, player: PlayerState, level: Level, console: Crt):
+    if level.Sideways and YWay == -1 and not game.OneMove and playfield.replacement != What.Rope:
         return
-    previous = level.Replacement
-    old_x = level.Px
-    old_y = level.Py
+    previous = playfield.replacement
+    (old_x, old_y) = player.position
 
-    playfield[level.Px, level.Py] = level.Replacement
-    console.gotoxy(level.Px, level.Py)
+    playfield[player.position] = playfield.replacement
+    console.gotoxy(*player.position)
     console.write(' ')
-    level.Px += XWay
-    level.Py += YWay
-    if playfield[level.Px, level.Py] in WhatSets.becomes_replacement_with_go:
-        level.Replacement = playfield[level.Px, level.Py]
+    player.position = (player.position[0] + XWay, player.position[1] + YWay)
+    if playfield[player.position] in WhatSets.becomes_replacement_with_go:
+        playfield.replacement = playfield[player.position]
     else:
-        level.Replacement = What.Nothing
+        playfield.replacement = What.Nothing
     if previous == What.Rope:
         console.gotoxy(old_x, old_y)
         console.write(VisibleTiles.Rope, Colors.LightGrey)
-    playfield[level.Px, level.Py] = What.Player
+    playfield[player.position] = What.Player
     if level.T[5] < 1:
-        console.gotoxy(level.Px, level.Py)
+        console.gotoxy(*player.position)
         console.write(VisibleTiles.Player, Colors.Yellow, Colors.Black)
     else:
-        console.gotoxy(level.Px, level.Py)
+        console.gotoxy(*player.position)
         console.write(' ')
     if not level.Sideways:
         console.sounds(sounds.FootStep())
-    elif level.Replacement != What.Rope and Human:
+    elif playfield.replacement != What.Rope and Human:
         console.sounds(sounds.FootStep())
     if console.keypressed() and Human:
         ch = console.read()
@@ -542,7 +495,7 @@ def MoveRock(XWay: int, YWay: int):
 def Trigger_Trap(Place: bool, i: int, ch: str):
     pass
 
-def End_Routine(level: Level, console: Crt):
+def End_Routine(player: PlayerState, level: Level, console: Crt):
     console.sounds(sounds.FootStep())
     console.delay(200)
     console.sounds(sounds.FootStep())
@@ -550,48 +503,48 @@ def End_Routine(level: Level, console: Crt):
     console.sounds(sounds.FootStep())
     for x in range(1, 250):
         console.sound(randrange(3000) + x, 0.5) # sounds.Victory_Strange()
-        console.gotoxy(level.Px, level.Py)
+        console.gotoxy(*player.position)
         console.write(VisibleTiles.Player, Colors.Yellow, Colors.Code[Colors.RandomDark()])
         console.print(15, 25, 'Oh no, something strange is happening!', Colors.Code[Colors.Random()], Colors.Black)
     for i in range(2200, 20, -1):
         console.sound(randrange(i)) # Also sounds.Victory_Strage() - one sound covers the whole sequence
     for x in range(650):
         console.sound(x * 3, 2) # sounds.Victory_ScramblePlayer()
-        console.gotoxy(level.Px, level.Py)
+        console.gotoxy(*player.position)
         console.write(220 + randrange(4), Colors.Yellow, Colors.Black)
-    console.gotoxy(level.Px, level.Py)
+    console.gotoxy(*player.position)
     console.write(VisibleTiles.Stairs, Colors.Black, Colors.Green) # Flashing, when possible
     Restore_Border(level, console)
     console.alert(YTOP + 1, 'You are magically transported from Kroz!', Colors.Code[level.Bc], Colors.Code[level.Bb])
     console.clearkeys()
     console.reset_colors()
     console.print(15, 25, 'Your gems are worth 100 points each...')
-    for i in range(level.Gems):
-        level.Score += 10
+    for i in range(player.gems):
+        player.score += 10
         Update_Info(level, console)
         console.sounds(sounds.Points_For_Gems(i))
     console.read()
     Restore_Border(level, console)
     console.clearkeys()
     console.print(15, 25, 'Your whips are worth 100 points each...')
-    for i in range(level.Whips):
-        level.Score += 10
+    for i in range(player.whips):
+        player.score += 10
         Update_Info(level, console)
         console.sounds(sounds.Points_For_Whips(i))
     console.read()
     Restore_Border(level, console)
     console.clearkeys()
     console.print(9, 25, 'Your Teleport Scrolls are woth 200 points each...')
-    for i in range(level.Teleports):
-        level.Score += 20
+    for i in range(player.teleports):
+        player.score += 20
         Update_Info(level, console)
         console.sounds(sounds.Points_For_Teleports(i))
     console.read()
     Restore_Border(level, console)
     console.clearkeys()
     console.print(14, 25, 'Your Keys are worth 10,000 points each...')
-    for i in range(level.Keys):
-        level.Score += 1000
+    for i in range(player.keys):
+        player.score += 1000
         Update_Info(level, console)
         console.sounds(sounds.Points_For_Keys(i))
     console.read()
