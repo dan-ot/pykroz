@@ -8,8 +8,8 @@ def main() -> None:
     seed(None)
     pygame.mixer.pre_init(frequency=110100, size = -16, channels = 1)
     pygame.init()
-    crt = Crt(80, 25, 'terminal8x12_gs_ro.png')
-    
+    crt = Crt(80, 25, 'assets/terminal8x12_gs_ro.png')
+
     clock = pygame.time.Clock()
     while True:
         if not pygame.mixer.get_busy():
