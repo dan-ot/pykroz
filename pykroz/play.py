@@ -8,8 +8,8 @@ import pygame.locals
 from playerstate import PlayerState
 from pieces import What, WhatSets
 from commands import Command, command_from_key_code
-from colors import Colors
-from crt import Crt
+from engine.colors import Colors
+from engine.crt import Crt
 from levels import Border, Dead, Game, Level, PMOVE, Restore_Border, SaveType, Sign_Off, TMAX, Update_Info, VisibleTiles, YTOP
 from screens import Display_Playfield, Hit, Init_Screen, Screen
 from movement import Move, Next_Level

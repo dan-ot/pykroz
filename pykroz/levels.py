@@ -10,12 +10,12 @@ import pygame.key
 from pygame import Color
 
 # Project Libraries
+from engine.crt import Crt
+from engine.colors import Colors
 from playerstate import PlayerState
 from playfield import Playfield
 from pieces import VisibleTiles, What, WhatSets
-from crt import Crt
 import sounds
-from colors import Colors
 
 # Constants
 TOTOBJECTS = 83

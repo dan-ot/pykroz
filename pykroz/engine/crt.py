@@ -1,6 +1,5 @@
 # Python Imports
 from collections import deque
-from levels import VisibleTiles, XBOT, XSIZE, YBOT, YTOP
 from sys import exit
 from typing import  Optional, Union
 from time import sleep
@@ -17,11 +16,11 @@ from pygame.event import get
 import numpy
 
 # Project Imports
-from ascii import ASCII
-from colors import Colors, ContrastLevel
-from sounds import SampleSet
-from keyboard import Keyboard
-from audio import Audio
+from engine.ascii import ASCII
+from engine.colors import Colors
+from engine.audio import SampleSet, Audio
+from engine.keyboard import Keyboard
+from levels import VisibleTiles, XBOT, XSIZE, YBOT, YTOP
 
 class ColorMode(Enum):
     COLOR_PALLETTE = 1
@@ -33,12 +32,12 @@ class Crt:
         self._audio = Audio(frequency, format)
 
         if fontFile is None:
-            tiles = ASCII.from_system_font() 
+            tiles = ASCII.from_system_font()
         elif fontFile.endswith('.ttf'):
             tiles = ASCII.from_font_file(fontFile)
         else:
             tiles = ASCII.from_bitmap_font(fontFile, (8, 12))
-        
+
         self._tiles = tiles
         self._screen = pygame.display.set_mode((self._tiles.width * widthInTiles, self._tiles.height * heightInTiles))
         self._keyboard = Keyboard()
@@ -57,8 +56,8 @@ class Crt:
 
     def tick(self):
         for event in get([
-            pygame.locals.QUIT, 
-            pygame.locals.KEYDOWN, 
+            pygame.locals.QUIT,
+            pygame.locals.KEYDOWN,
             pygame.locals.KEYUP
         ], pump = True):
             if event.type == pygame.locals.QUIT:
@@ -98,8 +97,8 @@ class Crt:
         done = False
         while not done:
             for event in get([
-                pygame.locals.QUIT, 
-                pygame.locals.KEYDOWN, 
+                pygame.locals.QUIT,
+                pygame.locals.KEYDOWN,
                 pygame.locals.KEYUP
             ], pump = True):
                 if event.type == pygame.locals.QUIT:
@@ -139,10 +138,10 @@ class Crt:
         if isinstance(str, message):
             clipped_message = message[0:(self.current_window.width - self.cursor_x)]
             self.dirty_blocks.append(Rect(self.cursor_x, self.cursor_y, len(clipped_message), 1))
-            for c in range(len(clipped_message)):
-                self.charbuffer[self.cursor_x + c, self.cursor_y] = ASCII.Ord[clipped_message[c]]
-                self.fg_color_buffer[self.cursor_x + c, self.cursor_y] = fg
-                self.bg_color_buffer[self.cursor_x + c, self.cursor_y] = bg
+            for (i, c) in clipped_message:
+                self.charbuffer[self.cursor_x + i, self.cursor_y] = ASCII.Ord[c]
+                self.fg_color_buffer[self.cursor_x + i, self.cursor_y] = fg
+                self.bg_color_buffer[self.cursor_x + i, self.cursor_y] = bg
             self.cursor_x += len(clipped_message)
         else:
             self.charbuffer[self.cursor_x, self.cursor_y] = message
@@ -193,7 +192,7 @@ class Crt:
         self.foreground = Colors.White
         self.background = Colors.Black
 
-    def default_colors(self, fore: Union[int, Color, None] = None, back: Union[int, Color, None] = None, contrast: Optional[ContrastLevel] = None):
+    def default_colors(self, fore: Union[int, Color, None] = None, back: Union[int, Color, None] = None):
         def translate_color(color: Union[int, Color]) -> Color:
             if isinstance(color, int):
                 mod_color = color % len(Colors.Code) # I think colors beyond 15 are meant to blink
@@ -221,7 +220,7 @@ class Crt:
         self._audio.sound(self._audio.tone(freq, duration, self._audio.square_wave))
 
     def sounds(self, parts: SampleSet):
-        self._audio.sound(self._audio.compose(parts))
+        self._audio.sound(self._audio.compose(parts, self._audio.square_wave))
 
     def clrscr(self, color: Optional[Color]):
         fg = [*self.foreground[0:3]]

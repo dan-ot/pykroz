@@ -1,12 +1,12 @@
 from typing import Tuple, cast
-
-from pygame.image import load
-from colors import Colors
 from functools import reduce
 
+from pygame.image import load
 from pygame import Color, Rect, Surface
 from pygame.freetype import Font, SysFont
 import pygame.locals
+
+from engine.colors import Colors
 
 class ASCII:
     def __init__(self, width: int, height: int, surface: Surface):
@@ -15,6 +15,7 @@ class ASCII:
         self.surface = surface
         self.mid = Surface((width, height))
 
+    @staticmethod
     def from_font(font: Font):
         def get_dimensions(t: Tuple[int, int, str], current_character: str) -> Tuple[int, int, str]:
             biggest_width, biggest_height, biggest_char = t
@@ -27,7 +28,7 @@ class ASCII:
             else:
                 print(min_y, max_y)
                 return max(biggest_width, character_width), character_height, current_character
-                
+
         (width, height, biggest) = reduce(get_dimensions, ASCII.Char.values(), (0, 0, ''))
         print(biggest, height)
         surface = Surface((width * len(ASCII.Char), height))
@@ -39,16 +40,18 @@ class ASCII:
             (x, y) = (i * width + min_x), height - max_y
             font.render_to(surface, (x, y), c, fgcolor = Colors.White)
         return ASCII(width, height, surface)
-        
 
+    @staticmethod
     def from_font_file(filename: str, size: int = 12):
         font = Font(filename, size)
         return ASCII.from_font(font)
 
+    @staticmethod
     def from_system_font(size: int = 12):
         font = cast(Font, SysFont(['Consolas', 'Menlo', 'Monaco', '\'Droid Sans Mono\''], size))
         return ASCII.from_font(font)
 
+    @staticmethod
     def from_bitmap_font(filename: str, tileSize: Tuple[int, int]):
         font_surface = load(filename)
         (width, height) = tileSize

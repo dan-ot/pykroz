@@ -1,6 +1,6 @@
 from enum import Enum
 
-from ascii import ASCII
+from engine.ascii import ASCII
 
 class VisibleTiles(Enum):
     Null       = ASCII.Char[0]
@@ -176,10 +176,10 @@ class What(int, Enum):
     Amulet = 81
     ShootRight = 82
     ShootLeft = 83
-    # . . . 
+    # . . .
     ExclamationPoint = 222
 
-    
+
     Trap_6 = 224
     Trap_7 = 225
     Trap_8 = 226
@@ -745,4 +745,3 @@ def parse(chr: str) -> What:
     else:
         print("Unknown What: [{0}]".format(chr))
         return What.Writing
-    

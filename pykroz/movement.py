@@ -1,10 +1,10 @@
 from random import choice, randrange
 
+from engine.colors import Colors
+from engine.crt import Crt
 from playerstate import PlayerState
 from playfield import Playfield
 from pieces import What, WhatSets
-from colors import Colors
-from crt import Crt
 from levels import AddScore, Border, LiteralLevel, Load_Literal_Level, Load_Random_Level, Dead, End_Routine, Game, Go, Level, RandomLevel, Update_Info, VisibleTiles, YBOT, YTOP
 from screens import Display_Playfield, Tome_Effects, Tome_Message
 from layouts import DungeonsLayouts

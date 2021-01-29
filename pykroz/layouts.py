@@ -1,4 +1,5 @@
 from typing import Union
+
 from pieces import What
 from levels import LiteralLevel, RandomLevel
 

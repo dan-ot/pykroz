@@ -2,7 +2,7 @@ from random import seed
 import pygame
 import pygame.time
 import pygame.mixer
-from crt import Crt
+from engine.crt import Crt
 
 def main() -> None:
     seed(None)

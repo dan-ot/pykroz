@@ -2,12 +2,12 @@ from random import randrange
 
 import pygame.locals
 
+from engine.colors import Colors
+from engine.ascii import ASCII
+from engine.crt import ColorMode, Crt
 from playerstate import PlayerState
 from pieces import What, WhatSets
-from colors import Colors
-from ascii import ASCII
 from levels import AddScore, Game, Level, TMAX, VisibleTiles, YTOP
-from crt import ColorMode, Crt
 from playfield import Playfield
 import sounds
 

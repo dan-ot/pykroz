@@ -1,7 +1,6 @@
 from random import randrange
-from typing import Sequence, Tuple, Union
 
-SampleSet = Sequence[Tuple[Union[None, int], int]]
+from engine.audio import SampleSet
 
 def FootStep() -> SampleSet:
     parts: SampleSet = []

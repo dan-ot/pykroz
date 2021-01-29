@@ -6,7 +6,8 @@ import numpy
 import pygame.sndarray
 from pygame.mixer import Sound, find_channel
 
-from sounds import SampleSet
+Sample = Tuple[Union[None, int], int]
+SampleSet = Sequence[Tuple[Union[None, int], int]]
 
 class Audio:
     def __init__(self, sample_rate: float, bit_depth: int):
@@ -19,8 +20,8 @@ class Audio:
         self.queue = deque()
         self.volume = (2 ** (abs(bit_depth) - 1)) * 0.8
 
-    def square_wave(self, input: Tuple[Union[int, None], int]) -> Sequence[int]:
-        (freq, duration_in_ms) = input
+    def square_wave(self, sample: Sample) -> Sequence[int]:
+        (freq, duration_in_ms) = sample
         duration_in_samples = int(self.sample_rate / 1000.0 * duration_in_ms)
 
         if freq is not None:
@@ -31,8 +32,8 @@ class Audio:
             bits = [0 for _ in range(duration_in_samples)]
         return bits
 
-    def sine_wave(self, input: Tuple[Union[int, None], int]) -> Sequence[int]:
-        (freq, duration_in_ms) = input
+    def sine_wave(self, sample: Sample) -> Sequence[int]:
+        (freq, duration_in_ms) = sample
         duration_in_samples = int(self.sample_rate / 1000.0 * duration_in_ms)
 
         if freq is not None:
@@ -41,14 +42,14 @@ class Audio:
             bits = [0 for _ in range(duration_in_samples)]
         return bits
 
-    def wave_to_sound(self, input: Sequence[int], stereo: bool = True) -> Sound:
-        in_stereo = list(map(lambda i: (i, i), input)) if stereo else input
+    def wave_to_sound(self, sample: Sequence[int], stereo: bool = True) -> Sound:
+        in_stereo = list(map(lambda i: (i, i), sample)) if stereo else sample
         np = numpy.array(in_stereo, dtype=self.type)
         return pygame.sndarray.make_sound(np)
 
     def tone(self, freq: Union[int, None], duration_in_ms: int, wave_func) -> Sound:
-        wave = wave_func((freq, duration_in_ms))
-        return self.wave_to_sound(wave)
+        wav = wave_func((freq, duration_in_ms))
+        return self.wave_to_sound(wav)
 
     def compose(self, commands: SampleSet, wave_func) -> Sound:
         blocks = map(wave_func, commands)
@@ -56,13 +57,13 @@ class Audio:
         for block in blocks:
             single.extend(block)
         return self.wave_to_sound(single)
-        
+
     def sound(self, sound: Sound):
         self.queue.append(sound)
 
     def sound_out(self, filename: str, sound: Sound):
         with wave.open(filename, 'wb') as f:
-            file = cast(wave.Wave_write, f)
+            file: wave.Wave_write = cast(wave.Wave_write, f)
             file.setframerate(self.sample_rate)
             file.setnchannels(1)
             file.setsampwidth(1 if self.type.endswith('8') else 2)

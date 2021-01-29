@@ -1,6 +1,5 @@
 from enum import Enum
 from typing import Optional
-from pygame.event import Event
 
 import pygame.locals
 
@@ -63,4 +62,3 @@ def command_from_key_code(key: Optional[int]) -> Optional[Command]:
         return Command.MOVE_SOUTHEAST
     else:
         return None
-    
