@@ -172,11 +172,11 @@ class Crt:
         if YPos == YTOP + 1: # Bottom border alert
             self.gotoxy(XBOT - 1, YTOP + 1)
             for _ in range(XSIZE + 1):
-                self.write(VisibleTiles.Block, bc, bb)
+                self.write(VisibleTiles.Breakable_Wall, bc, bb)
         elif YPos == YBOT - 1: # Top border alert
             self.gotoxy(XBOT - 1, YBOT - 1)
             for _ in range(XSIZE + 1):
-                self.write(VisibleTiles.Block, bc, bb)
+                self.write(VisibleTiles.Breakable_Wall, bc, bb)
 
 
     def window(self, x_min: int, y_min: int, x_max: int, y_max: int):

@@ -1,108 +1,20 @@
 # System Libraries
-from pygame import Color
-from colors import Colors, ContrastLevel
+from playfield import Playfield
+from pieces import VisibleTiles, What, WhatSets, parse
 from typing import List, Optional, Union
-from random import randint, randrange
+from random import randrange
 from pathlib import Path
 import json
 
 # Engine Libraries
 import pygame.locals
 import pygame.key
+from pygame import Color
 
 # Project Libraries
-from ascii import ASCII
 from crt import Crt
 import sounds
-
-class VisibleTiles:
-    Null       = ASCII.Char[0]
-    Block      = ASCII.Char[178]
-    Whip       = ASCII.Char[244]
-    Stairs     = ASCII.Char[240]
-    Chest      = ASCII.Char[67]
-    SlowTime   = ASCII.Char[232]
-    Gem        = ASCII.Char[4]
-    Invisible  = ASCII.Char[173]
-    Teleport   = ASCII.Char[24]
-    Key        = ASCII.Char[140]
-    Door       = ASCII.Char[236]
-    Wall       = ASCII.Char[219]
-    SpeedTime  = ASCII.Char[233]
-    Trap       = ASCII.Char[249]
-    River      = ASCII.Char[247]
-    Power      = ASCII.Char[9]
-    Forest     = ASCII.Char[219]
-    Tree       = ASCII.Char[5]
-    Bomb       = ASCII.Char[157]
-    Lava       = ASCII.Char[178]
-    Pit        = ASCII.Char[176]
-    Tome       = ASCII.Char[245]
-    Tunnel     = ASCII.Char[239]
-    Freeze     = ASCII.Char[159]
-    Nugget     = ASCII.Char[15]
-    Quake      = ASCII.Char[0]
-    IBlock     = ASCII.Char[30]
-    IWall      = ASCII.Char[0]
-    IDoor      = ASCII.Char[0]
-    Stop       = ASCII.Char[0]
-    Trap2      = ASCII.Char[0]
-    Zap        = ASCII.Char[30]
-    Create     = ASCII.Char[31]
-    Generator  = ASCII.Char[6]
-    Trap3      = ASCII.Char[0]
-    MBlock     = ASCII.Char[178]
-    Trap4      = ASCII.Char[0]
-    Player     = ASCII.Char[2]
-    SMonster_1 = ASCII.Char[142]
-    SMonster_2 = ASCII.Char[65]
-    MMonster_1 = ASCII.Char[153]
-    MMonster_2 = ASCII.Char[148]
-    FMonster_1 = ASCII.Char[234]
-    Tile       = ASCII.Char[0]
-    ShowGems   = ASCII.Char[0]
-    ZBlock     = ASCII.Char[178]
-    BlockSpell = ASCII.Char[0]
-    Chance     = ASCII.Char[63]
-    Statue     = ASCII.Char[1]
-    WallVanish = ASCII.Char[0]
-    OWall1     = ASCII.Char[219]
-    OWall2     = ASCII.Char[219]
-    OWall3     = ASCII.Char[219]
-    CWall1     = ASCII.Char[0]
-    Cwall2     = ASCII.Char[0]
-    CWall3     = ASCII.Char[0]
-    OSpell1    = ASCII.Char[127]
-    OSpell2    = ASCII.Char[127]
-    OSpell3    = ASCII.Char[127]
-    CSpell1    = ASCII.Char[0]
-    CSpell2    = ASCII.Char[0]
-    CSpell3    = ASCII.Char[0]
-    GBlock     = ASCII.Char[178]
-    Rock       = ASCII.Char[79]
-    EWall      = ASCII.Char[88]
-    Trap5      = ASCII.Char[0]
-    TBlock     = ASCII.Char[0]
-    TRock      = ASCII.Char[0]
-    TGem       = ASCII.Char[0]
-    TBlind     = ASCII.Char[0]
-    TWhip      = ASCII.Char[0]
-    TGold      = ASCII.Char[0]
-    TTree      = ASCII.Char[0]
-    Rope       = ASCII.Char[179]
-    DropRope   = ASCII.Char[25]
-    Amulet     = ASCII.Char[12]
-    ShootRight = ASCII.Char[26]
-    ShootLeft  = ASCII.Char[27]
-    Trap6      = ASCII.Char[0]
-    Trap7      = ASCII.Char[0]
-    Trap8      = ASCII.Char[0]
-    Trap9      = ASCII.Char[0]
-    Trap10     = ASCII.Char[0]
-    Trap11     = ASCII.Char[0]
-    Trap12     = ASCII.Char[0]
-    Trap13     = ASCII.Char[0]
-    Message    = ASCII.Char[5]
+from colors import Colors
 
 # Constants
 TOTOBJECTS = 83
@@ -168,9 +80,7 @@ class Level:
         # player
         self.Px: int = 0
         self.Py: int = 0
-        self.Replacement: Union[int, None] = None # What the player is standing on...
-        # enum of playfield space occupants
-        self.Pf: list[list[int]] = [[0 for _ in range(66)] for _ in range(25)]
+        self.Replacement: Union[What, None] = None # What the player is standing on...
         # string definition of the levels for parsing
         self.Fp: list[str] = ['{0:{width}}'.format(' ', width = XSIZE) for _ in range(YSIZE)]
         self.Parsed: list[int] = [0 for _ in range(TOTOBJECTS)]
@@ -223,7 +133,7 @@ class Level:
         self.I_WhipPower: int = 0
         self.I_Px: int = 0
         self.I_Py: int = 0
-        self.I_FoundSet: list[int] = []
+        self.I_FoundSet: set[What] = set()
         self.I_Difficulty: int = 0
 
 class Game:
@@ -235,7 +145,7 @@ class Game:
         self.Difficulty: int = 0
         self.MixUp: bool = True
         self.FastPC: bool = True
-        self.FoundSet: list[int] = []
+        self.FoundSet: set[What] = set()
 
 # Procedures
 def PrintNum(YPos: int, Num: int, level: Level, console: Crt, fore: Optional[Color] = None, back: Optional[Color] = None):
@@ -267,19 +177,19 @@ def Border(level: Level, console: Crt):
     level.Bb = randrange(1, 8)
     for x in range(XBOT - 1, XTOP + 2):
         console.gotoxy(x, 25)
-        console.write(VisibleTiles.Block, Colors.Code[level.Bc], Colors.Code[level.Bb])
+        console.write(VisibleTiles.Breakable_Wall, Colors.Code[level.Bc], Colors.Code[level.Bb])
         console.gotoxy(x, 1)
-        console.write(VisibleTiles.Block, Colors.Code[level.Bc], Colors.Code[level.Bb])
+        console.write(VisibleTiles.Breakable_Wall, Colors.Code[level.Bc], Colors.Code[level.Bb])
     for y in range(YBOT - 1, YTOP + 2):
         console.gotoxy(1, y)
-        console.write(VisibleTiles.Block, Colors.Code[level.Bc], Colors.Code[level.Bb])
+        console.write(VisibleTiles.Breakable_Wall, Colors.Code[level.Bc], Colors.Code[level.Bb])
         console.gotoxy(66, y)
-        console.write(VisibleTiles.Block, Colors.Code[level.Bc], Colors.Code[level.Bb])
+        console.write(VisibleTiles.Breakable_Wall, Colors.Code[level.Bc], Colors.Code[level.Bb])
 
 def Restore_Border(level: Level, console: Crt):
     console.gotoxy(2, 25)
     for _ in range(XBOT - 1, XTOP + 2):
-        console.write(VisibleTiles.Block, Colors.Code[level.Bc], Colors.Code[level.Bb])
+        console.write(VisibleTiles.Breakable_Wall, Colors.Code[level.Bc], Colors.Code[level.Bb])
 
 def Sign_Off(console: Crt):
     Shareware(console, Wait = False)
@@ -369,7 +279,7 @@ def Shareware(console: Crt, Wait: bool):
 def New_Gem_Color(level: Level):
     level.GemColor = Colors.RandomExcept([8])
 
-def AddScore(What: int, level: Level, console: Crt):
+def AddScore(What: What, level: Level, console: Crt):
     if What >= 1 and What <=3: # Monsters
         level.Score += What
     elif What == 4 or What == 14: # Block
@@ -549,20 +459,17 @@ def Define_Levels(game: Game):
     game.Df[26] = '   100 20    25  2  1  2 20  1  2             10     1        5   785    10    15               '
     game.Df[28] = '133133133        3  3    80420  1  1                                           10  5            '
 
-def Convert_Format(level: Level):
+def Convert_Format(level: Level, playfield: Playfield):
     level.SNum = 0
     level.MNum = 0
     level.FNum = 0
-    BNum = 0
     level.GenNum = 0
     level.T[9] = -1
     level.LavaFlow = False
     level.TreeRate = 0
     level.GravCounter = 0
     level.GravOn = False
-    for x in range(66):
-        for y in range(25):
-            level.Pf[x][y] = 0
+    playfield.parse(level.Fp)
     for m in range(1000):
         level.Sx[m] = 0
         level.Sy[m] = 0
@@ -571,124 +478,49 @@ def Convert_Format(level: Level):
         level.Fx[m] = 0
         level.Fy[m] = 0
     New_Gem_Color(level)
-    for YLoop in range(YSIZE):
-        for XLoop in range(XSIZE):
-            tempstr = level.Fp[YLoop][XLoop]
-            if tempstr == ' ':
-                level.Pf[XLoop + 1, YLoop + 1] = 0
-            elif tempstr == '1':
-                level.SNum += 1
-                level.Sx[level.SNum] = XLoop + 1
-                level.Sy[level.SNum] = YLoop + 1
-                level.Pf[XLoop + 1, YLoop + 1] = 1
-            elif tempstr == '2':
-                level.MNum += 1
-                level.Mx[level.MNum] = XLoop + 1
-                level.My[level.MNum] = YLoop + 1
-                level.Pf[XLoop + 1, YLoop + 1] = 1
-            elif tempstr == '3':
-                level.FNum += 1
-                level.Fx[level.FNum] = XLoop + 1
-                level.Fy[level.FNum] = YLoop + 1
-                level.Pf[XLoop + 1, YLoop + 1] = 1
-            elif tempstr == 'X':
-                level.Pf[XLoop + 1, YLoop + 1] = 4
-            elif tempstr == 'W':
-                level.Pf[XLoop + 1, YLoop + 1] = 5
-            elif tempstr == 'L':
-                level.Pf[XLoop + 1, YLoop + 1] = 6
-            elif tempstr == 'C':
-                level.Pf[XLoop + 1, YLoop + 1] = 7
-            elif tempstr == 'S':
-                level.Pf[XLoop + 1, YLoop + 1] = 8
-            elif tempstr == '+':
-                level.Pf[XLoop + 1, YLoop + 1] = 9
-            elif tempstr == 'I':
-                level.Pf[XLoop + 1, YLoop + 1] = 10
-            elif tempstr == 'T':
-                level.Pf[XLoop + 1, YLoop + 1] = 11
-            elif tempstr == 'K':
-                level.Pf[XLoop + 1, YLoop + 1] = 12
-            elif tempstr == 'D':
-                level.Pf[XLoop + 1, YLoop + 1] = 13
-            elif tempstr == '#':
-                level.Pf[XLoop + 1, YLoop + 1] = 14
-            elif tempstr == 'F':
-                level.Pf[XLoop + 1, YLoop + 1] = 15
-            elif tempstr == '.':
-                level.Pf[XLoop + 1, YLoop + 1] = 16
-            elif tempstr == 'R':
-                level.Pf[XLoop + 1, YLoop + 1] = 17
-            elif tempstr == 'Q':
-                level.Pf[XLoop + 1, YLoop + 1] = 18
-            elif tempstr == '/':
-                level.Pf[XLoop + 1, YLoop + 1] = 19
-            elif tempstr == '\\':
-                level.Pf[XLoop + 1, YLoop + 1] = 20
-            elif tempstr == 'B':
-                level.Pf[XLoop + 1, YLoop + 1] = 21
-            elif tempstr == 'V':
-                level.Pf[XLoop + 1, YLoop + 1] = 22
-            elif tempstr == '=':
-                level.Pf[XLoop + 1, YLoop + 1] = 23
-            elif tempstr == 'A':
-                level.Pf[XLoop + 1, YLoop + 1] = 24
-            elif tempstr == 'U':
-                level.Pf[XLoop + 1, YLoop + 1] = 25
-            elif tempstr == 'Z':
-                level.Pf[XLoop + 1, YLoop + 1] = 26
-            elif tempstr == '*':
-                level.Pf[XLoop + 1, YLoop + 1] = 27
-            elif tempstr == 'E':
-                level.Pf[XLoop + 1, YLoop + 1] = 28
-            elif tempstr == ';':
-                level.Pf[XLoop + 1, YLoop + 1] = 29
-            elif tempstr == ':':
-                level.Pf[XLoop + 1, YLoop + 1] = 30
-            elif tempstr == '`':
-                level.Pf[XLoop + 1, YLoop + 1] = 31
-            elif tempstr == '-':
-                level.Pf[XLoop + 1, YLoop + 1] = 32
-            elif tempstr == '@':
-                level.Pf[XLoop + 1, YLoop + 1] = 33
-            elif tempstr == '%':
-                level.Pf[XLoop + 1, YLoop + 1] = 34
-            elif tempstr == ']':
-                level.Pf[XLoop + 1, YLoop + 1] = 35
-            elif tempstr == 'G':
-                level.Pf[XLoop + 1, YLoop + 1] = 36
-                level.GenNum += 1
-            elif tempstr == '(':
-                level.Pf[XLoop + 1, YLoop + 1] = 37
-            elif tempstr == '!':
-                level.Pf[XLoop + 1, YLoop + 1] = 222
-            elif tempstr == 'P':
-                level.Pf[XLoop + 1, YLoop + 1] = 40
-                level.Px = XLoop + 1
-                level.Py = YLoop + 1
-            else:
-                level.Pf[XLoop + 1, YLoop + 1] = ASCII.Ord[tempstr]
+    for (x, y, monster) in playfield.coords_of([What.SlowMonster, What.MediumMonster, What.FastMonster, What.Generator]):
+        if monster == What.SlowMonster:
+            level.SNum += 1
+            level.Sx[level.SNum] = x
+            level.Sy[level.SNum] = y
+        elif monster == What.MediumMonster:
+            level.MNum += 1
+            level.Mx[level.MNum] = x
+            level.My[level.MNum] = y
+        elif monster == What.FastMonster:
+            level.FNum += 1
+            level.Fx[level.FNum] = x
+            level.Fy[level.FNum] = y
+        elif monster == What.Generator:
+            level.GenNum += 1
+    
+    players = playfield.coords_of(What.Player)
+    if len(players) != 1:
+        raise ValueError("Inappropriate number of players: {0}, expected 1.".format(len(players)))
+    [(player_x, player_y, _)] = players
+    level.Px = player_x
+    level.Py = player_y
 
-def Go(XWay: int, YWay: int, Human: bool, game: Game, level: Level, console: Crt):
-    if level.Sideways and YWay == -1 and not game.OneMove and level.Replacement != 75:
+def Go(XWay: int, YWay: int, Human: bool, game: Game, playfield: Playfield, level: Level, console: Crt):
+    if level.Sideways and YWay == -1 and not game.OneMove and level.Replacement != What.Rope:
         return
     previous = level.Replacement
     old_x = level.Px
     old_y = level.Py
 
-    level.Pf[level.Px, level.Py] = level.Replacement
-    console.gotoxy(level.Pf, level.Py)
+    playfield[level.Px, level.Py] = level.Replacement
+    console.gotoxy(level.Px, level.Py)
     console.write(' ')
     level.Px += XWay
     level.Py += YWay
-    if level.Pf[level.Px, level.Py] >=55 and level.Pf[level.Px, level.Py] <= 57 or level.Pf[level.Px, level.Py] == 75:
-        level.Replacement = level.Pf[level.Px, level.Py]
+    if playfield[level.Px, level.Py] in WhatSets.becomes_replacement_with_go:
+        level.Replacement = playfield[level.Px, level.Py]
     else:
-        level.Replacement = None
-    if previous == 75:
+        level.Replacement = What.Nothing
+    if previous == What.Rope:
         console.gotoxy(old_x, old_y)
         console.write(VisibleTiles.Rope, Colors.LightGrey)
-    level.Pf[level.Px, level.Py] = 40
+    playfield[level.Px, level.Py] = What.Player
     if level.T[5] < 1:
         console.gotoxy(level.Px, level.Py)
         console.write(VisibleTiles.Player, Colors.Yellow, Colors.Black)
@@ -697,7 +529,7 @@ def Go(XWay: int, YWay: int, Human: bool, game: Game, level: Level, console: Crt
         console.write(' ')
     if not level.Sideways:
         console.sounds(sounds.FootStep())
-    elif level.Replacement != 75 and Human:
+    elif level.Replacement != What.Rope and Human:
         console.sounds(sounds.FootStep())
     if console.keypressed() and Human:
         ch = console.read()
@@ -726,7 +558,7 @@ def End_Routine(level: Level, console: Crt):
     for x in range(650):
         console.sound(x * 3, 2) # sounds.Victory_ScramblePlayer()
         console.gotoxy(level.Px, level.Py)
-        console.write(220 + randint(4), Colors.Yellow, Colors.Black)
+        console.write(220 + randrange(4), Colors.Yellow, Colors.Black)
     console.gotoxy(level.Px, level.Py)
     console.write(VisibleTiles.Stairs, Colors.Black, Colors.Green) # Flashing, when possible
     Restore_Border(level, console)
