@@ -1,5 +1,5 @@
 # System Libraries
-from typing import List, Optional, Sequence
+from typing import List, Optional, Sequence, Tuple
 from random import randrange
 from pathlib import Path
 import json
@@ -129,11 +129,14 @@ class LiteralLevel():
     def __init__(self, lines: Sequence[str]):
         self.lines = list(lines)
 
+class RandomLevel():
+    def __init__(self, what_counts: Sequence[Tuple[What, int]]):
+        self.what_counts = what_counts
+
 class Game:
     def __init__(self):
         self.HSList: list[HSType] = [HSType('', 0, 0) for _ in range(1, 15)]
         self.Restart: bool = False
-        self.Df: list[str] = ['' for _ in range(1, 30)]
         self.OneMove: bool = True
         self.Difficulty: int = 0
         self.MixUp: bool = True
@@ -146,8 +149,8 @@ def PrintNum(YPos: int, Num: int, player: PlayerState, console: Crt, fore: Optio
     strVal = str(Num)
     if (YPos == 2 and player.score > 0):
         strVal += "0"
-    if (YPos == 11):
-        if (player.whip_power >= 3):
+    if YPos == 11:
+        if player.whip_power >= 3:
             strVal = strVal + "+" + str(player.whip_power)
     strVal = f"{strVal:^7}"
     console.write(69, YPos - 1, strVal, fore, back)
@@ -312,9 +315,11 @@ def High_Score(PlayAgain: bool, game: Game, player: PlayerState, level: Level, c
     place = 1
     stop = False
     while (stop is False and place <= 15):
-        if player.score > game.HSList[place].HighScore: stop = True
-        place += 1
-        if stop is False and place > 15: place = 100
+        if player.score > game.HSList[place].HighScore:
+            stop = True
+            place += 1
+        if stop is False and place > 15:
+            place = 100
     place -= 1
     if place < 16:
         for x in range (15, place, -1):
@@ -377,7 +382,7 @@ def Dead(DeadDot: bool, game: Game, player: PlayerState, level: Level, console: 
     if player.gems > 9:
         console.default_colors(Colors.Red, Colors.LightGrey)
     else:
-        player.ems = 0
+        player.gems = 0
         console.default_colors(Colors.LightRed, Colors.DarkGrey) # Flashing, when possible
     console.gotoxy(71, 8)
     console.write('     ')
@@ -399,26 +404,7 @@ def Dead(DeadDot: bool, game: Game, player: PlayerState, level: Level, console: 
     Border(level, console)
     High_Score(True, game, player, level, console)
 
-def Define_Levels(game: Game):
-    for i in range(1, 30):
-        game.Df[i] = ''
-                  #  1  2  3  X  W  L  C  S  +  I  T  K  D  #  F  .  R  Q  /  \  B  V  =  A  U  Z  *  E  ;  :  `  -
-    game.Df[2] =  '200  5   100     2  1  1 40        1    50     5                                                '
-    game.Df[4] =  '   200       38  2                                                                              '
-    game.Df[6] =  '      180 50     2       75                                                                     '
-    game.Df[8] =  '             20  2  1    40 35  2              5         990              3                     '
-    game.Df[10] = '   400           1       20                 1                                     35            '
-    game.Df[12] = '100 75 50100 10  1  1  1 30     1  1                          5                     100         '
-    game.Df[14] = '      170     5  1  1    25500  1       50 50 50     1        1          28        1            '
-    game.Df[16] = '    60           1     6 30 20              1                  550        4     5  2            '
-    game.Df[18] = '100           3  1  1    20     2              5              1           4    20   850         '
-    game.Df[20] = '   550   650  5  1  1     5     1  1           1              1                20  8            '
-    game.Df[22] = '      300        1         300            150150              1               300               '
-    game.Df[24] = '   305        5  1  1     5     1           1                             2     5            999'
-    game.Df[26] = '   100 20    25  2  1  2 20  1  2             10     1        5   785    10    15               '
-    game.Df[28] = '133133133        3  3    80420  1  1                                           10  5            '
-
-def Convert_Format(literal_level: LiteralLevel, player: PlayerState, level: Level, playfield: Playfield):
+def Load_Literal_Level(literal_level: LiteralLevel, player: PlayerState, level: Level, playfield: Playfield):
     level.SNum = 0
     level.MNum = 0
     level.FNum = 0
@@ -451,12 +437,41 @@ def Convert_Format(literal_level: LiteralLevel, player: PlayerState, level: Leve
             level.Fx[level.FNum] = x
             level.Fy[level.FNum] = y
         elif monster == What.Generator:
-            level.GenNum += 1  
+            level.GenNum += 1
     players = playfield.coords_of(What.Player)
     if len(players) != 1:
         raise ValueError("Inappropriate number of players: {0}, expected 1.".format(len(players)))
     [(player_x, player_y, _)] = players
     player.position = (player_x, player_y)
+
+def Load_Random_Level(definition: RandomLevel, player: PlayerState, playfield: Playfield, level: Level):
+    level.GenNum = 0
+    level.LavaFlow = False
+    level.T[9] = -1
+    for x in range(1, 999):
+        level.Sx[x] = 0
+        level.Sy[x] = 0
+        level.Mx[x] = 0
+        level.My[x] = 0
+        level.Fx[x] = 0
+        level.Fy[x] = 0
+    New_Gem_Color(level)
+    playfield.reset()
+    playfield[player.position] = What.Player
+    playfield.generate(definition)
+    for (mx, my, _) in playfield.coords_of(What.SlowMonster):
+        level.SNum += 1
+        level.Sx[level.SNum] = mx
+        level.Sy[level.SNum] = my
+    for (mx, my, _) in playfield.coords_of(What.MediumMonster):
+        level.MNum += 1
+        level.Mx[level.MNum] = mx
+        level.My[level.MNum] = my
+    for (mx, my, _) in playfield.coords_of(What.FastMonster):
+        level.FNum += 1
+        level.Fx[level.FNum] = mx
+        level.Fy[level.FNum] = my
+    level.GenNum = playfield.count_of(What.Generator)
 
 def Go(XWay: int, YWay: int, Human: bool, game: Game, playfield: Playfield, player: PlayerState, level: Level, console: Crt):
     if level.Sideways and YWay == -1 and not game.OneMove and playfield.replacement != What.Rope:

@@ -1,33 +1,48 @@
-from levels import LiteralLevel
+from typing import Union
+from pieces import What
+from levels import LiteralLevel, RandomLevel
 
-class DungeonsLayouts():
-    Level1: LiteralLevel = [
-            '        1    1     1  1     1     1   1      1        1         ',
-            '   ---#######   1        1     1          1      1#######---   1',
-            '   #        #1      1     1        1    1      1  #+ + + + #    ',
-            '1  #   TT   #     1   1      1   1          1     # + + + +#1   ',
-            '   #        #  1        1       1     1         1 #+ + + + #    ',
-            '   ##########       1     1         1     1   1   ##########  1 ',
-            '1   1       1     1    1      1         1       1      1       1',
-            '  1      1      1                         1       1     1    1  ',
-            '   1    1   1      1   XXXXXXXXXXXXXXX     1   1     1        1 ',
-            '      1      1   1     XXXXX  I  XXXXX   1      1   1    1      ',
-            '1   1    1    1    1   XXXX+     +XXXX    1   1       1        1',
-            ' 1      1  1    1      XXXX+  P  +XXXX   1      1      1    1   ',
-            '    1     1  1     1   XXXX+     +XXXX     1      1  1    1    1',
-            ' 1   1     1     1     XXXXX  S  XXXXX   1    1       1      1  ',
-            '1      1 1    1        XXXXXXXXXXXXXXX      1   1       1     1 ',
-            '  1     1  1      1                      1     1    1      1    ',
-            '    1       1    1     1     1     1    1     1       1 1      1',
-            '1  ##########1    1   1    1    1     1      1   1########## 1  ',
-            ' 1 # W W W W# 1        1    1     1      1 1      #        #    ',
-            '1  #W W W W #   1   1    1     1     1         1  #   LL   #  1 ',
-            '   # W W W W#1       1    1        1   1     1    #        #    ',
-            '1  ---#######    1     1    1 1     1     1     1 #######---    ',
-            '        1    1     1            1  1     1     1        1      1'
-    ]
+DungeonsLayouts: dict[int, Union[LiteralLevel, RandomLevel]] = {
+    1: LiteralLevel([
+        '        1    1     1  1     1     1   1      1        1         ',
+        '   ---#######   1        1     1          1      1#######---   1',
+        '   #        #1      1     1        1    1      1  #+ + + + #    ',
+        '1  #   TT   #     1   1      1   1          1     # + + + +#1   ',
+        '   #        #  1        1       1     1         1 #+ + + + #    ',
+        '   ##########       1     1         1     1   1   ##########  1 ',
+        '1   1       1     1    1      1         1       1      1       1',
+        '  1      1      1                         1       1     1    1  ',
+        '   1    1   1      1   XXXXXXXXXXXXXXX     1   1     1        1 ',
+        '      1      1   1     XXXXX  I  XXXXX   1      1   1    1      ',
+        '1   1    1    1    1   XXXX+     +XXXX    1   1       1        1',
+        ' 1      1  1    1      XXXX+  P  +XXXX   1      1      1    1   ',
+        '    1     1  1     1   XXXX+     +XXXX     1      1  1    1    1',
+        ' 1   1     1     1     XXXXX  S  XXXXX   1    1       1      1  ',
+        '1      1 1    1        XXXXXXXXXXXXXXX      1   1       1     1 ',
+        '  1     1  1      1                      1     1    1      1    ',
+        '    1       1    1     1     1     1    1     1       1 1      1',
+        '1  ##########1    1   1    1    1     1      1   1########## 1  ',
+        ' 1 # W W W W# 1        1    1     1      1 1      #        #    ',
+        '1  #W W W W #   1   1    1     1     1         1  #   LL   #  1 ',
+        '   # W W W W#1       1    1        1   1     1    #        #    ',
+        '1  ---#######    1     1    1 1     1     1     1 #######---    ',
+        '        1    1     1            1  1     1     1        1      1'
+    ]),
 
-    Level3: LiteralLevel = [
+    2: RandomLevel([
+        (What.SlowMonster, 200),
+        (What.MediumMonster, 5),
+        (What.Breakable_Wall, 100),
+        (What.Stairs, 2),
+        (What.Chest, 1),
+        (What.SlowTime, 1),
+        (What.Gem, 40),
+        (What.Key, 1),
+        (What.Wall, 50),
+        (What.TeleportTrap, 5)
+    ]),
+
+    3: LiteralLevel([
         '+++##############RRRRRRR###         ##sm######TVVVVT##K-        ',
         '+C+D       +    K#RRRRRRR##    C    ##was#### VVVVVV ###      # ',
         '+++######## ####1#RRRRRRR##         ##here## VVV++VVV ##333333# ',
@@ -42,7 +57,7 @@ class DungeonsLayouts():
         '.# # C###   P  ###### ###XXXXXXXXX# ::;:: ####### # #XXXXXX####D',
         '.# #3#### ////####### ###XRRRRRRRX#:: :   ###VW## # #XXXXX##WWWW',
         '.# ###////\\\\\\//###### ####RRRRRRR##+ :  :+###TV## # #XXXX##KWWWW',
-        '.# ##//\\\\\\\\C\//////## ##T##RRRRRRR###########V+## #     ####WWWW',
+        '.# ##//\\\\\\\\C\\//////## ##T##RRRRRRR###########V+## #     ####WWWW',
         '.# ##///\\\\\\1\\////###+ #+-+##RRRRRRR##cavern## V## ###///########',
         ' # ###///\\\\\\//#####+# #---###RRRRRRR##of#####V ## #222222222\\###',
         ' #  Q###//// #####+## #-C-#Z#RRRRRRR#tunnels# V## #222222222\\1 #',
@@ -51,9 +66,15 @@ class DungeonsLayouts():
         '##################### ##/## ###RRRRRRR## ## #V ## #222222222##D#',
         '22222222222222222222#       ####RRRRRRR# ###X V## #222222222##D#',
         'K + + + + + + + + +   ###########RRRRRRR#++##V    \\---------##L#'
-    ]
+    ]),
 
-    Level5: LiteralLevel = [
+    4: RandomLevel([
+        (What.MediumMonster, 200),
+        (What.Whip, 38),
+        (What.Stairs, 2)
+    ]),
+
+    5: LiteralLevel([
         '//1////////\\\\\\\\\\\\\\\\\\\\\\1\\\\\\\\11111\\C\\1111111\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\XXCCC',
         '/////////1//\\\\\\\\1\\\\\\\\\\\\\\\\\\\\\\\\111\\\\\\111111\\\\XXX\\\\\\1\\\\\\\\\\\\\\/1XXCCC',
         '///RRR///////\\\\\\\\\\\\\\\\\\\\\\\\\\\\Z\\\\111111111\\\\\\\\XLX\\\\\\\\\\\\\\\\\\\\///XXXXX',
@@ -77,9 +98,16 @@ class DungeonsLayouts():
         ' 111111 1    1      W                     RRR1           W    : ',
         '111 11 111 1    1         P                      W            :`',
         '1 11111 111  1       W            W                   W      I:U'
-    ]
+    ]),
 
-    Level7: LiteralLevel = [
+    6: RandomLevel([
+        (What.FastMonster, 180),
+        (What.Breakable_Wall, 50),
+        (What.Stairs, 2),
+        (What.Gem, 75)
+    ]),
+
+    7: LiteralLevel([
         ' I                3+             3+             3+             3',
         'PI                3+             3+             3+             3',
         ' I                3+             3+             3+             3',
@@ -103,9 +131,21 @@ class DungeonsLayouts():
         '  ###K     ;      3    +:    3     :+3       +: 3    :+     +  3',
         '  ##########  ##   :+  3  +    :+      :+     3  +:+     3  ::::',
         '              ##3         3 +:    3 +   3  :+      3   :+  :D`DL'
-    ]
-    
-    Level9: LiteralLevel = [
+    ]),
+
+    8: RandomLevel([
+        (What.Whip, 20),
+        (What.Stairs, 2),
+        (What.Chest, 1),
+        (What.Gem, 40),
+        (What.Invisibility, 35),
+        (What.TeleportScroll, 2),
+        (What.TeleportTrap, 5),
+        (What.Tree, 990),
+        (What.Tunnel, 3)
+    ]),
+
+    9: LiteralLevel([
         'K            3-      33333VVVVVVVVVVVV    .         .       .  Z',
         '     3-     ---     33VVVVVVVVVVVVVVZ          .                ',
         '3-  ---           333VVVVVVVVVVVVVVVVVV  .        U   .      .  ',
@@ -129,9 +169,17 @@ class DungeonsLayouts():
         '.  --.      - --.  - VVVVVVVVVVVVVVVVVVVVV11111111---11111111111',
         '   3 --    3   -- 3-  ##VVVVVVVVVVVVVVVVV11111111111111111111111',
         ' .   3  .    . 3-   . D+DLVVTTCCCTTVVVCC11111111111111111111111K'
-    ]
+    ]),
 
-    Level11: LiteralLevel = [
+    10: RandomLevel([
+        (What.MediumMonster, 400),
+        (What.Stairs, 1),
+        (What.Gem, 20),
+        (What.Freeze, 1),
+        (What.Quake, 35)
+    ]),
+
+    11: LiteralLevel([
         '                                                        WWWW  3S',
         'U################# #################################`###########',
         ' :3; \\3+#3 W    K#3  #  W  W  W  W  W  W  W  W  W  #   3     3  ',
@@ -155,9 +203,25 @@ class DungeonsLayouts():
         ' :3; \\3+#        #3 K#                             #3         ++',
         'U### ####I########################## ###############E###########',
         '                                                        ++++  3S'
-    ]
+    ]),
 
-    Level13: LiteralLevel = [
+    12: RandomLevel([
+        (What.SlowMonster, 100),
+        (What.MediumMonster, 75),
+        (What.FastMonster, 50),
+        (What.Breakable_Wall, 100),
+        (What.Whip, 10),
+        (What.Stairs, 1),
+        (What.Chest, 1),
+        (What.SlowTime, 1),
+        (What.Gem, 30),
+        (What.TeleportScroll, 1),
+        (What.Key, 1),
+        (What.Bomb, 5),
+        (What.Invisible_Breakable_Wall, 100)
+    ]),
+
+    13: LiteralLevel([
         'KKKKDE EI .  I  E    2  I   E  RRCC211///////// ////////////T//K',
         'VVVVVE     2    I    .     .   RR22211//////// / ///////////2// ',
         '  E  I .    E  .     E  .    2 RR11111///   / ///      /////2// ',
@@ -181,9 +245,26 @@ class DungeonsLayouts():
         '2---2---2-2--2-+-2----2----2--+RRVVVVLDVVVVVV  .    .     . VVVV',
         'VVVV2--2-+-2-2----2--2-2-2-2---RRCCVVVVDVDDVD                VVV',
         'KKKD-2---2-2--2-2---2-+-2--2--2RRCCVVVVVDVVDVV222222222222222DKK'
-    ]
+    ]),
 
-    Level15: LiteralLevel = [
+    14: RandomLevel([
+        (What.FastMonster, 170),
+        (What.Whip, 5),
+        (What.Stairs, 1),
+        (What.Chest, 1),
+        (What.Gem, 25),
+        (What.Invisibility, 500),
+        (What.TeleportScroll, 1),
+        (What.Wall, 50),
+        (What.SpeedTime, 50),
+        (What.TeleportTrap, 50),
+        (What.WhipPower, 1),
+        (What.Bomb, 1),
+        (What.Tunnel, 28),
+        (What.Quake, 1)
+    ]),
+
+    15: LiteralLevel([
         '+*****#3#L#+ \\    2    \\ 2   2   W#CCCC#=C;=====    ====        ',
         '+**Q**# #D#     \\/  2 \\\\     //   ##33##=;;===== === == ======= ',
         '+*****# #D#\\\\  //\\/   \\     \\\\// 2#\\33\\#===I=.  === ==== ===== =',
@@ -207,9 +288,22 @@ class DungeonsLayouts():
         ' #CK#.##11111111B111111111B11111111##RRRRRRRRRRR#   == ======= =',
         'P####X##111111111111111111111111111111RRRRRRRRRRU#====   ==== ==',
         '       /-------------C----------------URRRRRRRRRRR#======      T'
-    ]
+    ]),
 
-    Level17: LiteralLevel = [
+    16: RandomLevel([
+        (What.MediumMonster, 60),
+        (What.Stairs, 1),
+        (What.SlowTime, 6),
+        (What.Gem, 30),
+        (What.Invisibility, 20),
+        (What.SpeedTime, 1),
+        (What.Lava, 550),
+        (What.Tunnel, 4),
+        (What.Nugget, 5),
+        (What.Quake, 2)
+    ]),
+
+    17: LiteralLevel([
         '     2    KRR++                P RRRRRRRRRRRR                   ',
         ' RRRRRRRRRRRRRRRRRRRRRRRRRRRRRR      -         RRRRRRRRRRRRRRR  ',
         '                    ++++++C 3RR  RRRRR1 RRRRR  RRCE             ',
@@ -233,9 +327,23 @@ class DungeonsLayouts():
         '  X  RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR--URRCCRRCCRRXXXXXX333333  ',
         '--RR              RRRRRRRR    2   KRR- RRR..RR..RR**RR**RR**RR  ',
         '33RRRRRRRRRRRRRR   *    *   RRRRRRRRR--E.E******RRK*RR**RR**RR  '
-    ]
+    ]),
 
-    Level19: LiteralLevel = [
+    18: RandomLevel([
+        (What.SlowMonster, 100),
+        (What.Whip, 3),
+        (What.Stairs, 1),
+        (What.Chest, 1),
+        (What.Gem, 20),
+        (What.TeleportScroll, 2),
+        (What.TeleportTrap, 5),
+        (What.Bomb, 1),
+        (What.Tunnel, 4),
+        (What.Nugget, 20),
+        (What.Invisible_Breakable_Wall, 850)
+    ]),
+
+    19: LiteralLevel([
         '1  C  1      +   1   +        +  1      +     + 1 RRR++++++RRRRL',
         '--   ---  1     ---        1    ---  1         ---RRRR++++++RRRD',
         ' 1       ---RRRRRR    1   ---       ---    W      RRRR;;;;;;RRR1',
@@ -259,9 +367,24 @@ class DungeonsLayouts():
         ' #     #  #  #3 #                           #EEERRRRRR11111RRRR1',
         'C# 3#  #  #  #**#  ##\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\#+++RRRRR;;;;;;RRRR ',
         '3#+ #3*#3    #**#+3##33333333333333333333333#CCRRRRRRR*-U-*RRRRU'
-    ]
+    ]),
 
-    Level21: LiteralLevel = [
+    20: RandomLevel([
+        (What.MediumMonster, 550),
+        (What.Breakable_Wall, 650),
+        (What.Whip, 5),
+        (What.Stairs, 1),
+        (What.Chest, 1),
+        (What.Gem, 5),
+        (What.TeleportScroll, 1),
+        (What.Key, 1),
+        (What.TeleportTrap, 1),
+        (What.Bomb, 1),
+        (What.Nugget, 20),
+        (What.Quake, 8)
+    ]),
+
+    21: LiteralLevel([
         'LVVVVVVVVVVVVVVVVVVVVVV333333333333333333VVVVVVVVVVVVVVVVVVVVVVK',
         'DVVVVVVVVVVVVVVVVVVVV333                333VVVVVVVVVVVVVVVVVVVVI',
         '.VVVVVVVVVVVVVVVVVV333         ***        333VVVVVVVVVVVVVVVVVV-',
@@ -285,9 +408,19 @@ class DungeonsLayouts():
         '-VVVVVVVVVVVVVVVVVV333         ***        333VVVVVVVVVVVVVVVVVV-',
         '.VVVVVVVVVVVVVVVVVVVV333                333VVVVVVVVVVVVVVVVVVVVF',
         'KVVVVVVVVVVVVVVVVVVVVVV333333333333333333VVVVVVVVVVVVVVVVVVVVVVK'
-    ]
+    ]),
 
-    Level23: LiteralLevel = [
+    22: RandomLevel([
+        (What.FastMonster, 300),
+        (What.Stairs, 1),
+        (What.Invisibility, 300),
+        (What.SpeedTime, 150),
+        (What.TeleportTrap, 150),
+        (What.Bomb, 1),
+        (What.Nugget, 300)
+    ]),
+
+    23: LiteralLevel([
         'L UD*D*D*D*D------------------------;;;;;;;;;;;;;;;;;;;;;;;;;;;;',
         '############-----------------##-####                           S',
         '+2222K2222+#11111111111111111##-22X# XXXXXXXXXXXXXXXXXXXXXXXXXXX',
@@ -311,9 +444,22 @@ class DungeonsLayouts():
         '///////////#=-=-===-=====-==-##-2XX#---------------------#######',
         'C2222222222#W---====-----===S##-2XC#+--------------------##22222',
         '####################################:::::::::::::;:::::::##X222U'
-    ]
+    ]),
 
-    Level25: LiteralLevel = [
+    24: RandomLevel([
+        (What.MediumMonster, 305),
+        (What.Whip, 5),
+        (What.Stairs, 1),
+        (What.Chest, 1),
+        (What.Gem, 5),
+        (What.TeleportScroll, 1),
+        (What.SpeedTime, 1),
+        (What.Tunnel, 2),
+        (What.Nugget, 5),
+        (What.Stop, 999)
+    ]),
+
+    25: LiteralLevel([
         'VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV VVVVVVVVVVVVVVVVVVVVVVVCC',
         'VRRRRRVVVVVVVVV VVVVV VVVVVVVVVVVVVVV V VVV**VVVVVV*****VVVVVVCC',
         'VRU KRVVV**VVV V VVV VIVVV*****VVVVV VVV V**VVVVVV V*****VVVVVVV',
@@ -337,9 +483,27 @@ class DungeonsLayouts():
         'VVVVVVVVVVVVVVVV V VVV VVVVVVVRU KRVV VVVVVVV VVV****VVVV**VVVVV',
         'VVVVVVVVVVVVVV**VVV V VVVVVVVVRRRRRVVV**VVVVVV V****VVVVVVVVVVVC',
         'CCCCVVVVVVVVV**VVVVV VVVVVVVVVVVVVVVVVV**VVVVVV****VVVVVVVVVVVCC'
-    ]
+    ]),
 
-    Level27: LiteralLevel = [
+    26: RandomLevel([
+        (What.MediumMonster, 200),
+        (What.FastMonster, 30),
+        (What.Whip, 25),
+        (What.Stairs, 2),
+        (What. Chest, 1),
+        (What.SlowTime, 2),
+        (What.Gem, 20),
+        (What.Invisibility, 1),
+        (What.TeleportScroll, 2),
+        (What.TeleportTrap, 10),
+        (What.WhipPower, 1),
+        (What.Bomb, 5),
+        (What.Pit, 785),
+        (What.Tunnel, 10),
+        (What.Nugget, 15)
+    ]),
+
+    27: LiteralLevel([
         '3     +=     =+=    =  1=  =+=  =     -   -2   -    -2    -  Z-2',
         '3 P =   =   =   1==  =    =   = 1=    -2  -    -2   -    K-2  - ',
         '##################################   ###########################',
@@ -363,9 +527,23 @@ class DungeonsLayouts():
         '1-1111111V#----3-= = = = = =222222;  RK ===  ==== 1   .    1    ',
         '-11111111V#+++--3= =+   += =222222;  RRRRRRRRRRRRRRRRRRRRRRRRR-X',
         'T-------KV#+++-3-- =======I ------- ZU2 U2 U2 U2 UK U2 U2 U2 U2X'
-    ]
+    ]),
 
-    Level29: LiteralLevel = [
+    28: RandomLevel([
+        (What.SlowMonster, 133),
+        (What.MediumMonster, 133),
+        (What.FastMonster, 133),
+        (What.Stairs, 3),
+        (What.Chest, 3),
+        (What.Gem, 80),
+        (What.Invisibility, 420),
+        (What.TeleportScroll, 1),
+        (What.Key, 1),
+        (What.Nugget, 10),
+        (What.Quake, 5)
+    ]),
+
+    29: LiteralLevel([
         'P-----------:333333333333333:---------:C:::::::::::K:-----------',
         '-:-:-::;:::-:---------------;-:::-:::-:1-1-1-1-1-1-1:-:::::::::-',
         '-:-:--:2:C;-:-:#############:-:U:-:U:-:-1-1-1-1-1-1-:-:   C   :-',
@@ -389,9 +567,9 @@ class DungeonsLayouts():
         '--:-:-:CI`-------:*******:-:::EWWWWW--------:T::::::::::-:-:3-:`',
         ':-:-:-::::::::::-:::::::::---::::::::::::::::::3333333:--:-::-:`',
         '------------------+:Z-----------------------------------::----:L'
-    ]
+    ]),
 
-    Level30: LiteralLevel = [
+    30: LiteralLevel([
         'K1VXXXXXXXXXXXXXXXX3333333333333K#333##Q...\\2-2-2-2-2-2-2-2-2-:R',
         '-1V  +++++++++++++3333333333333333333#######-2-2-2-2-2-2-2-2-2;R',
         '-1V  #########################------+##-2-2-2-2-2-2-2-2-2-2-2-:R',
@@ -415,4 +593,5 @@ class DungeonsLayouts():
         '-1V1EEEE1E1EEEE1EE1E##C+++++++3KKD***##-2-2-2-2-2-2-2-2-2-2-2-:R',
         '-1VE1E11+EE11E1EEEE1##############***##2-2-2-2-2-2-2-2-2-2-2-2;R',
         'K1V+E1EEEEEEE1E+EEEE+*W*+C+*W*+K##S-----2-2-2-2-2-2-2-2-2-2-2-:R'
-    ]
+    ])
+}

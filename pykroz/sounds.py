@@ -1,4 +1,4 @@
-from random import randint
+from random import randrange
 from typing import Sequence, Tuple, Union
 
 SampleSet = Sequence[Tuple[Union[None, int], int]]
@@ -6,16 +6,16 @@ SampleSet = Sequence[Tuple[Union[None, int], int]]
 def FootStep() -> SampleSet:
     parts: SampleSet = []
     for _ in range(5):
-        freq = randint(0, 500) + 350
+        freq = randrange(500) + 350
         parts.append((freq, 1))
     parts.append((None, 120))
     for _ in range(6):
-        freq = randint(0, 50) + 150
+        freq = randrange(50) + 150
         parts.append((freq, 4))
     return parts
 
 def GrabSound() -> SampleSet:
-    return [(randint(1, 1000) + 1000, 0.5) for _ in range(50)]
+    return [(randrange(1000) + 1000, 0.5) for _ in range(50)]
 
 def BlockSound() -> SampleSet:
     return [(x, 30) for x in range(60, 30, -3)]
@@ -32,11 +32,11 @@ def NoneSound() -> SampleSet:
 def Static() -> SampleSet:
     parts = []
     for _ in range(33):
-        if randint(0, 1) == 0:
-            for _ in range(randint(0, 60) + 10):
-                parts.append((randint(0, 4000) + 3000, 1))
+        if randrange(1) == 0:
+            for _ in range(randrange(60) + 10):
+                parts.append((randrange(4000) + 3000, 1))
         else:
-            parts.append((None, randint(3, 30)))
+            parts.append((None, randrange(3, 30)))
     return parts
 
 def Points_For_Gems(gem: int) -> SampleSet:
@@ -74,7 +74,7 @@ def Invisible() -> SampleSet:
 def Door_No_Keys() -> SampleSet:
     parts = []
     for _ in range(1, 15):
-        parts.append((randint(0, 99) + 30, 15))
+        parts.append((randrange(99) + 30, 15))
         parts.append((None, 15))
     return parts
 
@@ -82,7 +82,7 @@ def Open_Door() -> SampleSet:
     return [(x, 15) for x in range(10, 90)]
 
 def River_Splash() -> SampleSet:
-    return [(randint(0, x * 2 + 200) + x, 1) for x in range(1, 500)] # 2000 on FastPC
+    return [(randrange(x * 2 + 200) + x, 1) for x in range(1, 500)] # 2000 on FastPC
 
 def Speed() -> SampleSet:
     return [(x * 50 + 300, x * 10 + 40) for x in range(1, 7)]
@@ -94,22 +94,22 @@ def Bomb_Windup() -> SampleSet:
     return [(i * 2, 3) for i in range(70, 600)]
 
 def Lava() -> SampleSet:
-    return [(randint(y * x + 100) + y * x, 0.3) for x in range(1400, 20, -1) for y in range(9, 2, -1)] # 2000 on FastPC
+    return [(randrange(y * x + 100) + y * x, 0.3) for x in range(1400, 20, -1) for y in range(9, 2, -1)] # 2000 on FastPC
 
 def Pit_Splat() -> SampleSet:
-    return [(randint(0, i), 0.2) for i in range(8000, 20, -1)]
+    return [(randrange(i), 0.2) for i in range(8000, 20, -1)]
 
 def Freeze() -> SampleSet:
-    return [(randint(0, 1000) + x + 200, 0.3) for x in range(1, 5000)] # 8000 on FastPC
+    return [(randrange(1000) + x + 200, 0.3) for x in range(1, 5000)] # 8000 on FastPC
 
 def Quake_Start() -> SampleSet:
-    return [(randint(0, i), 0.3) for i in range(1, 2500)] # 5500 on FastPC
+    return [(randrange(i), 0.3) for i in range(1, 2500)] # 5500 on FastPC
 
 def Quake_Block_Drop() -> SampleSet:
-    return [(randint(200), 0.3) for _ in range(1, 400)] # 700 on FastPC
+    return [(randrange(200), 0.3) for _ in range(1, 400)] # 700 on FastPC
 
 def Quake_Finish() -> SampleSet:
-    return [(randint(i), 0.3) for i in range(2500, 20, -1)]
+    return [(randrange(i), 0.3) for i in range(2500, 20, -1)]
 
 def Load_Error() -> SampleSet:
     return [(300, 250)]
@@ -124,7 +124,7 @@ def Whip_Hit() -> SampleSet:
 def Whip_Breakable_Destroy() -> SampleSet:
     parts = []
     for s in range(3300, 20, -1):
-        parts.append((randint(0, s), 0.2))
+        parts.append((randrange(s), 0.2))
         parts.append((90, 1))
     return parts
 
@@ -169,11 +169,11 @@ def Bad_Key() -> SampleSet:
     return [
         (540, 40),
         (100, 15),
-        (None, 15)
+        (None, 15),
         (100, 15),
-        (None, 15)
+        (None, 15),
         (100, 15),
-        (None, 15)
+        (None, 15),
         (100, 15),
         (None, 15)
     ]
@@ -228,9 +228,9 @@ def Victory_MacGuffin_2(b: int, x: int, y: int) -> SampleSet:
 def Victory_Strange() -> SampleSet:
     parts = []
     for x in range(1, 250):
-        parts.append((randint(0, 3000) + x, 0.5))
+        parts.append((randrange(3000) + x, 0.5))
     for y in range(2200, 20, -1):
-        parts.append((randint(0, y), 0.5))
+        parts.append((randrange(y), 0.5))
     return parts
 
 def Victory_ScramblePlayer() -> SampleSet:
@@ -256,7 +256,7 @@ def Whip_Power() -> SampleSet:
 def Bomb_Detonate() -> SampleSet:
     parts = []
     for i in range(5000, 20, -1): # 8230 for FastPC
-        parts.append((randint(0, i), 0.3))
+        parts.append((randrange(i), 0.3))
         parts.append((30, 8))
     return parts
 
@@ -271,10 +271,10 @@ def Pit_Falling() -> SampleSet:
 
 def Tunnelling(duration_ms: float) -> SampleSet:
     sample_ms = 0.2
-    return [(randint(0, 3000) + 100, sample_ms) for _ in range(0, duration_ms // sample_ms)]
+    return [(randrange(3000) + 100, sample_ms) for _ in range(0, duration_ms // sample_ms)]
 
 def Tunnel_Exit() -> SampleSet:
-    return [(randint(0, 1000), 0.2) for _ in range(1, 400)] # 2100 on FastPC
+    return [(randrange(1000), 0.2) for _ in range(1, 400)] # 2100 on FastPC
 
 def Load() -> SampleSet:
     return [(x // 2, 0.3) for x in range(1, 600)]

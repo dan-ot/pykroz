@@ -1,10 +1,12 @@
-from pieces import What, WhatSets
-from colors import Colors
 from random import randrange
+
 import pygame.locals
 
+from playerstate import PlayerState
+from pieces import What, WhatSets
+from colors import Colors
 from ascii import ASCII
-from levels import AddScore, Game, Level, New_Gem_Color, TMAX, TOTOBJECTS, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
+from levels import AddScore, Game, Level, TMAX, VisibleTiles, YTOP
 from crt import ColorMode, Crt
 from playfield import Playfield
 import sounds
@@ -45,29 +47,29 @@ def Screen(game: Game, console: Crt):
         game.FastPC = False
     console.clrscr()
 
-def Init_Screen(game: Game, level: Level, console: Crt):
+def Init_Screen(game: Game, player: PlayerState, playfield: Playfield, level: Level, console: Crt):
     game.Restart = False
-    level.Score = 0
-    level.Level = 1
-    level.Whips = 0
-    level.Teleports = 0
-    level.Keys = 0
-    level.WhipPower = 2
+    player.score = 0
+    player.level = 1
+    player.whips = 0
+    player.teleports = 0
+    player.keys = 0
+    player.whip_power = 2
     if game.Difficulty == 9:
-        level.Gems = 250
-        level.Whips = 100
-        level.Teleports = 50
-        level.Keys = 1
-        level.WhipPower = 3
+        player.gems = 250
+        player.whips = 100
+        player.teleports = 50
+        player.keys = 1
+        player.whip_power = 3
     elif game.Difficulty == 8:
-        level.Gems = 20
-        level.Whips = 10
+        player.gems = 20
+        player.whips = 10
     elif game.Difficulty == 5:
-        level.Gems = 15
+        player.gems = 15
     elif game.Difficulty == 2:
-        level.Gems = 10
+        player.gems = 10
     level.FloorPattern = False
-    level.Replacement = None
+    playfield.replacement = What.Nothing
     level.Bonus = 0
     level.LavaFlow = False
     level.LavaRate = 0
@@ -78,7 +80,7 @@ def Init_Screen(game: Game, level: Level, console: Crt):
     level.GravCounter = 0
     level.TreeRate = -1
     if game.Difficulty == 2 or game.Difficulty == 9:
-        game.FoundSet = set([w for w in What])
+        game.FoundSet = set(What)
     else:
         game.FoundSet = set()
     level.GenNum = 0
@@ -86,13 +88,12 @@ def Init_Screen(game: Game, level: Level, console: Crt):
     game.OneMove = False
     level.GenFactor = 17 # 28 for FastPC?
     if game.MixUp:
-        level.Gems = 60
-        level.Whips = 30
-        level.Teleports = 15
-        level.Keys = 2
+        player.gems = 60
+        player.whips = 30
+        player.teleports = 15
+        player.keys = 2
         game.FoundSet = WhatSets.auto_discover_on_mixup.copy()
-    level.Px = randrange(XSIZE) + XBOT
-    level.Py = randrange(YSIZE) + YBOT
+    player.position = (randrange(playfield.bounds().width), randrange(playfield.bounds().height))
     level.BTime = 2 # 9 for FastPC?
     level.STime = 3 # 10 for FastPC?
     level.MTime = 2 # 8 for FastPC?
@@ -134,55 +135,6 @@ def Init_Screen(game: Game, level: Level, console: Crt):
     console.gotoxy(70, 25)
     console.write('R', Colors.White)
     console.write('estore')
-
-def Parse_Field(game: Game, level: Level):
-    slot = 1
-    counter = 1
-    while not counter > TOTOBJECTS:
-        fetch = game.Df[level.Level][slot:slot + 3]
-        level.Parsed[counter] = int(fetch)
-        slot += 3
-        counter += 1
-
-def Create_Playfield(game: Game, playfield: Playfield, level: Level):
-    level.GenNum = 0
-    level.LavaFlow = False
-    level.T[9] = -1
-    for x in range(1, 999):
-        level.Sx[x] = 0
-        level.Sy[x] = 0
-        level.Mx[x] = 0
-        level.My[x] = 0
-        level.Fx[x] = 0
-        level.Fy[x] = 0
-    New_Gem_Color(level)
-    playfield.reset()
-    playfield[level.Px, level.Py] = What.Player
-    Parse_Field(game, level)
-    for obj in range(TOTOBJECTS):
-        if level.Parsed[obj] > 0:
-            for _ in range(level.Parsed[obj]):
-                done = False
-                while not done:
-                    x_spot = randrange(playfield.bounds().width)
-                    y_spot = randrange(playfield.bounds().height)
-                    if playfield[x_spot, y_spot] == What.Nothing:
-                        playfield[x_spot, y_spot] = What(obj)
-                        done = True
-                        if obj == 1:
-                            level.SNum += 1
-                            level.Sx[level.SNum] = x_spot
-                            level.Sy[level.SNum] = y_spot
-                        elif obj == 2:
-                            level.MNum += 1
-                            level.Mx[level.MNum] = x_spot
-                            level.My[level.MNum] = y_spot
-                        elif obj == 3:
-                            level.FNum += 1
-                            level.Fx[level.FNum] = x_spot
-                            level.Fy[level.FNum] = y_spot
-                        elif obj == 36:
-                            level.GenNum += 1
 
 def Display_Playfield(playfield: Playfield, level: Level, console: Crt):
     console.reset_colors()
@@ -313,7 +265,7 @@ def Display_Playfield(playfield: Playfield, level: Level, console: Crt):
                     console.write(ASCII.Char[int(playfield[x_loop, y_loop])].upper(), Colors.White, Colors.Brown)
     level.FloorPattern = False
 
-def Hit(x: int, y: int, ch: str, playfield: Playfield, level: Level, console: Crt):
+def Hit(x: int, y: int, ch: str, playfield: Playfield, player: PlayerState, level: Level, console: Crt):
     # Remember what we're overwriting
     what_thing = playfield[x, y]
     char_thing = ASCII.Char[int(what_thing)]
@@ -329,15 +281,15 @@ def Hit(x: int, y: int, ch: str, playfield: Playfield, level: Level, console: Cr
     if what_thing in WhatSets.monsters: # Monsters, they get killed
         playfield[x, y] = What.Nothing
         console.write(' ')
-        level.Score += int(what_thing)
+        player.score += int(what_thing)
         console.sounds(sounds.Whip_Hit())
     elif what_thing in WhatSets.breakable_obstacles: # Impediments, they might break
-        i = level.WhipPower if what_thing != What.Forest else 8
+        i = player.whip_power if what_thing != What.Forest else 8
         if what_thing == What.Breakable_Wall:
             char_thing = VisibleTiles.Breakable_Wall
         elif what_thing == What.Forest:
             char_thing = VisibleTiles.Forest
-        elif what_thing == What.Tree or what_thing == What.Tree_2:
+        elif what_thing in (What.Tree, What.Tree_2):
             char_thing = VisibleTiles.Tree
         if randrange(7) < i: # A whip-power in 7 chance...
             console.write(' ')
@@ -424,7 +376,7 @@ def Hit(x: int, y: int, ch: str, playfield: Playfield, level: Level, console: Cr
     elif what_thing == What.ShootLeft:
         console.write(VisibleTiles.ShootLeft, Colors.LightGrey)
     elif what_thing in WhatSets.breakable_wall_variants: # Breakable Walls?
-        if randrange(7) < level.WhipPower:
+        if randrange(7) < player.whip_power:
             console.write(' ')
             playfield[x, y] = What.Nothing
             console.sounds(sounds.Whip_Breakable_Destroy())

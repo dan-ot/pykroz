@@ -1,7 +1,6 @@
 from typing import Optional, Tuple
 from pieces import What, WhatSets
 
-
 class PlayerState():
     def __init__(self):
         self.score: int = 0
@@ -30,29 +29,29 @@ class PlayerState():
             self.score += 1
         elif what == 6: # Stairs
             self.score += self.level
-        elif What == 7: # Chest
+        elif what == 7: # Chest
             self.score += 5
-        elif What == 9: # Gem
+        elif what == 9: # Gem
             self.score += 1
-        elif What == 10: # Invisible
+        elif what == 10: # Invisible
             self.score += 10
-        elif What == 11: # Teleport
+        elif what == 11: # Teleport
             self.score += 1
-        elif What == 15: # SpeedTime
+        elif what == 15: # SpeedTime
             self.score += 2
-        elif What == 16: # Trap
+        elif what == 16: # Trap
             if self.score > 5:
                 self.score -= 5
-        elif What == 22: # Lava
+        elif what == 22: # Lava
             self.score += 25
-        elif What == 20: # Border
+        elif what == 20: # Border
             if self.score > self.level:
                 self.score -= self.level // 2
-        elif What == 27: # Nugget
+        elif what == 27: # Nugget
             self.score += 50
-        elif What == 35: # Create
+        elif what == 35: # Create
             self.score += self.level * 2
-        elif What == 36: # Generator
+        elif what == 36: # Generator
             self.score += 50
-        elif What == 38: # MBlock
+        elif what == 38: # MBlock
             self.score += 1

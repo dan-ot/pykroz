@@ -1,12 +1,6 @@
-from abc import ABCMeta, abstractmethod
-from typing import Tuple
 from enum import Enum
 
-from pygame.locals import Color
-
 from ascii import ASCII
-from crt import Crt
-from levels import Game, Level
 
 class VisibleTiles(Enum):
     Null       = ASCII.Char[0]
