@@ -1,5 +1,3 @@
-from random import randrange
-
 import pygame.locals
 
 from engine.colors import Colors
@@ -16,7 +14,7 @@ def Title(game: Game, level: Level, console: Crt):
     console.clearkeys()
     while not console.keypressed():
         console.gotoxy(1, 5)
-        console.default_colors(Colors.Code[Colors.Random()])
+        console.default_colors(Colors.Random())
         console.writeln('     ███     ███     ██████████         ███████████        █████████████  (R)')
         console.writeln('     ███▒▒  ███▒▒▒   ███▒▒▒▒▒███▒      ███▒▒▒▒▒▒▒███▒        ▒▒▒▒▒▒████▒▒▒')
         console.writeln('     ███▒▒ ███▒▒▒    ███▒▒   ███▒▒     ███▒▒     ███▒▒            ███▒▒▒▒')
@@ -84,7 +82,7 @@ def Title(game: Game, level: Level, console: Crt):
     while ch not in selections:
         while not console.keypressed():
             console.gotoxy(29, 2)
-            console.write(' DUNGEONS OF KROZ II ', Colors.Code[Colors.Random()])
+            console.write(' DUNGEONS OF KROZ II ', Colors.Random())
             console.delay(50)
         ch = console.read()
         console.sounds(sounds.Difficulty_Key())
@@ -111,7 +109,7 @@ def Title(game: Game, level: Level, console: Crt):
     console.write('Press any key.', Colors.LightGrey, Colors.Blue)
     while not console.keypressed():
         console.gotoxy(29, 2)
-        console.write(' DUNGEONS OF KROZ II ', Colors.Code[Colors.Random()], Colors.Red)
+        console.write(' DUNGEONS OF KROZ II ', Colors.Random(), Colors.Red)
         console.delay(50)
     console.clearkeys()
 
@@ -192,7 +190,7 @@ def Title(game: Game, level: Level, console: Crt):
             console.writeln('   It''s a good idea to save your game at every new level, therefore, if you die')
             console.writeln(' you can easily restore the game at that level and try again.')
             console.writeln('   Registered users will get a "secret code" that makes this game much easier!')
-            console.alert(YTOP + 1, 'Press any key to continue', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'Press any key to continue', level.Bc, level.Bb)
             console.clrscr()
             console.clearkeys()
             console.gotoxy(32, 2)
@@ -216,7 +214,7 @@ def Title(game: Game, level: Level, console: Crt):
             console.writeln('           off three of your valuable gems.  The slowest creatures only take a')
             console.writeln('           single gem from you, and the medium speed monsters take two.')
             console.writeln()
-            console.alert(YTOP + 1, 'Press any key to continue.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'Press any key to continue.', level.Bc, level.Bb)
             console.clrscr()
             console.clearkeys()
             console.gotoxy(32, 2)
@@ -239,7 +237,7 @@ def Title(game: Game, level: Level, console: Crt):
             console.write(VisibleTiles.FMonster_1, Colors.LightBlue)
             console.writeln(' - blue creatures move fastest and knock off 3 gems when touched')
             console.write('      ')
-            console.write(VisibleTiles.Gem, Colors.Code[randrange(13) + 2])
+            console.write(VisibleTiles.Gem, Colors.RandomExcept([Colors.Black, Colors.Blue, Colors.Green]))
             console.writeln(' - collect all the gems you can to survive creature attacks')
             console.write('      ')
             console.write(VisibleTiles.Whip)
@@ -265,7 +263,7 @@ def Title(game: Game, level: Level, console: Crt):
             console.writeln('   There are dozens and dozens of other objects to discover.  The best way')
             console.writeln(' to learn the usefulness of any new object is to touch it and read the brief')
             console.writeln(' message that appears at the bottom of the screen.')
-            console.alert(YTOP + 1, 'Press any key to continue.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'Press any key to continue.', level.Bc, level.Bb)
             console.clrscr()
             console.clearkeys()
             console.gotoxy(33, 2)
@@ -283,7 +281,7 @@ def Title(game: Game, level: Level, console: Crt):
             console.writeln('  ■ If you are tired of seeing the descriptions at the bottom of the screen')
             console.writeln('    that appear whenever you touch a new object, you can disable most of the')
             console.writeln('    messages by pressing the minus (-) key.  The plus key (+) resets messages.')
-            console.alert(YTOP + 1, 'Press any key to continue.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'Press any key to continue.', level.Bc, level.Bb)
         elif ch == pygame.locals.K_m:
             console.clrscr()
             console.clearkeys()
@@ -312,7 +310,7 @@ def Title(game: Game, level: Level, console: Crt):
             console.writeln(' disk, and handling."')
             console.writeln('   Note:  The current Apogee Software address will ALWAYS BE VALID.  Foreign')
             console.writeln(' orders are always welcome, please send U.S. funds/money orders only.')
-            console.alert(YTOP + 1, 'Press any key to continue.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'Press any key to continue.', level.Bc, level.Bb)
         elif ch == pygame.locals.K_s:
             console.clrscr()
             console.clearkeys()
@@ -340,7 +338,7 @@ def Title(game: Game, level: Level, console: Crt):
             console.writeln(' dangers, creatures and objects in your adventures below.')
             console.writeln('   Thanks to all the players of Kroz who contributed dozens of suggestions,')
             console.writeln(' ideas and improvements that were incorporated in later versions of Kroz.')
-            console.alert(YTOP + 1, 'Press any key to continue.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'Press any key to continue.', level.Bc, level.Bb)
             console.clrscr()
             console.clearkeys()
             console.gotoxy(29, 2)
@@ -367,7 +365,7 @@ def Title(game: Game, level: Level, console: Crt):
             console.writeln(' I guess as long as the letters keep coming, I''ll continue to make Kroz games.')
             console.writeln(' After all, Kroz is like my second home now, one that I like to visit often...')
             console.writeln('                                                        -- Scott Miller')
-            console.alert(YTOP + 1, 'Press any key to continue.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'Press any key to continue.', level.Bc, level.Bb)
         elif ch == pygame.locals.K_o:
             console.clrscr()
             console.clearkeys()
@@ -394,7 +392,7 @@ def Title(game: Game, level: Level, console: Crt):
             console.writeln('   All Kroz games work on all monitors, either graphics or monochrome systems.')
             console.writeln(' Plus, they only rely on keyboard control, and have slow-down routines that')
             console.writeln(' permit them to function correctly on any speed IBM PC compatible computer.')
-            console.alert(YTOP + 1, 'Press any key to continue.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'Press any key to continue.', level.Bc, level.Bb)
         elif ch == pygame.locals.K_a:
             console.clrscr()
             console.clearkeys()
@@ -422,7 +420,7 @@ def Title(game: Game, level: Level, console: Crt):
             console.writeln(' equipped with VGA graphics, a NEC MultiSync II and an HP LaserJet series III.')
             console.writeln(' The cost to market each Kroz game to the many shareware libraries and BBS''s')
             console.writeln(' is over $10,000 per game.  All of the appreciative letters make it worth it!')
-            console.alert(YTOP + 1, 'Press any key to continue.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'Press any key to continue.', level.Bc, level.Bb)
         else:
             console.sounds(sounds.Begin_Game())
             start_game = True

@@ -36,7 +36,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
             console.clearkeys()
             if not What.Nothing in game.FoundSet:
                 game.FoundSet.add(What.Nothing)
-                console.alert(YTOP + 1, 'An Electrified Wall blocks your way.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+                console.alert(YTOP + 1, 'An Electrified Wall blocks your way.', level.Bc, level.Bb)
     onto = playfield[future_player_position]
     if onto == What.Nothing:
         Go(x_way, y_way, Human, game, playfield, player, level, console)
@@ -62,7 +62,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         console.clearkeys()
         if not What.Breakable_Wall in game.FoundSet:
             game.FoundSet.add(What.Breakable_Wall)
-            console.alert(YTOP + 1, 'A Breakable Wall blocks your way.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'A Breakable Wall blocks your way.', level.Bc, level.Bb)
     elif onto == What.Whip: # Whip
         Go(x_way, y_way, Human, game, playfield, player, level, console)
         console.sounds(sounds.GrabSound())
@@ -70,7 +70,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         AddScore(What.Whip, player, console)
         if not What.Whip in game.FoundSet:
             game.FoundSet.add(What.Whip)
-            console.alert(YTOP + 1, 'You found a Whip.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'You found a Whip.', level.Bc, level.Bb)
     elif onto == What.Stairs: # Stairs
         Go(x_way, y_way, Human, game, playfield, player, level, console)
         console.clearkeys()
@@ -83,7 +83,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         AddScore(What.Stairs, player, console)
         if not What.Stairs in game.FoundSet:
             game.FoundSet.add(What.Stairs)
-            console.alert(YTOP + 1, 'Stairs take you to the next lower level.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'Stairs take you to the next lower level.', level.Bc, level.Bb)
             console.clearkeys()
         console.sounds(sounds.FootStep())
         level.T[1] = 5
@@ -119,13 +119,13 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         console.sounds(sounds.FootStep)
         for x in range(1, 30):
             console.window(32 - x, 12 - x // 3, 35 + x, 14 + x // 3)
-            console.clrscr(Colors.Code[level.GemColor])
+            console.clrscr(level.GemColor)
         for x in range(1, 30):
             console.window(32 - x, 12 - x // 3, 35 + x, 14 + x // 3)
-            console.clrscr(Colors.Code[level.GemColor])
+            console.clrscr(level.GemColor)
             console.sound(x * 45, 3)
         console.window(2, 2, 65, 24)
-        console.clrscr(Colors.Code[level.GemColor])
+        console.clrscr(level.GemColor)
         console.window(1, 1, 80, 25)
         Border(level, console)
         console.sounds(sounds.FootStep())
@@ -133,7 +133,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         console.sounds(sounds.FootStep())
         for x in range(1, 600):
             console.gotoxy(*player.position)
-            console.write(VisibleTiles.Player, Colors.Code[Colors.Random()], Colors.Code[Colors.RandomDark()])
+            console.write(VisibleTiles.Player, Colors.Random(), Colors.RandomDark())
             console.sound(x // 2, 1) # sounds.Enter_Level()
         console.gotoxy(*player.position)
         console.write(VisibleTiles.Player, Colors.Yellow)
@@ -148,7 +148,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         level.I_Py = player.position[1]
         level.I_FoundSet = game.FoundSet.copy()
         if player.level == 30:
-            console.alert(YTOP + 1, 'You have finally reached the last dungeon of Kroz!', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'You have finally reached the last dungeon of Kroz!', level.Bc, level.Bb)
     elif onto == What.Chest: # Chest
         Go(x_way, y_way, Human, game, playfield, player, level, console)
         console.sounds(sounds.Open_Chest())
@@ -158,7 +158,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         player.gems += gems
         AddScore(What.Chest, player, console)
         console.clearkeys()
-        console.alert(YTOP + 1, 'You found {0} gems and {1} whips inside the chest!'.format(gems, whips), Colors.Code[level.Bc], Colors.Code[level.Bb])
+        console.alert(YTOP + 1, 'You found {0} gems and {1} whips inside the chest!'.format(gems, whips), level.Bc, level.Bb)
     elif onto == What.SlowTime: # SlowTime
         Go(x_way, y_way, Human, game, playfield, player, level, console)
         AddScore(What.SlowTime, player, console)
@@ -167,7 +167,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         level.T[6] = 0
         if What.SlowTime not in game.FoundSet:
             game.FoundSet.add(What.SlowTime)
-            console.alert(YTOP + 1, 'You activated a Slow Creature spell.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'You activated a Slow Creature spell.', level.Bc, level.Bb)
     elif onto == What.Gem: # Gem
         Go(x_way, y_way, Human, game, playfield, player, level, console)
         console.sounds(sounds.GrabSound())
@@ -175,7 +175,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         AddScore(What.Gem, player, console)
         if What.Gem not in game.FoundSet:
             game.FoundSet.add(What.Gem)
-            console.alert(YTOP + 1, 'Gems give you both points and strength.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'Gems give you both points and strength.', level.Bc, level.Bb)
     elif onto == What.Invisibility: # Invisible
         Go(x_way, y_way, Human, game, playfield, player, level, console)
         AddScore(What.Invisibility, player, console)
@@ -185,7 +185,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         level.T[5] = 35 # 120 on FastPC
         if What.Invisibility not in game.FoundSet:
             game.FoundSet.add(What.Invisibility)
-            console.alert(YTOP + 1, 'Oh no, a temporary Blindness Potion!', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'Oh no, a temporary Blindness Potion!', level.Bc, level.Bb)
     elif onto == What.TeleportScroll: # Teleport
         Go(x_way, y_way, Human, game, playfield, player, level, console)
         console.sounds(sounds.GrabSound())
@@ -193,7 +193,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         AddScore(What.TeleportScroll, player, console)
         if What.TeleportScroll not in game.FoundSet:
             game.FoundSet.add(What.TeleportScroll)
-            console.alert(YTOP + 1, 'You found a Teleport scroll.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'You found a Teleport scroll.', level.Bc, level.Bb)
     elif onto == What.Key: # Key
         Go(x_way, y_way, Human, game, playfield, player, level, console)
         console.sounds(sounds.GrabSound())
@@ -201,12 +201,12 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         Update_Info(player, console)
         if What.Key not in game.FoundSet:
             game.FoundSet.add(What.Key)
-            console.alert(YTOP + 1, 'Use Keys to unlock doors.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'Use Keys to unlock doors.', level.Bc, level.Bb)
     elif onto == What.Door: # Door
         if Human:
             if player.keys < 1:
                 console.sounds(sounds.Door_No_Keys())
-                console.alert(YTOP + 1, 'To pass the Door you need a Key.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+                console.alert(YTOP + 1, 'To pass the Door you need a Key.', level.Bc, level.Bb)
             else:
                 player.keys -= 1
                 AddScore(What.TeleportScroll, player, console)
@@ -215,11 +215,11 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
                 console.clearkeys()
                 if What.Door not in game.FoundSet:
                     game.FoundSet.add(What.Door)
-                    console.alert(YTOP + 1, 'The Door opens!  (One of your Keys is used.)', Colors.Code[level.Bc], Colors.Code[level.Bb])
+                    console.alert(YTOP + 1, 'The Door opens!  (One of your Keys is used.)', level.Bc, level.Bb)
                 else:
                     console.clearkeys()
                 if player.level == 75 and player.position == (33, 14):
-                    console.alert(YTOP + 1, 'You unlock the door to the Sacred Temple!', Colors.Code[level.Bc], Colors.Code[level.Bb])
+                    console.alert(YTOP + 1, 'You unlock the door to the Sacred Temple!', level.Bc, level.Bb)
     elif onto == What.Wall or onto == What.River: # Wall, River
         if Human:
             if onto == What.Wall:
@@ -231,9 +231,9 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
             if onto not in game.FoundSet:
                 game.FoundSet.add(onto)
                 if onto == What.Wall:
-                    console.alert(YTOP + 1, 'A Solid Wall blocks your way.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+                    console.alert(YTOP + 1, 'A Solid Wall blocks your way.', level.Bc, level.Bb)
                 else:
-                    console.alert(YTOP + 1, 'You cannot travel through water.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+                    console.alert(YTOP + 1, 'You cannot travel through water.', level.Bc, level.Bb)
     elif onto == What.SpeedTime: # SpeedTime
         Go(x_way, y_way, Human, game, playfield, player, level, console)
         AddScore(What.SpeedTime, player, console)
@@ -242,13 +242,13 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         level.T[4] = 0
         if What.SpeedTime not in game.FoundSet:
             game.FoundSet.add(What.SpeedTime)
-            console.alert(YTOP + 1, 'You activated a Speed Creature spell.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'You activated a Speed Creature spell.', level.Bc, level.Bb)
     elif onto == What.TeleportTrap: # Trap
         Go(x_way, y_way, Human, game, playfield, player, level, console)
         AddScore(What.TeleportTrap, player, console)
         for x in range(1, 500):
             console.gotoxy(*player.position)
-            console.write(VisibleTiles.Player, Colors.Code[Colors.Random()], Colors.Code[Colors.RandomDark()])
+            console.write(VisibleTiles.Player, Colors.Random(), Colors.RandomDark())
         console.gotoxy(*player.position)
         console.write(' ')
         console.sounds(sounds.Teleport_Trap())
@@ -259,7 +259,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         playfield[empty_x, empty_y] = What.Player
         for x in range(1, 500): # 3000 on FastPC
             console.gotoxy(*player.position)
-            console.write(VisibleTiles.Player, Colors.Code[Colors.Random()], Colors.Code[Colors.RandomDark()])
+            console.write(VisibleTiles.Player, Colors.Random(), Colors.RandomDark())
         if level.T[5] < 1:
             console.gotoxy(*player.position)
             console.write(VisibleTiles.Player, Colors.Yellow)
@@ -269,7 +269,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         console.clearkeys()
         if What.TeleportTrap not in game.FoundSet:
             game.FoundSet.add(What.TeleportTrap)
-            console.alert(YTOP + 1, 'You activated a Teleport trap!', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'You activated a Teleport trap!', level.Bc, level.Bb)
     elif onto == What.WhipPower: # Power
         Go(x_way, y_way, Human, game, playfield, player, level, console)
         player.whip_power += 1
@@ -277,11 +277,11 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
             for y in range(45, 52):
                 console.sounds([(x * y, 7), (None, 15)]) # sounds.Whip_Power()
                 console.gotoxy(*player.position)
-                console.write(VisibleTiles.Player, Colors.Code[Colors.RandomDark()])
+                console.write(VisibleTiles.Player, Colors.RandomDark())
         console.gotoxy(*player.position)
         console.write(VisibleTiles.Player, Colors.Yellow)
         AddScore(What.SpeedTime, level, console)
-        console.alert(YTOP + 1, 'A Power Ring--your whip is now a little stronger!', Colors.Code[level.Bc], Colors.Code[level.Bb])
+        console.alert(YTOP + 1, 'A Power Ring--your whip is now a little stronger!', level.Bc, level.Bb)
     elif onto == What.Forest or onto == What.Tree: # Forest, Tree
         if Human:
             console.sounds(sounds.BlockSound())
@@ -290,9 +290,9 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
             if onto not in game.FoundSet:
                 game.FoundSet.add(onto)
                 if onto == What.Forest:
-                    console.alert(YTOP + 1, 'You cannot travel through forest terrain.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+                    console.alert(YTOP + 1, 'You cannot travel through forest terrain.', level.Bc, level.Bb)
                 else:
-                    console.alert(YTOP + 1, 'A tree blocks your way.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+                    console.alert(YTOP + 1, 'A tree blocks your way.', level.Bc, level.Bb)
     elif onto == What.Bomb: # Bomb
         Go(x_way, y_way, Human, game, playfield, player, level, console)
         xr = 0
@@ -323,7 +323,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
             console.clearkeys()
             if What.Bomb not in game.FoundSet:
                 game.FoundSet.add(What.Bomb)
-                console.alert(YTOP + 1, 'You activated a Magic Bomb!', Colors.Code[level.Bc], Colors.Code[level.Bb])
+                console.alert(YTOP + 1, 'You activated a Magic Bomb!', level.Bc, level.Bb)
     elif onto == What.Lava: # Lava
         Go(x_way, y_way, Human, game, playfield, player, level, console)
         player.gems -= 10
@@ -337,11 +337,11 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         console.clearkeys()
         if What.Lava not in game.FoundSet:
             game.FoundSet.add(What.Lava)
-            console.alert(YTOP + 1, 'Oooooooooooooooooooh!  Lava hurts!  (Lose 10 Gems.)', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'Oooooooooooooooooooh!  Lava hurts!  (Lose 10 Gems.)', level.Bc, level.Bb)
     elif onto == What.Pit: # Pit
         Go(x_way, y_way, Human, game, playfield, player, level, console)
         console.clearkeys()
-        console.alert(YTOP + 1, 'Oh no, a Bottomless Pit!', Colors.Code[level.Bc], Colors.Code[level.Bb])
+        console.alert(YTOP + 1, 'Oh no, a Bottomless Pit!', level.Bc, level.Bb)
         console.window(2, 2, 65, 24)
         console.clrscr(Colors.Brown)
         console.window(32, 2, 36, 24)
@@ -367,7 +367,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         console.write('_', Colors.Yellow)
         console.sounds(sounds.Pit_Splat())
         console.clearkeys()
-        console.alert(YBOT - 1, '* SPLAT!! *', Colors.Code[level.Bc], Colors.Code[level.Bb])
+        console.alert(YBOT - 1, '* SPLAT!! *', level.Bc, level.Bb)
         Dead(False, game, player, level, console)
     elif onto == What.Tome: # Tome
         Tome_Message(level, console)
@@ -377,15 +377,15 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
             for y in range(5, 1, -1):
                 console.sounds([(x * 45 + y * 10, y * 3), (None, 40)]) # sounds.Victory_MacGuffin()
                 console.gotoxy(51, 13)
-                console.write(VisibleTiles.Tome, Colors.Code[Colors.Random()])
+                console.write(VisibleTiles.Tome, Colors.Random())
         console.gotoxy(51, 13)
         console.write(VisibleTiles.Stairs, Colors.Black, Colors.Green) # Flashing when possible
         playfield[future_player_position] = What.Stairs
         player.score += 5000
         Update_Info(level, console)
         console.clearkeys()
-        console.alert(YTOP + 1, 'The Magical Staff of Kroz is finally yours--50,000 points!', Colors.Code[level.Bc], Colors.Code[level.Bb])
-        console.alert(YTOP + 1, 'Congratulations, Adventurer, you finally did it!!!', Colors.Code[level.Bc], Colors.Code[level.Bb])
+        console.alert(YTOP + 1, 'The Magical Staff of Kroz is finally yours--50,000 points!', level.Bc, level.Bb)
+        console.alert(YTOP + 1, 'Congratulations, Adventurer, you finally did it!!!', level.Bc, level.Bb)
     elif onto == What.Tunnel: # Tunnel
         (px_old, py_old) = player.position if player.position is not None else (0, 0)
         Go(x_way, y_way, Human, game, playfield, player, level, console)
@@ -427,7 +427,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         for x in range(1, 400): # 2100 on FastPC
             console.sound(randrange(1000), 0.2) # sounds.TunnelExit()
             console.gotoxy(*player.position)
-            console.write(VisibleTiles.Player, Colors.Code[Colors.Random()], Colors.Code[Colors.RandomDark()])
+            console.write(VisibleTiles.Player, Colors.Random(), Colors.RandomDark())
         console.gotoxy(*player.position)
         if level.T[5] < 1:
             console.write(VisibleTiles.Player, Colors.Yellow)
@@ -436,7 +436,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         console.clearkeys()
         if What.Tunnel not in game.FoundSet:
             game.FoundSet.add(What.Tunnel)
-            console.alert(YTOP + 1, 'You passed through a secret Tunnel!', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'You passed through a secret Tunnel!', level.Bc, level.Bb)
     elif onto == What.Freeze: # Freeze
         Go(x_way, y_way, Human, game, playfield, player, level, console)
         AddScore(What.TeleportScroll, player, console)
@@ -445,14 +445,14 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         level.T[7] = 55 # 60 on FastPC
         if What.Freeze not in game.FoundSet:
             game.FoundSet.add(What.Freeze)
-            console.alert(YTOP + 1, 'You have actiavted a Freeze Creature spell!', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'You have actiavted a Freeze Creature spell!', level.Bc, level.Bb)
     elif onto == What.Nugget: # Nugget
         Go(x_way, y_way, Human, game, playfield, player, level, console)
         AddScore(What.Nugget, player, console)
         console.sounds(sounds.GrabSound())
         if What.Freeze not in game.FoundSet:
             game.FoundSet.add(What.Freeze)
-            console.alert(YTOP + 1, 'You found a Gold Nugget...500 points!', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'You found a Gold Nugget...500 points!', level.Bc, level.Bb)
     elif onto == What.Quake: # Quake
         Go(x_way, y_way, Human, game, playfield, player, level, console)
         console.sounds(sounds.Quake_Start())
@@ -471,7 +471,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         if What.Quake not in game.FoundSet:
             game.FoundSet.add(What.Quake)
             console.clearkeys()
-            console.alert(YTOP + 1, 'Oh no, you set off an Earthquake trap!', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'Oh no, you set off an Earthquake trap!', level.Bc, level.Bb)
     elif onto == What.Invisible_Breakable_Wall: # IBlock
         console.gotoxy(*future_player_position)
         console.write(VisibleTiles.Breakable_Wall, Colors.Brown)
@@ -480,7 +480,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         console.clearkeys()
         if What.Invisible_Breakable_Wall not in game.FoundSet:
             game.FoundSet.add(What.Invisible_Breakable_Wall)
-            console.alert(YTOP + 1, 'An Invisible Crumbled Wall blocks your way.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'An Invisible Crumbled Wall blocks your way.', level.Bc, level.Bb)
     elif onto == What.Invisible_Wall: # IWall
         console.gotoxy(*future_player_position)
         console.write(VisibleTiles.Wall, Colors.Brown)
@@ -489,7 +489,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         console.clearkeys()
         if What.Invisible_Wall not in game.FoundSet:
             game.FoundSet.add(What.Invisible_Wall)
-            console.alert(YTOP + 1, 'An Invisible Wall blocks your way.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'An Invisible Wall blocks your way.', level.Bc, level.Bb)
     elif onto == What.Invisible_Door: # IDoor
         console.gotoxy(*future_player_position)
         console.write(VisibleTiles.Door, Colors.Cyan, Colors.Magenta)
@@ -498,7 +498,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         console.clearkeys()
         if What.Invisible_Door not in game.FoundSet:
             game.FoundSet.add(What.Invisible_Door)
-            console.alert(YTOP + 1, 'An Invisible Door blocks your way.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'An Invisible Door blocks your way.', level.Bc, level.Bb)
     elif onto == What.Stop: # Stop
         Go(x_way, y_way, Human, game, playfield, player, level, console)
     elif onto == What.Trap_2: # Trap2

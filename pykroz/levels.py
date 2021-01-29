@@ -56,9 +56,14 @@ class SaveType:
 # Unit-level State
 class Level:
     def __init__(self):
-        self.Bc: int = 0
-        self.Bb: int = 0
-        self.GemColor: int = 0
+        self.Bc: Color = Colors.Black
+        self.Bb: Color = Colors.Black
+        self.GemColor: Color = Colors.Black
+        # Floor colors
+        self.Cf1: Color = Colors.Black
+        self.Cf2: Color = Colors.Black
+        self.Bf1: Color = Colors.Black
+        self.Bf2: Color = Colors.Black
         # slow monsters
         self.Sx: list[int] = [0 for _ in range(1000)]
         self.Sy: list[int] = [0 for _ in range(1000)]
@@ -108,11 +113,6 @@ class Level:
         self.MTime: int = 0
         self.FTime: int = 0
         self.SkipTime: int = 0
-        # Floor colors
-        self.Cf1: int = 0
-        self.Cf2: int = 0
-        self.Bf1: int = 0
-        self.Bf2: int = 0
         # Save/Restore Variables
         self.I_Score: int = 0
         self.I_Gems: int = 0
@@ -169,23 +169,23 @@ def Update_Info(player: PlayerState, console: Crt):
     console.reset_colors()
 
 def Border(level: Level, console: Crt):
-    level.Bc = randrange(8, 15)
-    level.Bb = randrange(1, 8)
+    level.Bc = Colors.RandomLight()
+    level.Bb = Colors.RandomDark()
     for x in range(XBOT - 1, XTOP + 2):
         console.gotoxy(x, 25)
-        console.write(VisibleTiles.Breakable_Wall, Colors.Code[level.Bc], Colors.Code[level.Bb])
+        console.write(VisibleTiles.Breakable_Wall, level.Bc, level.Bb)
         console.gotoxy(x, 1)
-        console.write(VisibleTiles.Breakable_Wall, Colors.Code[level.Bc], Colors.Code[level.Bb])
+        console.write(VisibleTiles.Breakable_Wall, level.Bc, level.Bb)
     for y in range(YBOT - 1, YTOP + 2):
         console.gotoxy(1, y)
-        console.write(VisibleTiles.Breakable_Wall, Colors.Code[level.Bc], Colors.Code[level.Bb])
+        console.write(VisibleTiles.Breakable_Wall, level.Bc, level.Bb)
         console.gotoxy(66, y)
-        console.write(VisibleTiles.Breakable_Wall, Colors.Code[level.Bc], Colors.Code[level.Bb])
+        console.write(VisibleTiles.Breakable_Wall, level.Bc, level.Bb)
 
 def Restore_Border(level: Level, console: Crt):
     console.gotoxy(2, 25)
     for _ in range(XBOT - 1, XTOP + 2):
-        console.write(VisibleTiles.Breakable_Wall, Colors.Code[level.Bc], Colors.Code[level.Bb])
+        console.write(VisibleTiles.Breakable_Wall, level.Bc, level.Bb)
 
 def Sign_Off(console: Crt):
     Shareware(console, Wait = False)
@@ -282,7 +282,7 @@ def AddScore(what: What, player: PlayerState, console: Crt):
 def Won(game: Game, player: PlayerState, level: Level, console: Crt):
     Border(level, console)
     console.clearkeys()
-    console.print(5, 1, 'YOUR QUEST FOR THE MAGICAL STAFF OF KROZ WAS SUCCESSFUL!!', Colors.White, Colors.Code[level.Bb]) # Flashing when possible
+    console.print(5, 1, 'YOUR QUEST FOR THE MAGICAL STAFF OF KROZ WAS SUCCESSFUL!!', Colors.White, level.Bb) # Flashing when possible
     High_Score(False, game, player, level, console)
 
 def High_Score(PlayAgain: bool, game: Game, player: PlayerState, level: Level, console: Crt):
@@ -360,10 +360,10 @@ def High_Score(PlayAgain: bool, game: Game, player: PlayerState, level: Level, c
         level.Fx[x] = 0
         level.Fy[x] = 0
     if PlayAgain:
-        console.alert(YTOP + 1, 'Do you want to play another game (Y/N)?', Colors.Code[level.Bc], Colors.Code[level.Bb])
+        console.alert(YTOP + 1, 'Do you want to play another game (Y/N)?', level.Bc, level.Bb)
         ch = pygame.key.name(console.read())
     else:
-        console.alert(YTOP + 1, 'Press any key to continue.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+        console.alert(YTOP + 1, 'Press any key to continue.', level.Bc, level.Bb)
         ch = 'N'
     if ch.upper() is not 'N':
         game.Restart = True
@@ -392,14 +392,14 @@ def Dead(DeadDot: bool, game: Game, player: PlayerState, level: Level, console: 
     if DeadDot:
         for x in range(150, 5, -1):
             console.gotoxy(*player.position)
-            console.write(VisibleTiles.Player, Colors.Code[x], Colors.Code[Colors.RandomDark()])
+            console.write(VisibleTiles.Player, Colors.Code[x % len(Colors.Code)], Colors.RandomDark())
             console.sound(x * x, 0.5) # sounds.Death()
     console.clearkeys()
-    console.print(27, 1, 'YOU HAVE DIED!!', Colors.Black, Colors.Code[level.Bb]) # Flashing, when possible
+    console.print(27, 1, 'YOU HAVE DIED!!', Colors.Black, level.Bb) # Flashing, when possible
     while not console.keypressed():
         console.gotoxy(*player.position)
         if DeadDot:
-            console.write('*', Colors.Code[Colors.Random()], Colors.Black)
+            console.write('*', Colors.Random(), Colors.Black)
         console.print(21, 25, 'Press any key to continue.')
     Border(level, console)
     High_Score(True, game, player, level, console)
@@ -521,8 +521,8 @@ def End_Routine(game: Game, player: PlayerState, level: Level, console: Crt):
     for x in range(1, 250):
         console.sound(randrange(3000) + x, 0.5) # sounds.Victory_Strange()
         console.gotoxy(*player.position)
-        console.write(VisibleTiles.Player, Colors.Yellow, Colors.Code[Colors.RandomDark()])
-        console.print(15, 25, 'Oh no, something strange is happening!', Colors.Code[Colors.Random()], Colors.Black)
+        console.write(VisibleTiles.Player, Colors.Yellow, Colors.RandomDark())
+        console.print(15, 25, 'Oh no, something strange is happening!', Colors.Random(), Colors.Black)
     for i in range(2200, 20, -1):
         console.sound(randrange(i)) # Also sounds.Victory_Strage() - one sound covers the whole sequence
     for x in range(650):
@@ -532,7 +532,7 @@ def End_Routine(game: Game, player: PlayerState, level: Level, console: Crt):
     console.gotoxy(*player.position)
     console.write(VisibleTiles.Stairs, Colors.Black, Colors.Green) # Flashing, when possible
     Restore_Border(level, console)
-    console.alert(YTOP + 1, 'You are magically transported from Kroz!', Colors.Code[level.Bc], Colors.Code[level.Bb])
+    console.alert(YTOP + 1, 'You are magically transported from Kroz!', level.Bc, level.Bb)
     console.clearkeys()
     console.reset_colors()
     console.print(15, 25, 'Your gems are worth 100 points each...')
@@ -569,7 +569,7 @@ def End_Routine(game: Game, player: PlayerState, level: Level, console: Crt):
     console.clearkeys()
     for x in range(30):
         console.window(32 - x, 12 - x // 3, 35 + x, 14 + (x // 3))
-        console.clrscr(Colors.Code[level.GemColor])
+        console.clrscr(level.GemColor)
     for x in range(30):
         console.window(32 - x, 12 - x // 3, 35 + x, 14 + x // 3)
         console.clrscr(Colors.Black)
@@ -604,5 +604,5 @@ def End_Routine(game: Game, player: PlayerState, level: Level, console: Crt):
     console.clearkeys()
     console.window(1, 1, 80, 25)
     console.default_colors(back = Colors.Black)
-    console.alert(YTOP + 1, 'Press any key, Adventurer.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+    console.alert(YTOP + 1, 'Press any key, Adventurer.', level.Bc, level.Bb)
     Won(game, player, level, console)

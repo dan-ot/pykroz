@@ -23,19 +23,26 @@ class Colors:
 
     @staticmethod
     def Random() -> Color:
-        return Colors.Code[randrange(len(Colors.Code))]
+        return choice([
+            Colors.Black, Colors.Blue, Colors.Green, Colors.Cyan, Colors.Red, Colors.Magenta, Colors.Brown, Colors.DarkGrey,
+            Colors.LightGrey, Colors.LightBlue, Colors.LightGreen, Colors.LightCyan, Colors.LightRed, Colors.LightMagenta, Colors.Yellow, Colors.White
+        ])
 
     @staticmethod
-    def RandomDark() -> int:
-        return choice([0, 1, 2, 3, 4, 5, 6, 8])
+    def RandomDark() -> Color:
+        return choice([
+            Colors.Black, Colors.Blue, Colors.Green, Colors.Cyan, Colors.Red, Colors.Magenta, Colors.Brown, Colors.DarkGrey
+        ])
 
     @staticmethod
-    def RandomLight() -> int:
-        return choice([7, 9, 10, 11, 12, 13, 14, 15])
+    def RandomLight() -> Color:
+        return choice([
+            Colors.LightGrey, Colors.LightBlue, Colors.LightGreen, Colors.LightCyan, Colors.LightRed, Colors.LightMagenta, Colors.Yellow, Colors.White
+        ])
 
     @staticmethod
-    def RandomExcept(exclude: Sequence[int]) -> int:
-        cols = set(Colors.Code.keys)
+    def RandomExcept(exclude: Sequence[Color]) -> Color:
+        cols = set(Colors.Code.values())
         return choice(cols.difference(exclude))
 
     Code = {

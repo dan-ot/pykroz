@@ -1,9 +1,9 @@
 # Python Imports
 from collections import deque
-from sys import exit
 from typing import  Optional, Union
 from time import sleep
 from enum import Enum
+import sys
 
 # Library Imports
 import pygame
@@ -61,7 +61,7 @@ class Crt:
             pygame.locals.KEYUP
         ], pump = True):
             if event.type == pygame.locals.QUIT:
-                exit()
+                sys.exit()
             print(event)
             self._keyboard.handle(event)
         self._audio.tick()
@@ -161,12 +161,13 @@ class Crt:
         self.write(Message, fore, back)
 
     def alert(self, YPos: int, Message: str, bc: Color, bb: Color):
+        colors = [Colors.Yellow, Colors.White]
         left = (XSIZE - len(Message)) // 2 # Half the empty space needed to show the message
         counter = 0
         while not self.keypressed():
             counter = (counter + 1) % 2
             self.delay(20)
-            self.print(left, YPos, Message, Colors.Code[14 + counter], Colors.Black)
+            self.print(left, YPos, Message, colors[counter], Colors.Black)
             self.tick() # keep the message pump and frame rate alive...
         if YPos == YTOP + 1: # Bottom border alert
             self.gotoxy(XBOT - 1, YTOP + 1)
@@ -192,29 +193,29 @@ class Crt:
         self.foreground = Colors.White
         self.background = Colors.Black
 
-    def default_colors(self, fore: Union[int, Color, None] = None, back: Union[int, Color, None] = None):
-        def translate_color(color: Union[int, Color]) -> Color:
-            if isinstance(color, int):
-                mod_color = color % len(Colors.Code) # I think colors beyond 15 are meant to blink
-                if self.color_mode == ColorMode.COLOR_PALLETTE:
-                    return Colors.Code[mod_color]
-                else:
-                    if mod_color in [0, 7, 8, 15]: # Already greyscale
-                        return Colors.Code[mod_color]
-                    elif mod_color in [1, 3]: # Very dark shades
-                        return Colors.Black
-                    elif mod_color in [2, 4, 5, 6]: # Dark Shades
-                        return Colors.DarkGrey
-                    elif mod_color in [9, 10, 11, 13]: # Light Shades
-                        return Colors.LightGrey
-                    elif mod_color in [12, 14]: # Very light colors
-                        return Colors.White
-            else:
-                return color
+    def default_colors(self, fore: Optional[Color] = None, back: Optional[Color] = None):
+        # def translate_color(color: Union[int, Color]) -> Color:
+        #     if isinstance(color, int):
+        #         mod_color = color % len(Colors.Code) # I think colors beyond 15 are meant to blink
+        #         if self.color_mode == ColorMode.COLOR_PALLETTE:
+        #             return Colors.Code[mod_color]
+        #         else:
+        #             if mod_color in [0, 7, 8, 15]: # Already greyscale
+        #                 return Colors.Code[mod_color]
+        #             elif mod_color in [1, 3]: # Very dark shades
+        #                 return Colors.Black
+        #             elif mod_color in [2, 4, 5, 6]: # Dark Shades
+        #                 return Colors.DarkGrey
+        #             elif mod_color in [9, 10, 11, 13]: # Light Shades
+        #                 return Colors.LightGrey
+        #             elif mod_color in [12, 14]: # Very light colors
+        #                 return Colors.White
+        #     else:
+        #         return color
         if fore is not None:
-            self.foreground = translate_color(fore)
+            self.foreground = fore
         if back is not None:
-            self.background = translate_color(back)
+            self.background = back
 
     def sound(self, freq: int, duration: int):
         self._audio.sound(self._audio.tone(freq, duration, self._audio.square_wave))

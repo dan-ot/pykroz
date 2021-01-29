@@ -24,10 +24,10 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
         console.reset_colors()
         if command == Command.DISCOVERY_CLEAR:
             game.FoundSet = set()
-            console.alert(YTOP + 1, 'Newly found object descriptions are reset.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'Newly found object descriptions are reset.', level.Bc, level.Bb)
         elif command == Command.DISCOVERY_FULL:
             game.FoundSet = set(What)
-            console.alert(YTOP + 1, 'References to new objects will not be displayed.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'References to new objects will not be displayed.', level.Bc, level.Bb)
         elif command == Command.CREATE_STAIRS:
             (px, py) = player.position
             playfield[px + 1, py] = What.Stairs
@@ -35,16 +35,16 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
         elif command == Command.PAUSE:
             console.sounds(sounds.Pause())
             console.clearkeys()
-            console.alert(YTOP + 1, ' Press any key to resume game. ', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, ' Press any key to resume game. ', level.Bc, level.Bb)
         elif command == Command.QUIT:
             console.sounds(sounds.Quit())
             console.clearkeys()
-            console.alert(YTOP + 1, ' Are you sure you want to quit (Y/N)? ', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, ' Are you sure you want to quit (Y/N)? ', level.Bc, level.Bb)
             ch = console.read()
             if ch == pygame.locals.K_y:
                 Sign_Off(console)
         elif command == Command.RESTORE:
-            console.alert(YTOP + 1, ' Are you sure you want to RESTORE (Y/N)? ', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, ' Are you sure you want to RESTORE (Y/N)? ', level.Bc, level.Bb)
             ch = console.read()
             if ch == pygame.locals.K_n:
                 return
@@ -123,19 +123,19 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
                 Display_Playfield(playfield, level, console)
                 for x in range (1, 600):
                     console.gotoxy(*player.position)
-                    console.write(VisibleTiles.Player, Colors.Code[Colors.Random()], Colors.Code[Colors.RandomDark()])
+                    console.write(VisibleTiles.Player, Colors.Random(), Colors.RandomDark())
                     console.sound(x // 2, 0.3) # sounds.Load()
                 console.gotoxy(*player.position)
                 console.write(VisibleTiles.Player, Colors.Yellow)
             else:
                 Restore_Border(level, console)
                 console.sounds(sounds.Load_Error())
-                console.alert(YTOP + 1, ' The SAVE file {0} was not found.'.format(which_file), Colors.Code[level.Bc], Colors.Code[level.Bb])
+                console.alert(YTOP + 1, ' The SAVE file {0} was not found.'.format(which_file), level.Bc, level.Bb)
 
-            console.alert(YTOP + 1, 'Press any key to begin this level.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, 'Press any key to begin this level.', level.Bc, level.Bb)
 
         elif command == Command.SAVE:
-            console.alert(YTOP + 1, ' Are you sure you want to SAVE (Y/N)? ', Colors.Code[level.Bc], Colors.Code[level.Bb])
+            console.alert(YTOP + 1, ' Are you sure you want to SAVE (Y/N)? ', level.Bc, level.Bb)
             ch = console.read()
             console.reset_colors()
             console.clearkeys()
@@ -182,7 +182,7 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
             Update_Info(level, console)
             for x in range(1, 250):
                 console.gotoxy(*player.position)
-                console.write(VisibleTiles.Player, Colors.Code[Colors.Random()], Colors.Code[Colors.RandomDark()])
+                console.write(VisibleTiles.Player, Colors.Random(), Colors.RandomDark())
             console.gotoxy(*player.position)
             if playfield.replacement == What.Rope:
                 console.write(VisibleTiles.Rope, Colors.LightGrey)
@@ -213,7 +213,7 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
             console.clearkeys()
             for x in range(1, 500): # 3000 on FastPC
                 console.gotoxy(*player.position)
-                console.write(VisibleTiles.Player, Colors.Code[Colors.Random()], Colors.Code[Colors.RandomDark()])
+                console.write(VisibleTiles.Player, Colors.Random(), Colors.RandomDark())
             if level.T[5] < 1:
                 console.gotoxy(*player.position)
                 console.write(VisibleTiles.Player, Colors.Yellow)
@@ -577,12 +577,12 @@ def NewGame(game: Game, playfield: Playfield, player: PlayerState, level: Level,
     level.I_FoundSet = game.FoundSet.copy()
     for x in range(1, 800):
         console.gotoxy(*player.position)
-        console.write(VisibleTiles.Player, Colors.Code[Colors.Random()], Colors.Code[Colors.RandomDark()])
+        console.write(VisibleTiles.Player, Colors.Random(), Colors.RandomDark())
         console.sound(x // 2) # sounds.NewGame()
     console.gotoxy(*player.position)
     console.write(VisibleTiles.Player, Colors.Yellow)
     console.clearkeys()
-    console.alert(YTOP + 1, 'Press any key to begin this level.', Colors.Code[level.Bc], Colors.Code[level.Bb])
+    console.alert(YTOP + 1, 'Press any key to begin this level.', level.Bc, level.Bb)
     while not game.Restart:
         Player_Move(game, playfield, player, level, console)
         if console.keypressed():

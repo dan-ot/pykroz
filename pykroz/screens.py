@@ -143,7 +143,7 @@ def Display_Playfield(playfield: Playfield, level: Level, console: Crt):
             if (playfield[x_loop, y_loop] is not What.Nothing or level.FloorPattern) and (not level.HideLevel):
                 console.gotoxy(x_loop, y_loop)
                 if playfield[x_loop, y_loop] == What.Nothing: # Floor
-                    console.write(VisibleTiles.Tile, Colors.Code[level.Cf1], Colors.Code[level.Bf1])
+                    console.write(VisibleTiles.Tile, level.Cf1, level.Bf1)
                 elif playfield[x_loop, y_loop] == What.SlowMonster: # Slow Monster
                     console.write(VisibleTiles.SMonster_1, Colors.LightRed)
                 elif playfield[x_loop, y_loop] == What.MediumMonster: # Medium Monster
@@ -170,7 +170,7 @@ def Display_Playfield(playfield: Playfield, level: Level, console: Crt):
                         console.write(VisibleTiles.SlowTime, Colors.LightCyan)
                 elif playfield[x_loop, y_loop] == What.Gem: # Gem
                     if not level.HideGems:
-                        console.write(VisibleTiles.Gem, Colors.Code[level.GemColor])
+                        console.write(VisibleTiles.Gem, level.GemColor)
                 elif playfield[x_loop, y_loop] == What.Invisibility: # Invisible
                     console.write(VisibleTiles.Invisible, Colors.Blue)
                 elif playfield[x_loop, y_loop] == What.TeleportScroll: # Teleport
@@ -274,7 +274,7 @@ def Hit(x: int, y: int, ch: str, playfield: Playfield, player: PlayerState, leve
     console.reset_colors()
     for _ in range(45):
         console.gotoxy(x, y)
-        console.write(ch, Colors.Code[Colors.Random()])
+        console.write(ch, Colors.Random())
 
     # React to the hit, or restore the original, as appropriate
     console.gotoxy(x, y)
@@ -320,7 +320,7 @@ def Hit(x: int, y: int, ch: str, playfield: Playfield, player: PlayerState, leve
     elif what_thing == What.SlowTime:
         console.write(VisibleTiles.SlowTime, Colors.LightCyan)
     elif what_thing == What.Gem:
-        console.write(VisibleTiles.Gem, Colors.Code[level.GemColor])
+        console.write(VisibleTiles.Gem, level.GemColor)
     elif what_thing == What.TeleportScroll:
         console.write(VisibleTiles.Teleport, Colors.LightMagenta)
     elif what_thing == What.Key:
@@ -402,8 +402,8 @@ def Shoot_Left(x_way: int, y_way: int, Human: bool):
     pass
 
 def Tome_Message(level: Level, console: Crt):
-    console.alert(YTOP + 1, ' You reach out to grab the object of your long quest... ', Colors.Code[level.Bc], Colors.Code[level.Bb])
-    console.alert(YTOP + 1, ' the Magical Staff of Kroz. ', Colors.Code[level.Bc], Colors.Code[level.Bb])
+    console.alert(YTOP + 1, ' You reach out to grab the object of your long quest... ', level.Bc, level.Bb)
+    console.alert(YTOP + 1, ' the Magical Staff of Kroz. ', level.Bc, level.Bb)
     console.alert(YTOP + 1, ' Your budy surges with electricity as you clutch it! ')
 
 def Tome_Effects(playfield: Playfield, console: Crt):
