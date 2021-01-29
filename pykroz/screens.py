@@ -48,6 +48,7 @@ def Screen(game: Game, console: Crt):
     console.clrscr()
 
 def Init_Screen(game: Game, player: PlayerState, playfield: Playfield, level: Level, console: Crt):
+    EXTRA_TIME = 8.0
     game.Restart = False
     player.score = 0
     player.level = 1
@@ -95,15 +96,12 @@ def Init_Screen(game: Game, player: PlayerState, playfield: Playfield, level: Le
         game.FoundSet = WhatSets.auto_discover_on_mixup.copy()
     player.position = (randrange(playfield.bounds().width), randrange(playfield.bounds().height))
     level.BTime = 2 # 9 for FastPC?
-    level.STime = 3 # 10 for FastPC?
-    level.MTime = 2 # 8 for FastPC?
-    level.FTime = 1 # 6 for FastPC?
     level.SkipTime = 0
     for x in range(TMAX):
         level.T[x] = -1
-    level.T[1] = 5
-    level.T[2] = 6
-    level.T[3] = 7
+    level.slow_monster_timer = EXTRA_TIME - level.slow_monster_timer_base
+    level.medium_monster_timer = EXTRA_TIME - level.medium_monster_timer_base
+    level.fast_monster_timer = EXTRA_TIME - level.fast_monster_timer_base
     level.T[8] = 6
     console.window(67, 1, 80, 25)
     console.default_colors(Colors.Yellow, Colors.Blue)

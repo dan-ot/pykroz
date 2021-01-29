@@ -39,19 +39,19 @@ class HSType:
         self.HighLevel = highLevel
 
 class SaveType:
-    def __init__(self, level: int, score: int, gems: int, whips: int, teleports: int, keys: int, whipPower: int, difficulty: int, px: int, py: int, foundSet: List[int], mixUp: bool):
-        self.S_Level = level
-        self.S_Score = score
-        self.S_Gems = gems
-        self.S_Whips = whips
-        self.S_Teleports = teleports
-        self.S_Keys = keys
-        self.S_WhipPower = whipPower
-        self.S_Difficulty = difficulty
-        self.S_Px = px
-        self.S_Py = py
-        self.S_FoundSet = foundSet
-        self.S_MixUp = mixUp
+    def __init__(self):
+        self.S_Level: int = 1
+        self.S_Score: int = 0
+        self.S_Gems: int = 0
+        self.S_Whips: int = 0
+        self.S_Teleports: int = 0
+        self.S_Keys: int = 0
+        self.S_WhipPower: int = 0
+        self.S_Difficulty: int = 0
+        self.S_Px: int = 0
+        self.S_Py: int = 0
+        self.S_FoundSet: list[int] = []
+        self.S_MixUp: bool = False
 
 # Unit-level State
 class Level:
@@ -65,28 +65,28 @@ class Level:
         self.Bf1: Color = Colors.Black
         self.Bf2: Color = Colors.Black
         # slow monsters
-        self.Sx: list[int] = [0 for _ in range(1000)]
-        self.Sy: list[int] = [0 for _ in range(1000)]
-        self.SNum: int = 0
+        self.slow_monsters: list[Tuple[int, int]] = []
+        self.slow_monster_timer: float = 0.0
+        self.slow_monster_timer_base: float = 3.0
         # medium monsters
-        self.Mx: list[int] = [0 for _ in range(1000)]
-        self.My: list[int] = [0 for _ in range(1000)]
-        self.MNum: int = 0
+        self.medium_monsters: list[Tuple[int, int]] = []
+        self.medium_monster_timer: float = 0.0
+        self.medium_monster_timer_base: float = 2.0
         # fast monsters
-        self.Fx: list[int] = [0 for _ in range(1000)]
-        self.Fy: list[int] = [0 for _ in range(1000)]
-        self.FNum: int = 0
+        self.fast_monsters: list[Tuple[int, int]] = []
+        self.fast_monster_timer: float = 0.0
+        self.fast_monster_timer_base: float = 1.0
         # string definition of the levels for parsing
-        self.Parsed: list[int] = [0 for _ in range(TOTOBJECTS)]
         self.GenNum: int = 0
         # Timers:
         self.SkipTime: int = 0
-        self.T: list[int] = [0 for _ in range(TMAX)]
-        # * T[1..3] = Monster Move Timers?
-        # * T[4] = SlowTime
-        # * T[5] = Invisibility
-        # * T[6] = FastTime
-        # * T[7] = Freeze
+        self.T: dict[int, int] = {
+            4: 0, # slow time
+            5: 0, # invisibility
+            6: 0, # fast time
+            7: 0, # freeze
+            8: 0  # don't know yet
+        }
         self.LavaFlow: bool = False
         self.LavaRate: int = 0
         self.TreeRate: int = -1
@@ -109,7 +109,6 @@ class Level:
         self.GenFactor: int = 0
         self.BTime: int = 0
         # Monster delay speeds
-        self.STime: int = 0
         self.MTime: int = 0
         self.FTime: int = 0
         self.SkipTime: int = 0
@@ -352,13 +351,9 @@ def High_Score(PlayAgain: bool, game: Game, player: PlayerState, level: Level, c
     console.reset_colors()
     console.gotoxy(16, 23)
     console.write('                                   ')
-    for x in range(1000):
-        level.Sx[x] = 0
-        level.Sy[x] = 0
-        level.Mx[x] = 0
-        level.My[x] = 0
-        level.Fx[x] = 0
-        level.Fy[x] = 0
+    level.slow_monsters = []
+    level.medium_monsters = []
+    level.fast_monsters = []
     if PlayAgain:
         console.alert(YTOP + 1, 'Do you want to play another game (Y/N)?', level.Bc, level.Bb)
         ch = pygame.key.name(console.read())
@@ -405,9 +400,6 @@ def Dead(DeadDot: bool, game: Game, player: PlayerState, level: Level, console: 
     High_Score(True, game, player, level, console)
 
 def Load_Literal_Level(literal_level: LiteralLevel, player: PlayerState, level: Level, playfield: Playfield):
-    level.SNum = 0
-    level.MNum = 0
-    level.FNum = 0
     level.GenNum = 0
     level.T[9] = -1
     level.LavaFlow = False
@@ -415,29 +407,11 @@ def Load_Literal_Level(literal_level: LiteralLevel, player: PlayerState, level: 
     level.GravCounter = 0
     level.GravOn = False
     playfield.parse(literal_level)
-    for m in range(1000):
-        level.Sx[m] = 0
-        level.Sy[m] = 0
-        level.Mx[m] = 0
-        level.My[m] = 0
-        level.Fx[m] = 0
-        level.Fy[m] = 0
     New_Gem_Color(level)
-    for (x, y, monster) in playfield.coords_of([What.SlowMonster, What.MediumMonster, What.FastMonster, What.Generator]):
-        if monster == What.SlowMonster:
-            level.SNum += 1
-            level.Sx[level.SNum] = x
-            level.Sy[level.SNum] = y
-        elif monster == What.MediumMonster:
-            level.MNum += 1
-            level.Mx[level.MNum] = x
-            level.My[level.MNum] = y
-        elif monster == What.FastMonster:
-            level.FNum += 1
-            level.Fx[level.FNum] = x
-            level.Fy[level.FNum] = y
-        elif monster == What.Generator:
-            level.GenNum += 1
+    level.slow_monsters = [(x, y) for (x, y, _) in playfield.coords_of(What.SlowMonster)]
+    level.medium_monsters = [(x, y) for (x, y, _) in playfield.coords_of(What.MediumMonster)]
+    level.fast_monsters = [(x, y) for (x, y, _) in playfield.coords_of(What.FastMonster)]
+    level.GenNum = playfield.count_of(What.Generator)
     players = playfield.coords_of(What.Player)
     if len(players) != 1:
         raise ValueError("Inappropriate number of players: {0}, expected 1.".format(len(players)))
@@ -448,29 +422,13 @@ def Load_Random_Level(definition: RandomLevel, player: PlayerState, playfield: P
     level.GenNum = 0
     level.LavaFlow = False
     level.T[9] = -1
-    for x in range(1, 999):
-        level.Sx[x] = 0
-        level.Sy[x] = 0
-        level.Mx[x] = 0
-        level.My[x] = 0
-        level.Fx[x] = 0
-        level.Fy[x] = 0
     New_Gem_Color(level)
     playfield.reset()
     playfield[player.position] = What.Player
     playfield.generate(definition)
-    for (mx, my, _) in playfield.coords_of(What.SlowMonster):
-        level.SNum += 1
-        level.Sx[level.SNum] = mx
-        level.Sy[level.SNum] = my
-    for (mx, my, _) in playfield.coords_of(What.MediumMonster):
-        level.MNum += 1
-        level.Mx[level.MNum] = mx
-        level.My[level.MNum] = my
-    for (mx, my, _) in playfield.coords_of(What.FastMonster):
-        level.FNum += 1
-        level.Fx[level.FNum] = mx
-        level.Fy[level.FNum] = my
+    level.slow_monsters = [(mx, my) for (mx, my, _) in playfield.coords_of(What.SlowMonster)]
+    level.medium_monsters = [(mx, my) for (mx, my, _) in playfield.coords_of(What.MediumMonster)]
+    level.fast_monsters = [(mx, my) for (mx, my, _) in playfield.coords_of(What.FastMonster)]
     level.GenNum = playfield.count_of(What.Generator)
 
 def Go(XWay: int, YWay: int, Human: bool, game: Game, playfield: Playfield, player: PlayerState, level: Level, console: Crt):

@@ -19,6 +19,7 @@ import sounds
 
 def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Level, console: Crt):
     # Handle internal messages
+    EXTRA_TIME = 8.0
     command = command_from_key_code(console.readkey())
     if command is not None:
         console.reset_colors()
@@ -105,9 +106,9 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
                 level.GravOn = False
                 level.GravCounter = 0
                 level.TreeRate = -1
-                level.T[1] = 4
-                level.T[2] = 6
-                level.T[3] = 7
+                level.slow_monster_timer = EXTRA_TIME - level.slow_monster_timer_base
+                level.medium_monster_timer = EXTRA_TIME - level.medium_monster_timer_base
+                level.fast_monster_timer = EXTRA_TIME - level.fast_monster_timer_base
                 level.T[8] = 7
                 level.T[4] = 0
                 level.T[5] = 0
@@ -276,69 +277,63 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
         console.sounds(sounds.Bad_Key())
 
 def Move_Slow(game: Game, playfield: Playfield, player: PlayerState, level: Level, console: Crt):
-    if level.T[6] > 0: # FastTime is on
-        level.T[1] = 0 # 3 on FastPC
-    else:
-        if level.T[4] < 1: # SlowTime is off
-            level.T[1] = level.STime
-        else:
-            level.T[1] = level.STime * 5
-    if level.SNum < 1: # Number of monsters that started on the level. Not updated as monsters are removed...
+    # Remove monsters the playfield doesn't recognize
+    level.slow_monsters = filter(lambda sm: playfield[sm] == What.SlowMonster)
+
+    # No-op if there are no monsters
+    if len(level.slow_monsters) == 0:
         return
-    for loop in range(1, level.SNum):
-        if level.Sx[loop] == 0:
-            if randrange(8) == 1:
-                Player_Move(game, playfield, player, level, console)
-                return
-        if not playfield[level.Sx[loop], level.Sy[loop]] == What.SlowMonster: # There's no slow monster where there's supposed to be one?
-            level.Sx[loop] = 0 # Set the current monster's X to 0?
-            if randrange(8) == 1:
-                Player_Move(game, playfield, player, level, console)
-                return
-        playfield[level.Sx[loop], level.Sy[loop]] = What.Nothing # remove the monster before we know whether it's move is valid...
-        console.gotoxy(level.Sx[loop], level.Sy[loop])
+    if level.T[6] > 0: # FastTime is on
+        level.slow_monster_timer = level.slow_monster_timer_base * 0.0
+    else:
+        if level.T[4] > 0: # SlowTime is on
+            level.slow_monster_timer = level.slow_monster_timer_base * 5.0
+        else:
+            level.slow_monster_timer = level.slow_monster_timer_base
+    for (i, monster_coord) in enumerate(level.slow_monsters):
+        playfield[monster_coord] = What.Nothing # remove the monster before we know whether its move is valid...
+        console.gotoxy(*monster_coord)
         console.write(' ')
         # How far we've moved the monster before we realized it can't move?
         x_dir = 0
         y_dir = 0
         (px, py) = player.position
-        if px < level.Sx[loop]:
-            level.Sx[loop] -= 1 # change the monster's state before we know whether this move is valid...
+        (mx, my) = monster_coord
+        if px < mx:
+            mx -= 1 # change the monster's state before we know whether this move is valid...
             x_dir = 1
-        elif px > level.Sx[loop]:
-            level.Sx[loop] += 1
+        elif px > mx:
+            mx += 1
             x_dir = -1
         if not level.Sideways:
-            if py < level.Sy[loop]:
-                level.Sy[loop] -= 1
+            if py < my:
+                my -= 1
                 y_dir = 1
-            elif py > level.Sy[loop]:
-                level.Sy[loop] += 1
+            elif py > my:
+                my += 1
                 y_dir = -1
-        console.gotoxy(level.Sx[loop], level.Sy[loop]) # After the move!
-        occupant = playfield[level.Sx[loop], level.Sy[loop]] # What's in the space the monster may have moved to
+        console.gotoxy(mx, my) # After the move!
+        occupant = playfield[mx, my] # What's in the space the monster may have moved to
         # Things that don't stop a monster
         if occupant in WhatSets.monster_empty_spaces:
             console.write(VisibleTiles.SMonster_1 if randrange(2) == 0 else VisibleTiles.SMonster_2, Colors.LightRed)
             console.sound(20, 0.3) # sounds.Monster_Steps()
-            playfield[level.Sx[loop], level.Sy[loop]] = What.SlowMonster # Confirm the move
+            playfield[mx, my] = What.SlowMonster # Confirm the move
         # Things a monster can't move through
         elif occupant in WhatSets.monster_blocked:
-            level.Sx[loop] += x_dir
-            level.Sy[loop] += y_dir
-            playfield[level.Sx[loop], level.Sy[loop]] = What.SlowMonster # Put the monster back
-            console.gotoxy(level.Sx[loop], level.Sy[loop])
+            mx += x_dir
+            my += y_dir
+            playfield[mx, my] = What.SlowMonster # Put the monster back
+            console.gotoxy(mx, my)
             console.write(VisibleTiles.SMonster_1 if randrange(2) == 0 else VisibleTiles.SMonster_2, Colors.LightRed)
         # Things with mutual destruction
         elif occupant in WhatSets.monster_self_destruct:
-            playfield[level.Sx[loop], level.Sy[loop]] = What.Nothing
-            level.Sx[loop] = 0
+            playfield[mx, my] = What.Nothing # This will remove the monster next filter
             console.write(' ')
             player.score += 1
             console.sounds(sounds.Monster_Self_Destruction())
         elif occupant == What.Player: # The player!
             console.sounds(sounds.Monster1_On_Player())
-            level.Sx[loop] = 0
             player.gems -= 1
             if player.gems < 0:
                 Dead(True, game, player, level, console)
@@ -354,81 +349,76 @@ def Move_Slow(game: Game, playfield: Playfield, player: PlayerState, level: Leve
         # Things a monster eats
         elif occupant in WhatSets.monster_eats:
             console.write(VisibleTiles.SMonster_1 if randrange(2) == 0 else VisibleTiles.SMonster_2, Colors.LightRed)
-            playfield[level.Sx[loop], level.Sy[loop]] = What.SlowMonster
+            playfield[mx, my] = What.SlowMonster
             console.sounds(sounds.GrabSound())
         else:
-            level.Sx[loop] += x_dir
-            level.Sy[loop] += y_dir
-            playfield[level.Sx[loop], level.Sy[loop]] = What.SlowMonster
-            console.gotoxy(level.Sx[loop], level.Sy[loop])
+            # Monster doesn't move
+            mx += x_dir
+            my += y_dir
+            playfield[mx, my] = What.SlowMonster
+            console.gotoxy(mx, my)
             console.write(VisibleTiles.SMonster_1 if randrange(2) == 0 else VisibleTiles.SMonster_2, Colors.LightRed)
+
         if randrange(8) == 1:
             Player_Move(game, playfield, player, level, console) # player gets a chance to move after each monster?
+        level.slow_monsters[i] = (mx, my)
 
 def Move_Medium(game: Game, playfield: Playfield, player: PlayerState, level: Level, console: Crt):
-    if level.T[6] > 0: # FastTime is on
-        level.T[2] = 0 # 3 on FastPC
-    else:
-        if level.T[4] < 1: # SlowTime is off
-            level.T[1] = level.MTime
-        else:
-            level.T[1] = level.MTime * 5
-    if level.MNum < 1: # Number of monsters that started on the level. Not updated as monsters are removed...
+    level.medium_monsters = filter(lambda sm: playfield[sm] == What.MediumMonster)
+    if len(level.medium_monsters) == 0:
         return
-    for loop in range(1, level.MNum):
-        if level.Mx[loop] == 0:
-            if randrange(7) == 1:
-                Player_Move(game, playfield, player, level, console)
-                return
-        if not playfield[level.Mx[loop], level.My[loop]] == What.MediumMonster: # There's no slow monster where there's supposed to be one?
-            level.Mx[loop] = 0 # Set the current monster's X to 0?
-            if randrange(7) == 1:
-                Player_Move(game, playfield, player, level, console)
-                return
-        playfield[level.Mx[loop], level.My[loop]] = What.Nothing # remove the monster before we know whether it's move is valid...
-        console.gotoxy(level.Mx[loop], level.My[loop])
+    if level.T[6] > 0: # FastTime is on
+        level.medium_monster_timer = level.medium_monster_timer_base * 0.0
+    else:
+        if level.T[4] > 0: # SlowTime is on
+            level.medium_monster_timer = level.medium_monster_timer_base * 5.0
+        else:
+            level.medium_monster_timer = level.medium_monster_timer_base
+
+    for (i, monster_coord) in level.medium_monsters:
+        playfield[monster_coord] = What.Nothing # remove the monster before we know whether it's move is valid...
+        console.gotoxy(*monster_coord)
         console.write(' ')
         # How far we've moved the monster before we realized it can't move?
         x_dir = 0
         y_dir = 0
         (px, py) = player.position
-        if px < level.Mx[loop]:
-            level.Mx[loop] -= 1 # change the monster's state before we know whether this move is valid...
+        (mx, my) = monster_coord
+        if px < mx:
+            mx -= 1 # change the monster's state before we know whether this move is valid...
             x_dir = 1
-        elif px > level.Mx[loop]:
-            level.Mx[loop] += 1
+        elif px > mx:
+            mx += 1
             x_dir = -1
         if not level.Sideways:
-            if py < level.My[loop]:
-                level.My[loop] -= 1
+            if py < my:
+                my -= 1
                 y_dir = 1
-            elif py > level.My[loop]:
-                level.My[loop] += 1
+            elif py > my:
+                my += 1
                 y_dir = -1
-        console.gotoxy(level.Mx[loop], level.My[loop]) # After the move!
-        occupant = playfield[level.Mx[loop], level.My[loop]] # What's in the space the monster may have moved to
+        console.gotoxy(mx, my) # After the move!
+        occupant = playfield[mx, my] # What's in the space the monster may have moved to
         # Things that don't stop a monster
         if occupant in WhatSets.monster_empty_spaces:
             console.write(VisibleTiles.MMonster_1 if randrange(2) == 0 else VisibleTiles.MMonster_2, Colors.LightGreen)
             console.sound(20, 0.3) # sounds.Monster_Steps()
-            playfield[level.Mx[loop], level.My[loop]] = What.MediumMonster # Confirm the move
+            playfield[mx, my] = What.MediumMonster # Confirm the move
         # Things a monster can't move through
         elif occupant in WhatSets.monster_blocked:
-            level.Mx[loop] += x_dir
-            level.My[loop] += y_dir
-            playfield[level.Mx[loop], level.My[loop]] = What.MediumMonster # Put the monster back
-            console.gotoxy(level.Mx[loop], level.My[loop])
+            mx += x_dir
+            my += y_dir
+            playfield[mx, my] = What.MediumMonster # Put the monster back
+            console.gotoxy(mx, my)
             console.write(VisibleTiles.MMonster_1 if randrange(2) == 0 else VisibleTiles.MMonster_2, Colors.LightGreen)
         # Things with mutual destruction
         elif occupant in WhatSets.monster_self_destruct:
-            playfield[level.Mx[loop], level.My[loop]] = What.Nothing
-            level.Mx[loop] = 0
+            playfield[mx, my] = What.Nothing
             console.write(' ')
             player.score += 2
             console.sounds(sounds.Monster_Self_Destruction())
         elif occupant == What.Player: # The player!
             console.sound(sounds.Monster2_On_Player())
-            level.Mx[loop] = 0
             player.gems -= 2
             if player.gems < 0:
                 Dead(True, game, player, level, console)
@@ -444,81 +434,74 @@ def Move_Medium(game: Game, playfield: Playfield, player: PlayerState, level: Le
         # Things a monster eats
         elif occupant in WhatSets.monster_eats:
             console.write(VisibleTiles.MMonster_1 if randrange(2) == 0 else VisibleTiles.MMonster_2, Colors.LightGreen)
-            playfield[level.Mx[loop], level.My[loop]] = What.MediumMonster
+            playfield[mx, my] = What.MediumMonster
             console.sounds(sounds.GrabSound())
         else:
-            level.Mx[loop] += x_dir
-            level.My[loop] += y_dir
-            playfield[level.Mx[loop], level.My[loop]] = What.MediumMonster
-            console.gotoxy(level.Mx[loop], level.My[loop])
+            # Monster doesn't move
+            mx += x_dir
+            my += y_dir
+            playfield[mx, my] = What.MediumMonster
+            console.gotoxy(mx, my)
             console.write(VisibleTiles.MMonster_1 if randrange(2) == 0 else VisibleTiles.MMonster_2, Colors.LightGreen)
         if randrange(7) == 1:
             Player_Move(game, playfield, player, level, console) # player gets a chance to move after each monster?
+        level.medium_monsters[i] = (mx, my)
 
 def Move_Fast(game: Game, playfield: Playfield, player: PlayerState, level: Level, console: Crt):
-    if level.T[6] > 0: # FastTime is on
-        level.T[1] = 0 # 3 on FastPC
-    else:
-        if level.T[4] < 1: # SlowTime is off
-            level.T[3] = level.FTime
-        else:
-            level.T[3] = level.FTime * 5
-    if level.FNum < 1: # Number of monsters that started on the level. Not updated as monsters are removed...
+    level.fast_monsters = filter(lambda sm: playfield[sm] == What.FastMonster)
+    if len(level.fast_monsters) == 0:
         return
-    for loop in range(1, level.FNum):
-        if level.Fx[loop] == 0:
-            if randrange(6) == 1:
-                Player_Move(game, playfield, player, level, console)
-                return
-        if not playfield[level.Fx[loop], level.Fy[loop]] == What.FastMonster: # There's no slow monster where there's supposed to be one?
-            level.Fx[loop] = 0 # Set the current monster's X to 0?
-            if randrange(6) == 1:
-                Player_Move(game, playfield, player, level, console)
-                return
-        playfield[level.Fx[loop], level.Fy[loop]] = What.Nothing # remove the monster before we know whether it's move is valid...
-        console.gotoxy(level.Fx[loop], level.Fy[loop])
+    if level.T[6] > 0: # FastTime is on
+        level.fast_monster_timer = level.fast_monster_timer * 0.0 # 3 on FastPC
+    else:
+        if level.T[4] > 0: # SlowTime is on
+            level.fast_monster_timer = level.fast_monster_timer_base * 5.0
+        else:
+            level.fast_monster_timer = level.fast_monster_timer_base
+    for (i, monster_coord) in level.fast_monsters:
+        playfield[monster_coord] = What.Nothing # remove the monster before we know whether it's move is valid...
+        console.gotoxy(*monster_coord)
         console.write(' ')
         # How far we've moved the monster before we realized it can't move?
         x_dir = 0
         y_dir = 0
         (px, py) = player.position
-        if px < level.Fx[loop]:
-            level.Fx[loop] -= 1 # change the monster's state before we know whether this move is valid...
+        (mx, my) = monster_coord
+        if px < mx:
+            mx -= 1 # change the monster's state before we know whether this move is valid...
             x_dir = 1
-        elif px > level.Fx[loop]:
-            level.Fx[loop] += 1
+        elif px > mx:
+            mx += 1
             x_dir = -1
         if not level.Sideways:
-            if py < level.Fy[loop]:
-                level.Fy[loop] -= 1
+            if py < my:
+                my -= 1
                 y_dir = 1
-            elif py > level.Fy[loop]:
-                level.Fy[loop] += 1
+            elif py > my:
+                my += 1
                 y_dir = -1
-        console.gotoxy(level.Fx[loop], level.Fy[loop]) # After the move!
-        occupant = playfield[level.Fx[loop], level.Fy[loop]] # What's in the space the monster may have moved to
+        console.gotoxy(mx, my) # After the move!
+        occupant = playfield[mx, my] # What's in the space the monster may have moved to
         # Things that don't stop a monster
         if occupant in WhatSets.monster_empty_spaces:
             console.write(VisibleTiles.FMonster_1, Colors.LightBlue)
             console.sound(20, 0.3) # sounds.Monster_Steps()
-            playfield[level.Fx[loop], level.Fy[loop]] = What.FastMonster # Confirm the move
+            playfield[mx, my] = What.FastMonster # Confirm the move
         # Things a monster can't move through
         elif occupant in WhatSets.monster_blocked:
-            level.Fx[loop] += x_dir
-            level.Fy[loop] += y_dir
-            playfield[level.Fx[loop], level.Fy[loop]] = What.FastMonster # Put the monster back
-            console.gotoxy(level.Fx[loop], level.Fy[loop])
+            mx += x_dir
+            my += y_dir
+            playfield[mx, my] = What.FastMonster # Put the monster back
+            console.gotoxy(mx, my)
             console.write(VisibleTiles.FMonster_1, Colors.LightBlue)
         # Things with mutual destruction
         elif occupant in WhatSets.monster_self_destruct:
-            playfield[level.Fx[loop], level.Fy[loop]] = What.Nothing
-            level.Fx[loop] = 0
+            playfield[mx, my] = What.Nothing
             console.write(' ')
             player.score += 3
             console.sounds(sounds.Monster_Self_Destruction())
         elif occupant == What.Player: # The player!
             console.sounds(sounds.Monster3_On_Player())
-            level.Fx[loop] = 0
             player.gems -= 3
             if player.gems < 0:
                 Dead(True, game, player, level, console)
@@ -534,16 +517,17 @@ def Move_Fast(game: Game, playfield: Playfield, player: PlayerState, level: Leve
         # Things a monster eats
         elif occupant in WhatSets.monster_eats:
             console.write(VisibleTiles.FMonster_1, Colors.LightBlue)
-            playfield[level.Fx[loop], level.Fy[loop]] = What.FastMonster
+            playfield[mx, my] = What.FastMonster
             console.sounds(sounds.GrabSound())
         else:
-            level.Fx[loop] += x_dir
-            level.Fy[loop] += y_dir
-            playfield[level.Fx[loop], level.Fy[loop]] = What.FastMonster
-            console.gotoxy(level.Fx[loop], level.Fy[loop])
+            mx += x_dir
+            my += y_dir
+            playfield[mx, my] = What.FastMonster
+            console.gotoxy(mx, my)
             console.write(VisibleTiles.FMonster_1, Colors.LightBlue)
         if randrange(6) == 1:
             Player_Move(game, playfield, player, level, console) # player gets a chance to move after each monster?
+        level.fast_monsters[i] = (mx, my)
 
 def Move_MBlock():
     pass
@@ -594,10 +578,10 @@ def NewGame(game: Game, playfield: Playfield, player: PlayerState, level: Level,
                 level.T[x] -= 1
             level.SkipTime = 0 # -150 for FastPC
             if level.T[7] < 1: # Freeze is not active
-                if level.T[1] < 1:
+                if level.slow_monster_timer <= 0:
                     Move_Slow(game, playfield, player, level, console)
-                if level.T[2] < 1:
+                if level.medium_monster_timer <= 0:
                     Move_Medium(game, playfield, player, level, console)
-                if level.T[3] < 1:
+                if level.fast_monster_timer <= 0:
                     Move_Fast(game, playfield, player, level, console)
     NewGame(game, playfield, player, level, console)

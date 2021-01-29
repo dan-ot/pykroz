@@ -25,6 +25,7 @@ def Next_Level(player: PlayerState, playfield: Playfield, level: Level):
         Load_Random_Level(definition, player, playfield, level)
 
 def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, player: PlayerState, level: Level, console: Crt):
+    EXTRA_TIME = 8.0
     future_player_position = player.future_pos(x_way, y_way)
     if level.Sideways and y_way == -1 and playfield.replacement != What.Rope and (not playfield[future_player_position] in WhatSets.becomes_replacement_with_sideways):
         game.OneMove = False
@@ -86,9 +87,9 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
             console.alert(YTOP + 1, 'Stairs take you to the next lower level.', level.Bc, level.Bb)
             console.clearkeys()
         console.sounds(sounds.FootStep())
-        level.T[1] = 5
-        level.T[2] = 6
-        level.T[3] = 7
+        level.slow_monster_timer = EXTRA_TIME - level.slow_monster_timer_base
+        level.medium_monster_timer = EXTRA_TIME - level.medium_monster_timer_base
+        level.fast_monster_timer = EXTRA_TIME - level.fast_monster_timer_base
         level.T[4] = 0 # cancel SlowTime
         level.T[5] = 0 # cancel Invisibility
         level.T[6] = 0 # cancel SpeedTime
