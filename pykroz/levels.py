@@ -1,9 +1,5 @@
 # System Libraries
-from pygame.event import post
-from playerstate import PlayerState
-from playfield import Playfield
-from pieces import VisibleTiles, What, WhatSets, parse
-from typing import List, Optional, Union
+from typing import List, Optional, Sequence
 from random import randrange
 from pathlib import Path
 import json
@@ -14,6 +10,9 @@ import pygame.key
 from pygame import Color
 
 # Project Libraries
+from playerstate import PlayerState
+from playfield import Playfield
+from pieces import VisibleTiles, What, WhatSets
 from crt import Crt
 import sounds
 from colors import Colors
@@ -73,7 +72,6 @@ class Level:
         self.Fy: list[int] = [0 for _ in range(1000)]
         self.FNum: int = 0
         # string definition of the levels for parsing
-        self.Fp: list[str] = ['{0:{width}}'.format(' ', width = XSIZE) for _ in range(YSIZE)]
         self.Parsed: list[int] = [0 for _ in range(TOTOBJECTS)]
         self.GenNum: int = 0
         # Timers:
@@ -126,6 +124,10 @@ class Level:
         self.I_Py: int = 0
         self.I_FoundSet: set[What] = set()
         self.I_Difficulty: int = 0
+
+class LiteralLevel():
+    def __init__(self, lines: Sequence[str]):
+        self.lines = list(lines)
 
 class Game:
     def __init__(self):
@@ -274,11 +276,11 @@ def AddScore(what: What, player: PlayerState, console: Crt):
     player.add_score(what)
     Update_Info(player, console)
 
-def Won(level: Level, console: Crt):
+def Won(game: Game, player: PlayerState, level: Level, console: Crt):
     Border(level, console)
     console.clearkeys()
     console.print(5, 1, 'YOUR QUEST FOR THE MAGICAL STAFF OF KROZ WAS SUCCESSFUL!!', Colors.White, Colors.Code[level.Bb]) # Flashing when possible
-    High_Score(console, PlayAgain = False)
+    High_Score(False, game, player, level, console)
 
 def High_Score(PlayAgain: bool, game: Game, player: PlayerState, level: Level, console: Crt):
     console.clearkeys()
@@ -358,7 +360,7 @@ def High_Score(PlayAgain: bool, game: Game, player: PlayerState, level: Level, c
     else:
         console.alert(YTOP + 1, 'Press any key to continue.', Colors.Code[level.Bc], Colors.Code[level.Bb])
         ch = 'N'
-    if ch.upper() is not 'N': 
+    if ch.upper() is not 'N':
         game.Restart = True
     else:
         console.reset_colors()
@@ -391,7 +393,8 @@ def Dead(DeadDot: bool, game: Game, player: PlayerState, level: Level, console: 
     console.print(27, 1, 'YOU HAVE DIED!!', Colors.Black, Colors.Code[level.Bb]) # Flashing, when possible
     while not console.keypressed():
         console.gotoxy(*player.position)
-        if DeadDot: console.write('*', Colors.Code[Colors.Random()], Colors.Black)
+        if DeadDot:
+            console.write('*', Colors.Code[Colors.Random()], Colors.Black)
         console.print(21, 25, 'Press any key to continue.')
     Border(level, console)
     High_Score(True, game, player, level, console)
@@ -415,7 +418,7 @@ def Define_Levels(game: Game):
     game.Df[26] = '   100 20    25  2  1  2 20  1  2             10     1        5   785    10    15               '
     game.Df[28] = '133133133        3  3    80420  1  1                                           10  5            '
 
-def Convert_Format(player: PlayerState, level: Level, playfield: Playfield):
+def Convert_Format(literal_level: LiteralLevel, player: PlayerState, level: Level, playfield: Playfield):
     level.SNum = 0
     level.MNum = 0
     level.FNum = 0
@@ -425,7 +428,7 @@ def Convert_Format(player: PlayerState, level: Level, playfield: Playfield):
     level.TreeRate = 0
     level.GravCounter = 0
     level.GravOn = False
-    playfield.parse(level.Fp)
+    playfield.parse(literal_level)
     for m in range(1000):
         level.Sx[m] = 0
         level.Sy[m] = 0
@@ -448,8 +451,7 @@ def Convert_Format(player: PlayerState, level: Level, playfield: Playfield):
             level.Fx[level.FNum] = x
             level.Fy[level.FNum] = y
         elif monster == What.Generator:
-            level.GenNum += 1
-    
+            level.GenNum += 1  
     players = playfield.coords_of(What.Player)
     if len(players) != 1:
         raise ValueError("Inappropriate number of players: {0}, expected 1.".format(len(players)))
@@ -495,7 +497,7 @@ def MoveRock(XWay: int, YWay: int):
 def Trigger_Trap(Place: bool, i: int, ch: str):
     pass
 
-def End_Routine(player: PlayerState, level: Level, console: Crt):
+def End_Routine(game: Game, player: PlayerState, level: Level, console: Crt):
     console.sounds(sounds.FootStep())
     console.delay(200)
     console.sounds(sounds.FootStep())
@@ -588,4 +590,4 @@ def End_Routine(player: PlayerState, level: Level, console: Crt):
     console.window(1, 1, 80, 25)
     console.default_colors(back = Colors.Black)
     console.alert(YTOP + 1, 'Press any key, Adventurer.', Colors.Code[level.Bc], Colors.Code[level.Bb])
-    Won(level, console)
+    Won(game, player, level, console)

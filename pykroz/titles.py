@@ -1,8 +1,8 @@
-from colors import Colors
 from random import randrange
 
 import pygame.locals
 
+from colors import Colors
 from crt import Crt
 from levels import Game, Level, Shareware, VisibleTiles, YTOP
 import sounds

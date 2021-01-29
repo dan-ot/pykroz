@@ -5,7 +5,7 @@ from playfield import Playfield
 from pieces import What, WhatSets
 from colors import Colors
 from crt import Crt
-from levels import AddScore, Border, Dead, End_Routine, Game, Go, Level, Restore_Border, Update_Info, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
+from levels import AddScore, Border, Convert_Format, Dead, End_Routine, Game, Go, Level, Restore_Border, Update_Info, VisibleTiles, XBOT, XSIZE, XTOP, YBOT, YSIZE, YTOP
 from screens import Create_Playfield, Display_Playfield, Tome_Effects, Tome_Message
 from layouts import Level1, Level11, Level13, Level15, Level17, Level19, Level21, Level23, Level25, Level27, Level29, Level3, Level30, Level5, Level7, Level9
 import sounds
@@ -16,9 +16,9 @@ def Prayer():
 def Tablet_Message(level: int):
     pass
 
-def Next_Level(game: Game, level: Level):
-    if level.Level == 1:
-        Level1(level)
+def Next_Level(player: PlayerState, playfield: Playfield, game: Game, level: Level):
+    if player.level == 1:
+        Convert_Format(Level1(), player, level, playfield)
     elif level.Level == 3:
         Level3(level)
     elif level.Level == 5:
