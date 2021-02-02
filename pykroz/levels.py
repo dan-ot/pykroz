@@ -16,7 +16,7 @@ from engine.crt import Crt
 from engine.colors import Colors
 from playerstate import PlayerState
 from playfield import Playfield
-from pieces import VisibleTiles, What, WhatSets
+from pieces import VisibleTiles, What, WhatSets, score_for
 import sounds
 
 # Constants
@@ -260,11 +260,6 @@ def Shareware(console: Crt, Wait: bool):
 # TODO: Move to GameDisplay
 def New_Gem_Color(level: Level):
     level.GemColor = Colors.RandomExcept([8])
-
-# TODO: Move to GameDisplay
-def AddScore(what: What, player: PlayerState, display: GameDisplay):
-    player.add_score(what)
-    display.mark_player_dirty()
 
 # TODO: Move to GameDisplay
 def Won(game: Game, player: PlayerState, level: Level, console: Crt):

@@ -6,8 +6,8 @@ from engine.colors import Colors
 from engine.ascii import ASCII
 from engine.crt import ColorMode, Crt
 from playerstate import PlayerState
-from pieces import What, WhatSets
-from levels import AddScore, Game, Level, TMAX, VisibleTiles, YTOP
+from pieces import What, WhatSets, score_for
+from levels import Game, Level, TMAX, VisibleTiles, YTOP
 from playfield import Playfield
 import sounds
 
@@ -48,6 +48,7 @@ def Screen(game: Game, console: Crt):
     console.clrscr()
 
 def Init_Screen(game: Game, player: PlayerState, playfield: Playfield, level: Level, console: Crt):
+    # TODO: The first set of moves on a level take more time - presumably to allow the player time to review the level
     EXTRA_TIME = 8.0
     game.Restart = False
     player.score = 0
@@ -135,7 +136,7 @@ def Init_Screen(game: Game, player: PlayerState, playfield: Playfield, level: Le
     console.write('R', Colors.White)
     console.write('estore')
 
-# TODO: This should be some mix of Whereness and result...
+# TODO: This should be some mix of Whatness and result...
 def Hit(x: int, y: int, ch: str, playfield: Playfield, player: PlayerState, level: Level, console: Crt):
     # Remember what we're overwriting
     what_thing = playfield[x, y]
@@ -180,7 +181,7 @@ def Hit(x: int, y: int, ch: str, playfield: Playfield, player: PlayerState, leve
         console.sounds(sounds.Whip_Breakable_Hit())
         if what_thing == What.Generator:
             console.sounds(sounds.Whip_Breakable_Destroy())
-            AddScore(What.Generator, level, console)
+            player.add_score(score_for(What.Generator, player.level))
             level.GenNum -= 1
 
     # Things that don't break - if any were hidden under Chance symbols, they're revealed
@@ -251,7 +252,7 @@ def Hit(x: int, y: int, ch: str, playfield: Playfield, player: PlayerState, leve
             console.write(' ')
             playfield[x, y] = What.Nothing
             console.sounds(sounds.Whip_Breakable_Destroy())
-            AddScore(What.MBlock, level, console)
+            player.add_score(score_for(What.MBlock, player.level))
         else:
             console.sounds(sounds.Whip_Breakable_Hit())
             if what_thing == What.Breakable_Wall_Grey:

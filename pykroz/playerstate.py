@@ -19,39 +19,6 @@ class PlayerState():
         (x, y) = self.position
         return (x + x_offset, y + y_offset)
 
-    def add_score(self, what: What):
-        if what in WhatSets.monsters: # Monsters
-            self.score += int(What)
-        elif what in (What.Breakable_Wall, What.Wall): # Block
-            if self.score > 2:
-                self.score -= 2
-        elif what == 5: # Whip
-            self.score += 1
-        elif what == 6: # Stairs
-            self.score += self.level
-        elif what == 7: # Chest
-            self.score += 5
-        elif what == 9: # Gem
-            self.score += 1
-        elif what == 10: # Invisible
-            self.score += 10
-        elif what == 11: # Teleport
-            self.score += 1
-        elif what == 15: # SpeedTime
-            self.score += 2
-        elif what == 16: # Trap
-            if self.score > 5:
-                self.score -= 5
-        elif what == 22: # Lava
-            self.score += 25
-        elif what == 20: # Border
-            if self.score > self.level:
-                self.score -= self.level // 2
-        elif what == 27: # Nugget
-            self.score += 50
-        elif what == 35: # Create
-            self.score += self.level * 2
-        elif what == 36: # Generator
-            self.score += 50
-        elif what == 38: # MBlock
-            self.score += 1
+    def add_score(self, score: int):
+        if score > 0 or self.score + score > 0:
+            self.score += score

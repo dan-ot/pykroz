@@ -879,3 +879,39 @@ def draw(what: What, visibility: VisibilityFlags) -> DrawResponse:
 
     # TODO: Mark letters appropriately, not as int-able Whats
     return DrawResponse(ASCII.Char[int(what)].upper(), Colors.White, Colors.Brown)
+
+def score_for(what: What, level: int) -> int:
+    if what in WhatSets.monsters: # Monsters
+        return int(What)
+    if what in (What.Breakable_Wall, What.Wall): # Block
+        return -2
+    if what == What.Whip:
+        return 1
+    if what == What.Stairs:
+        return level
+    if what == What.Chest:
+        return 5
+    if what == What.Gem:
+        return 1
+    if what == What.Invisibility:
+        return 10
+    if what == What.TeleportScroll:
+        return 1
+    if what == What.SpeedTime:
+        return 2
+    if what == What.TeleportTrap:
+        return -5
+    if what == What.Lava:
+        return 25
+    if what == What.Tree:
+        return -level // 2
+    if what == What.Nugget:
+        return 50
+    if what == What.Create:
+        return level * 2
+    if what == What.Generator:
+        return 50
+    if what == What.MBlock:
+        return 1
+
+    return 0
