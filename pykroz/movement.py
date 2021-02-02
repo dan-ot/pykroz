@@ -7,7 +7,7 @@ from playerstate import PlayerState
 from playfield import Playfield
 from pieces import What, WhatSets
 from levels import AddScore, Border, LiteralLevel, Load_Literal_Level, Load_Random_Level, Dead, End_Routine, Game, Go, Level, RandomLevel, VisibleTiles, YBOT, YTOP
-from screens import Display_Playfield, Tome_Effects, Tome_Message
+from screens import Tome_Effects, Tome_Message
 from layouts import DungeonsLayouts
 import sounds
 
@@ -77,7 +77,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         Go(x_way, y_way, Human, game, playfield, player, level, console)
         console.clearkeys()
         if player.level == 30:
-            End_Routine(game, player, level, console)
+            End_Routine(game, player, level, display, console)
         if game.MixUp:
             player.level = randrange(27) + 2
         else:
@@ -131,7 +131,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         console.window(1, 1, 80, 25)
         Border(level, console)
         console.sounds(sounds.FootStep())
-        Display_Playfield(playfield, level, console)
+        display.new_level(playfield)
         console.sounds(sounds.FootStep())
         for x in range(1, 600):
             console.gotoxy(*player.position)

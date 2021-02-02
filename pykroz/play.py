@@ -12,7 +12,7 @@ from commands import Command, command_from_key_code
 from engine.colors import Colors
 from engine.crt import Crt
 from levels import Border, Dead, Game, Level, PMOVE, Restore_Border, SaveType, Sign_Off, TMAX, VisibleTiles, YTOP
-from screens import Display_Playfield, Hit, Init_Screen, Screen
+from screens import Hit, Init_Screen, Screen
 from movement import Move, Next_Level
 from titles import Title
 from playfield import Playfield
@@ -122,7 +122,7 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
                 console.clrscr()
                 console.window(1, 1, 80, 25)
                 Border(level, console)
-                Display_Playfield(playfield, level, console)
+                display.new_level(playfield)
                 for x in range (1, 600):
                     console.gotoxy(*player.position)
                     console.write(VisibleTiles.Player, Colors.Random(), Colors.RandomDark())
@@ -549,7 +549,8 @@ def NewGame(game: Game, playfield: Playfield, player: PlayerState, level: Level,
     player.level = 1
     display.mark_player_dirty()
     Next_Level(player, playfield, level)
-    Display_Playfield(playfield, level, console)
+
+    display.new_level(playfield)
     level.initial.score = player.score
     level.initial.gems = player.gems
     level.initial.whips = player.whips
