@@ -28,8 +28,8 @@ class ColorMode(Enum):
 
 class Crt:
     def __init__(self, widthInTiles: int, heightInTiles: int, fontFile: Union[str, None]):
-        (frequency, format, _) = pygame.mixer.get_init()
-        self._audio = Audio(frequency, format)
+        (frequency, bit_depth, _) = pygame.mixer.get_init()
+        self._audio = Audio(frequency, bit_depth)
 
         if fontFile is None:
             tiles = ASCII.from_system_font()

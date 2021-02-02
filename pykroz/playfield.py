@@ -19,7 +19,7 @@ class Playfield(Sequence):
         return len(self.__data)
 
     def __getitem__(self, key: Tuple[int, int]) -> What:
-        if len(key) is not 2:
+        if len(key) != 2:
             raise KeyError("Expected key of length 2 (x, y) but got: {0}".format(key))
         x, y = key
         if x >= self.__width or y >= self.__height:
@@ -28,7 +28,7 @@ class Playfield(Sequence):
         return self.__data[x * self.__width + y]
 
     def __setitem__(self, key: Tuple[int, int], value: Union[What, int]) -> What:
-        if len(key) is not 2:
+        if len(key) != 2:
             raise KeyError("Expected key of length 2 (x, y) but got: {0}".format(key))
         x, y = key
         if x >= self.__width or y >= self.__height:
@@ -52,12 +52,6 @@ class Playfield(Sequence):
             value) for (index, value)
                 in enumerate(self.__data)
                 if value in check]
-        # for index, value in enumerate(self.__data):
-        #     if value in check:
-        #         x = index // self.__width
-        #         y = index % self.__width
-        #         coords.append((x, y, value))
-        # return coords
 
     def reset(self, base: What = What.Nothing) -> None:
         self.__data = [base for _ in range(self.__width * self.__height)]

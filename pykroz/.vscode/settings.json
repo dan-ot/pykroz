@@ -1,4 +1,8 @@
 {
     "python.linting.enabled": true,
-    "python.linting.pylintEnabled": true
+    "python.linting.pylintEnabled": true,
+    "todo-tree.general.tags": [
+        "TODO",
+        "HACK"
+    ]
 }

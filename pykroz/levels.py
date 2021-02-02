@@ -1,8 +1,9 @@
 # System Libraries
-from typing import List, Optional, Sequence, Tuple
+from typing import Optional, Sequence, Tuple
 from random import randrange
 from pathlib import Path
 import json
+from enum import Flag, auto
 
 # Engine Libraries
 import pygame.locals
@@ -53,13 +54,30 @@ class SaveType:
         self.found_set: list[int] = []
         self.mix_up: bool = False
 
+class VisibilityFlags(Flag):
+    SHOW_ALL = 0
+    FLOOR_PATTERN = auto()
+    HIDE_ROCK = auto()
+    HIDE_STAIRS = auto()
+    HIDE_LEVEL = auto()
+    HIDE_CREATE = auto()
+    HIDE_OPEN_WALL = auto()
+    HIDE_TRAP = auto()
+    HIDE_GEMS = auto()
+    HIDE_M_BLOCK = auto()
+
+    def __contains__(self, flags: "VisibilityFlags") -> bool:
+        return self & flags == flags
+
 # Unit-level State
 class Level:
     def __init__(self):
+        # TODO: deprecated, now part of GameDisplay system
         self.Bc: Color = Colors.Black
         self.Bb: Color = Colors.Black
         self.GemColor: Color = Colors.Black
         # Floor colors
+        # TODO: deprecated
         self.Cf1: Color = Colors.Black
         self.Cf2: Color = Colors.Black
         self.Bf1: Color = Colors.Black
@@ -95,8 +113,10 @@ class Level:
         self.GravOn: bool = False
         self.GravRate: int = 0
         self.Sideways: bool = False
-        self.FloorPattern: bool = False
         self.Bonus: int = 0
+        self.visibility: VisibilityFlags = VisibilityFlags.SHOW_ALL
+        # TODO: Deprecated by the self.visibility property
+        self.FloorPattern: bool = False
         self.MagicEWalls: bool = False
         self.HideRock: bool = False
         self.HideStairs: bool = False
@@ -129,17 +149,8 @@ class Game:
         self.FoundSet: set[What] = set()
 
 # Procedures
-def PrintNum(YPos: int, Num: int, player: PlayerState, console: Crt, fore: Optional[Color] = None, back: Optional[Color] = None):
-    # console.write(70, YPos, "       ")
-    strVal = str(Num)
-    if (YPos == 2 and player.score > 0):
-        strVal += "0"
-    if YPos == 11:
-        if player.whip_power >= 3:
-            strVal = strVal + "+" + str(player.whip_power)
-    strVal = f"{strVal:^7}"
-    console.write(69, YPos - 1, strVal, fore, back)
 
+# TODO: deprecated - mark the PlayerState dirty via GameDisplay
 def Update_Info(player: PlayerState, console: Crt):
     console.default_colors(Colors.Red, Colors.LightGrey)
     PrintNum(2, player.score, player, console)
@@ -153,6 +164,7 @@ def Update_Info(player: PlayerState, console: Crt):
     PrintNum(17, player.keys, player, console)
     console.reset_colors()
 
+# TODO: deprecated
 def Border(level: Level, console: Crt):
     level.Bc = Colors.RandomLight()
     level.Bb = Colors.RandomDark()
@@ -167,6 +179,7 @@ def Border(level: Level, console: Crt):
         console.gotoxy(66, y)
         console.write(VisibleTiles.Breakable_Wall, level.Bc, level.Bb)
 
+# TODO: deprecated
 def Restore_Border(level: Level, console: Crt):
     console.gotoxy(2, 25)
     for _ in range(XBOT - 1, XTOP + 2):
@@ -257,13 +270,16 @@ def Shareware(console: Crt, Wait: bool):
     console.reset_colors()
     console.clrscr()
 
+# TODO: Move to GameDisplay
 def New_Gem_Color(level: Level):
     level.GemColor = Colors.RandomExcept([8])
 
+# TODO: Move to GameDisplay
 def AddScore(what: What, player: PlayerState, console: Crt):
     player.add_score(what)
     Update_Info(player, console)
 
+# TODO: Move to GameDisplay
 def Won(game: Game, player: PlayerState, level: Level, console: Crt):
     Border(level, console)
     console.clearkeys()
@@ -360,6 +376,7 @@ def High_Score(PlayAgain: bool, game: Game, player: PlayerState, level: Level, c
         Sign_Off(console)
 
 def Dead(DeadDot: bool, game: Game, player: PlayerState, level: Level, console: Crt):
+    # TODO: Handled by GameDisplay
     if player.gems > 9:
         console.default_colors(Colors.Red, Colors.LightGrey)
     else:

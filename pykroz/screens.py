@@ -103,6 +103,7 @@ def Init_Screen(game: Game, player: PlayerState, playfield: Playfield, level: Le
     level.medium_monster_timer = EXTRA_TIME - level.medium_monster_timer_base
     level.fast_monster_timer = EXTRA_TIME - level.fast_monster_timer_base
     level.T[8] = 6
+    # TODO: Handled by StatsDisplay natively.
     console.window(67, 1, 80, 25)
     console.default_colors(Colors.Yellow, Colors.Blue)
     console.clrscr()
@@ -134,6 +135,7 @@ def Init_Screen(game: Game, player: PlayerState, playfield: Playfield, level: Le
     console.write('R', Colors.White)
     console.write('estore')
 
+# TODO: deprecated
 def Display_Playfield(playfield: Playfield, level: Level, console: Crt):
     console.reset_colors()
     for x_loop in range(playfield.bounds().width):
