@@ -1,6 +1,5 @@
 # System Libraries
-from display.game_display import GameDisplay
-from typing import Optional, Sequence, Tuple
+from typing import Sequence, Tuple
 from random import randrange
 from pathlib import Path
 import json
@@ -12,11 +11,12 @@ import pygame.key
 from pygame import Color
 
 # Project Libraries
+from display.game_display import GameDisplay
 from engine.crt import Crt
 from engine.colors import Colors
 from playerstate import PlayerState
 from playfield import Playfield
-from pieces import VisibleTiles, What, WhatSets, score_for
+from pieces import VisibleTiles, What, WhatSets
 import sounds
 
 # Constants
@@ -152,21 +152,6 @@ class Game:
 # Procedures
 
 # TODO: deprecated
-def Border(level: Level, console: Crt):
-    level.Bc = Colors.RandomLight()
-    level.Bb = Colors.RandomDark()
-    for x in range(XBOT - 1, XTOP + 2):
-        console.gotoxy(x, 25)
-        console.write(VisibleTiles.Breakable_Wall, level.Bc, level.Bb)
-        console.gotoxy(x, 1)
-        console.write(VisibleTiles.Breakable_Wall, level.Bc, level.Bb)
-    for y in range(YBOT - 1, YTOP + 2):
-        console.gotoxy(1, y)
-        console.write(VisibleTiles.Breakable_Wall, level.Bc, level.Bb)
-        console.gotoxy(66, y)
-        console.write(VisibleTiles.Breakable_Wall, level.Bc, level.Bb)
-
-# TODO: deprecated
 def Restore_Border(level: Level, console: Crt):
     console.gotoxy(2, 25)
     for _ in range(XBOT - 1, XTOP + 2):
@@ -262,8 +247,8 @@ def New_Gem_Color(level: Level):
     level.GemColor = Colors.RandomExcept([8])
 
 # TODO: Move to GameDisplay
-def Won(game: Game, player: PlayerState, level: Level, console: Crt):
-    Border(level, console)
+def Won(game: Game, player: PlayerState, level: Level, display: GameDisplay, console: Crt):
+    display.new_border()
     console.clearkeys()
     console.print(5, 1, 'YOUR QUEST FOR THE MAGICAL STAFF OF KROZ WAS SUCCESSFUL!!', Colors.White, level.Bb) # Flashing when possible
     High_Score(False, game, player, level, console)
@@ -357,7 +342,7 @@ def High_Score(PlayAgain: bool, game: Game, player: PlayerState, level: Level, c
             console.writeln('DUNGEONS OF KROZ II')
         Sign_Off(console)
 
-def Dead(DeadDot: bool, game: Game, player: PlayerState, level: Level, console: Crt):
+def Dead(DeadDot: bool, game: Game, player: PlayerState, level: Level, display: GameDisplay, console: Crt):
     # TODO: Handled by GameDisplay
     if player.gems > 9:
         console.default_colors(Colors.Red, Colors.LightGrey)
@@ -381,7 +366,7 @@ def Dead(DeadDot: bool, game: Game, player: PlayerState, level: Level, console: 
         if DeadDot:
             console.write('*', Colors.Random(), Colors.Black)
         console.print(21, 25, 'Press any key to continue.')
-    Border(level, console)
+    display.new_border()
     High_Score(True, game, player, level, console)
 
 def Load_Literal_Level(literal_level: LiteralLevel, player: PlayerState, level: Level, playfield: Playfield):
@@ -548,4 +533,4 @@ def End_Routine(game: Game, player: PlayerState, level: Level, display: GameDisp
     console.window(1, 1, 80, 25)
     console.default_colors(back = Colors.Black)
     console.alert(YTOP + 1, 'Press any key, Adventurer.', level.Bc, level.Bb)
-    Won(game, player, level, console)
+    Won(game, player, level, display, console)

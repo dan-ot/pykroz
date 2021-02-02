@@ -6,7 +6,7 @@ from display.game_display import GameDisplay
 from playerstate import PlayerState
 from playfield import Playfield
 from pieces import What, WhatSets, score_for
-from levels import Border, LiteralLevel, Load_Literal_Level, Load_Random_Level, Dead, End_Routine, Game, Go, Level, RandomLevel, VisibleTiles, YBOT, YTOP
+from levels import LiteralLevel, Load_Literal_Level, Load_Random_Level, Dead, End_Routine, Game, Go, Level, RandomLevel, VisibleTiles, YBOT, YTOP
 from screens import Tome_Effects, Tome_Message
 from layouts import DungeonsLayouts
 import sounds
@@ -134,7 +134,6 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         console.window(2, 2, 65, 24)
         console.clrscr(level.GemColor)
         console.window(1, 1, 80, 25)
-        Border(level, console)
         console.sounds(sounds.FootStep())
         display.new_level(playfield)
         console.sounds(sounds.FootStep())

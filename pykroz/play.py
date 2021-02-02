@@ -11,7 +11,7 @@ from pieces import What, WhatSets
 from commands import Command, command_from_key_code
 from engine.colors import Colors
 from engine.crt import Crt
-from levels import Border, Dead, Game, Level, PMOVE, Restore_Border, SaveType, Sign_Off, TMAX, VisibleTiles, YTOP
+from levels import Dead, Game, Level, PMOVE, Restore_Border, SaveType, Sign_Off, TMAX, VisibleTiles, YTOP
 from screens import Hit, Init_Screen, Screen
 from movement import Move, Next_Level
 from titles import Title
@@ -121,7 +121,6 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
                 console.window(2, 2, playfield.bounds().width, playfield.bounds().height)
                 console.clrscr()
                 console.window(1, 1, 80, 25)
-                Border(level, console)
                 display.new_level(playfield)
                 for x in range (1, 600):
                     console.gotoxy(*player.position)
@@ -544,7 +543,6 @@ def Run(console: Crt):
 def NewGame(game: Game, playfield: Playfield, player: PlayerState, level: Level, display: GameDisplay, console: Crt):
     console.reset_colors()
     Title(game, level, console)
-    Border(level, console)
     Init_Screen(game, player, playfield, level, console)
     player.level = 1
     display.mark_player_dirty()

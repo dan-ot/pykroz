@@ -42,6 +42,9 @@ class GameDisplay():
         self.border.new_level()
         self.stats.new_level()
 
+    def new_border(self):
+        self.border.new_level()
+
 class MainPlayfield():
     def __init__(self, rect: Rect, gem_color: Color, visibility: VisibilityFlags, floor_colors: Optional[Tuple[Color, Color]] = None):
         self.dirty: bool = True
