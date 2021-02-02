@@ -1,4 +1,5 @@
 # System Libraries
+from display.game_display import GameDisplay
 from typing import Optional, Sequence, Tuple
 from random import randrange
 from pathlib import Path
@@ -150,20 +151,6 @@ class Game:
 
 # Procedures
 
-# TODO: deprecated - mark the PlayerState dirty via GameDisplay
-def Update_Info(player: PlayerState, console: Crt):
-    console.default_colors(Colors.Red, Colors.LightGrey)
-    PrintNum(2, player.score, player, console)
-    PrintNum(5, player.level, player, console)
-    if player.gems > 9:
-        PrintNum(8, player.gems, player, console)
-    else:
-        PrintNum(8, player.gems, player, console, Colors.LightRed, Colors.DarkGrey) # Flashing Red when it can be managed
-    PrintNum(11, player.whips, player, console)
-    PrintNum(14, player.teleports, player, console)
-    PrintNum(17, player.keys, player, console)
-    console.reset_colors()
-
 # TODO: deprecated
 def Border(level: Level, console: Crt):
     level.Bc = Colors.RandomLight()
@@ -275,9 +262,9 @@ def New_Gem_Color(level: Level):
     level.GemColor = Colors.RandomExcept([8])
 
 # TODO: Move to GameDisplay
-def AddScore(what: What, player: PlayerState, console: Crt):
+def AddScore(what: What, player: PlayerState, display: GameDisplay):
     player.add_score(what)
-    Update_Info(player, console)
+    display.mark_player_dirty()
 
 # TODO: Move to GameDisplay
 def Won(game: Game, player: PlayerState, level: Level, console: Crt):
@@ -473,7 +460,7 @@ def MoveRock(XWay: int, YWay: int):
 def Trigger_Trap(Place: bool, i: int, ch: str):
     pass
 
-def End_Routine(game: Game, player: PlayerState, level: Level, console: Crt):
+def End_Routine(game: Game, player: PlayerState, level: Level, display: GameDisplay, console: Crt):
     console.sounds(sounds.FootStep())
     console.delay(200)
     console.sounds(sounds.FootStep())
@@ -499,7 +486,7 @@ def End_Routine(game: Game, player: PlayerState, level: Level, console: Crt):
     console.print(15, 25, 'Your gems are worth 100 points each...')
     for i in range(player.gems):
         player.score += 10
-        Update_Info(level, console)
+        display.mark_player_dirty()
         console.sounds(sounds.Points_For_Gems(i))
     console.read()
     Restore_Border(level, console)
@@ -507,7 +494,7 @@ def End_Routine(game: Game, player: PlayerState, level: Level, console: Crt):
     console.print(15, 25, 'Your whips are worth 100 points each...')
     for i in range(player.whips):
         player.score += 10
-        Update_Info(level, console)
+        display.mark_player_dirty()
         console.sounds(sounds.Points_For_Whips(i))
     console.read()
     Restore_Border(level, console)
@@ -515,7 +502,7 @@ def End_Routine(game: Game, player: PlayerState, level: Level, console: Crt):
     console.print(9, 25, 'Your Teleport Scrolls are woth 200 points each...')
     for i in range(player.teleports):
         player.score += 20
-        Update_Info(level, console)
+        display.mark_player_dirty()
         console.sounds(sounds.Points_For_Teleports(i))
     console.read()
     Restore_Border(level, console)
@@ -523,7 +510,7 @@ def End_Routine(game: Game, player: PlayerState, level: Level, console: Crt):
     console.print(14, 25, 'Your Keys are worth 10,000 points each...')
     for i in range(player.keys):
         player.score += 1000
-        Update_Info(level, console)
+        display.mark_player_dirty()
         console.sounds(sounds.Points_For_Keys(i))
     console.read()
     Restore_Border(level, console)

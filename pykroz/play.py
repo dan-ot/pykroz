@@ -5,19 +5,20 @@ from typing import cast
 
 import pygame.locals
 
+from display.game_display import GameDisplay
 from playerstate import PlayerState
 from pieces import What, WhatSets
 from commands import Command, command_from_key_code
 from engine.colors import Colors
 from engine.crt import Crt
-from levels import Border, Dead, Game, Level, PMOVE, Restore_Border, SaveType, Sign_Off, TMAX, Update_Info, VisibleTiles, YTOP
+from levels import Border, Dead, Game, Level, PMOVE, Restore_Border, SaveType, Sign_Off, TMAX, VisibleTiles, YTOP
 from screens import Display_Playfield, Hit, Init_Screen, Screen
 from movement import Move, Next_Level
 from titles import Title
 from playfield import Playfield
 import sounds
 
-def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Level, console: Crt):
+def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Level, display: GameDisplay, console: Crt):
     # Handle internal messages
     EXTRA_TIME = 8.0
     command = command_from_key_code(console.readkey())
@@ -89,7 +90,7 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
                 level.initial.px = player.position[0]
                 level.initial.py = player.position[1]
                 level.initial.found_set = list(game.FoundSet)
-                Update_Info(level, console)
+                display.mark_player_dirty()
                 console.delay(1000)
                 level.Sideways = False
                 level.Evaporate = 0
@@ -179,7 +180,7 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
                 console.sounds(sounds.NoneSound())
                 return
             player.teleports -= 1
-            Update_Info(level, console)
+            display.mark_player_dirty()
             for x in range(1, 250):
                 console.gotoxy(*player.position)
                 console.write(VisibleTiles.Player, Colors.Random(), Colors.RandomDark())
@@ -253,29 +254,29 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
             if py > bounds.top:
                 console.sounds(sounds.Whip(10))
                 Hit(px, py - 1, '│', playfield, player, level, console)
-            Update_Info(level, console)
+            display.mark_player_dirty()
             console.clearkeys()
 
         elif command == Command.MOVE_NORTH:
-            Move(0, -1, PMOVE, game, playfield, player, level, console)
+            Move(0, -1, PMOVE, game, playfield, player, level, display, console)
         elif command == Command.MOVE_SOUTH:
-            Move(0, 1, PMOVE, game, playfield, player, level, console)
+            Move(0, 1, PMOVE, game, playfield, player, level, display, console)
         elif command == Command.MOVE_EAST:
-            Move(1, 0, PMOVE, game, playfield, player, level, console)
+            Move(1, 0, PMOVE, game, playfield, player, level, display, console)
         elif command == Command.MOVE_WEST:
-            Move(-1, 0, PMOVE, game, playfield, player, level, console)
+            Move(-1, 0, PMOVE, game, playfield, player, level, display, console)
         elif command == Command.MOVE_NORTHWEST:
-            Move(-1, -1, PMOVE, game, playfield, player, level, console)
+            Move(-1, -1, PMOVE, game, playfield, player, level, display, console)
         elif command == Command.MOVE_NORTHEAST:
-            Move(1, -1, PMOVE, game, playfield, player, level, console)
+            Move(1, -1, PMOVE, game, playfield, player, level, display, console)
         elif command == Command.MOVE_SOUTHWEST:
-            Move(-1, 1, PMOVE, game, playfield, player, level, console)
+            Move(-1, 1, PMOVE, game, playfield, player, level, display, console)
         elif command == Command.MOVE_SOUTHEAST:
-            Move(1, 1, PMOVE, game, playfield, player, level, console)
+            Move(1, 1, PMOVE, game, playfield, player, level, display, console)
     else: # command is None
         console.sounds(sounds.Bad_Key())
 
-def Move_Slow(game: Game, playfield: Playfield, player: PlayerState, level: Level, console: Crt):
+def Move_Slow(game: Game, playfield: Playfield, player: PlayerState, level: Level, display: GameDisplay, console: Crt):
     # Remove monsters the playfield doesn't recognize
     level.slow_monsters = filter(lambda sm: playfield[sm] == What.SlowMonster)
 
@@ -359,10 +360,10 @@ def Move_Slow(game: Game, playfield: Playfield, player: PlayerState, level: Leve
             console.write(VisibleTiles.SMonster_1 if randrange(2) == 0 else VisibleTiles.SMonster_2, Colors.LightRed)
 
         if randrange(8) == 1:
-            Player_Move(game, playfield, player, level, console) # player gets a chance to move after each monster?
+            Player_Move(game, playfield, player, level, display, console) # player gets a chance to move after each monster?
         level.slow_monsters[i] = (mx, my)
 
-def Move_Medium(game: Game, playfield: Playfield, player: PlayerState, level: Level, console: Crt):
+def Move_Medium(game: Game, playfield: Playfield, player: PlayerState, level: Level, display: GameDisplay, console: Crt):
     level.medium_monsters = filter(lambda sm: playfield[sm] == What.MediumMonster)
     if len(level.medium_monsters) == 0:
         return
@@ -443,10 +444,10 @@ def Move_Medium(game: Game, playfield: Playfield, player: PlayerState, level: Le
             console.gotoxy(mx, my)
             console.write(VisibleTiles.MMonster_1 if randrange(2) == 0 else VisibleTiles.MMonster_2, Colors.LightGreen)
         if randrange(7) == 1:
-            Player_Move(game, playfield, player, level, console) # player gets a chance to move after each monster?
+            Player_Move(game, playfield, player, level, display, console) # player gets a chance to move after each monster?
         level.medium_monsters[i] = (mx, my)
 
-def Move_Fast(game: Game, playfield: Playfield, player: PlayerState, level: Level, console: Crt):
+def Move_Fast(game: Game, playfield: Playfield, player: PlayerState, level: Level, display: GameDisplay, console: Crt):
     level.fast_monsters = filter(lambda sm: playfield[sm] == What.FastMonster)
     if len(level.fast_monsters) == 0:
         return
@@ -525,7 +526,7 @@ def Move_Fast(game: Game, playfield: Playfield, player: PlayerState, level: Leve
             console.gotoxy(mx, my)
             console.write(VisibleTiles.FMonster_1, Colors.LightBlue)
         if randrange(6) == 1:
-            Player_Move(game, playfield, player, level, console) # player gets a chance to move after each monster?
+            Player_Move(game, playfield, player, level, display, console) # player gets a chance to move after each monster?
         level.fast_monsters[i] = (mx, my)
 
 def Move_MBlock():
@@ -536,16 +537,17 @@ def Run(console: Crt):
     level = Level()
     playfield = Playfield(64, 23)
     player = PlayerState()
+    display = GameDisplay(playfield.bounds())
     Screen(game, console)
-    NewGame(game, playfield, player, level, console)
+    NewGame(game, playfield, player, level, display, console)
 
-def NewGame(game: Game, playfield: Playfield, player: PlayerState, level: Level, console: Crt):
+def NewGame(game: Game, playfield: Playfield, player: PlayerState, level: Level, display: GameDisplay, console: Crt):
     console.reset_colors()
     Title(game, level, console)
     Border(level, console)
     Init_Screen(game, player, playfield, level, console)
-    Update_Info(player, console)
     player.level = 1
+    display.mark_player_dirty()
     Next_Level(player, playfield, level)
     Display_Playfield(playfield, level, console)
     level.initial.score = player.score
@@ -567,7 +569,7 @@ def NewGame(game: Game, playfield: Playfield, player: PlayerState, level: Level,
     console.clearkeys()
     console.alert(YTOP + 1, 'Press any key to begin this level.', level.Bc, level.Bb)
     while not game.Restart:
-        Player_Move(game, playfield, player, level, console)
+        Player_Move(game, playfield, player, level, display, console)
         if console.keypressed():
             level.SkipTime = 801
         else:
@@ -578,9 +580,9 @@ def NewGame(game: Game, playfield: Playfield, player: PlayerState, level: Level,
             level.SkipTime = 0 # -150 for FastPC
             if level.T[7] < 1: # Freeze is not active
                 if level.slow_monster_timer <= 0:
-                    Move_Slow(game, playfield, player, level, console)
+                    Move_Slow(game, playfield, player, level, display, console)
                 if level.medium_monster_timer <= 0:
-                    Move_Medium(game, playfield, player, level, console)
+                    Move_Medium(game, playfield, player, level, display, console)
                 if level.fast_monster_timer <= 0:
-                    Move_Fast(game, playfield, player, level, console)
-    NewGame(game, playfield, player, level, console)
+                    Move_Fast(game, playfield, player, level, display, console)
+    NewGame(game, playfield, player, level, display, console)

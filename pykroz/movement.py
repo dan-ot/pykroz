@@ -1,3 +1,4 @@
+from display.game_display import GameDisplay
 from random import choice, randrange
 
 from engine.colors import Colors
@@ -5,7 +6,7 @@ from engine.crt import Crt
 from playerstate import PlayerState
 from playfield import Playfield
 from pieces import What, WhatSets
-from levels import AddScore, Border, LiteralLevel, Load_Literal_Level, Load_Random_Level, Dead, End_Routine, Game, Go, Level, RandomLevel, Update_Info, VisibleTiles, YBOT, YTOP
+from levels import AddScore, Border, LiteralLevel, Load_Literal_Level, Load_Random_Level, Dead, End_Routine, Game, Go, Level, RandomLevel, VisibleTiles, YBOT, YTOP
 from screens import Display_Playfield, Tome_Effects, Tome_Message
 from layouts import DungeonsLayouts
 import sounds
@@ -24,7 +25,7 @@ def Next_Level(player: PlayerState, playfield: Playfield, level: Level):
     elif isinstance(definition, RandomLevel):
         Load_Random_Level(definition, player, playfield, level)
 
-def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, player: PlayerState, level: Level, console: Crt):
+def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, player: PlayerState, level: Level, display: GameDisplay, console: Crt):
     EXTRA_TIME = 8.0
     future_player_position = player.future_pos(x_way, y_way)
     if level.Sideways and y_way == -1 and playfield.replacement != What.Rope and (not playfield[future_player_position] in WhatSets.becomes_replacement_with_sideways):
@@ -199,7 +200,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         Go(x_way, y_way, Human, game, playfield, player, level, console)
         console.sounds(sounds.GrabSound())
         player.keys += 1
-        Update_Info(player, console)
+        display.mark_player_dirty()
         if What.Key not in game.FoundSet:
             game.FoundSet.add(What.Key)
             console.alert(YTOP + 1, 'Use Keys to unlock doors.', level.Bc, level.Bb)
@@ -320,7 +321,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
                         if playfield[x, y] in WhatSets.destroyed_by_bomb:
                             console.gotoxy(x, y)
                             console.write(219, Colors.LightRed)
-            Update_Info(player, console)
+            display.mark_player_dirty()
             console.clearkeys()
             if What.Bomb not in game.FoundSet:
                 game.FoundSet.add(What.Bomb)
@@ -383,7 +384,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         console.write(VisibleTiles.Stairs, Colors.Black, Colors.Green) # Flashing when possible
         playfield[future_player_position] = What.Stairs
         player.score += 5000
-        Update_Info(level, console)
+        display.mark_player_dirty()
         console.clearkeys()
         console.alert(YTOP + 1, 'The Magical Staff of Kroz is finally yours--50,000 points!', level.Bc, level.Bb)
         console.alert(YTOP + 1, 'Congratulations, Adventurer, you finally did it!!!', level.Bc, level.Bb)

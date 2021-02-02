@@ -34,6 +34,9 @@ class GameDisplay():
         if self.border.dirty:
             self.border.render(self.mpf.rect.size, console)
 
+    def mark_player_dirty(self):
+        self.stats.stats_dirty = True
+
 class MainPlayfield():
     def __init__(self, rect: Rect, gem_color: Color, visibility: VisibilityFlags, floor_colors: Optional[Tuple[Color, Color]] = None):
         self.dirty: bool = True
