@@ -8,7 +8,7 @@ import sys
 # Library Imports
 import pygame
 from pygame import Color, Rect
-import pygame.locals
+import pygame.constants
 import pygame.display
 import pygame.mixer
 import pygame.key
@@ -56,11 +56,11 @@ class Crt:
 
     def tick(self):
         for event in get([
-            pygame.locals.QUIT,
-            pygame.locals.KEYDOWN,
-            pygame.locals.KEYUP
+            pygame.constants.QUIT,
+            pygame.constants.KEYDOWN,
+            pygame.constants.KEYUP
         ], pump = True):
-            if event.type == pygame.locals.QUIT:
+            if event.type == pygame.constants.QUIT:
                 sys.exit()
             print(event)
             self._keyboard.handle(event)
@@ -87,7 +87,8 @@ class Crt:
     def read(self) -> int:
         while not self._keyboard.key_in_queue():
             self.tick()
-        return self._keyboard.get_key_from_queue()
+        key = self._keyboard.get_key_from_queue()
+        return key if key is not None else 0
 
     def readkey(self) -> Optional[int]:
         return self._keyboard.get_key_from_queue()
@@ -97,16 +98,16 @@ class Crt:
         done = False
         while not done:
             for event in get([
-                pygame.locals.QUIT,
-                pygame.locals.KEYDOWN,
-                pygame.locals.KEYUP
+                pygame.constants.QUIT,
+                pygame.constants.KEYDOWN,
+                pygame.constants.KEYUP
             ], pump = True):
-                if event.type == pygame.locals.QUIT:
+                if event.type == pygame.constants.QUIT:
                     exit()
-                elif event.type == pygame.locals.KEYDOWN:
-                    if event.key in [pygame.locals.K_ESCAPE, pygame.locals.K_RETURN, pygame.locals.K_KP_ENTER]:
+                elif event.type == pygame.constants.KEYDOWN:
+                    if event.key in [pygame.constants.K_ESCAPE, pygame.constants.K_RETURN, pygame.constants.K_KP_ENTER]:
                         done = True
-                    elif event.key in [pygame.locals.K_BACKSPACE, pygame.locals.K_DELETE]:
+                    elif event.key in [pygame.constants.K_BACKSPACE, pygame.constants.K_DELETE]:
                         line = line[:-1]
                         self.cursor_x -= 1
                         self.write(' ')
@@ -135,10 +136,10 @@ class Crt:
             return
         fg = [*self.foreground[0:3]] if fore is None else [*fore[0:3]]
         bg = [*self.background[0:3]] if back is None else [*back[0:3]]
-        if isinstance(str, message):
+        if isinstance(message, str):
             clipped_message = message[0:(self.current_window.width - self.cursor_x)]
             self.dirty_blocks.append(Rect(self.cursor_x, self.cursor_y, len(clipped_message), 1))
-            for (i, c) in clipped_message:
+            for (i, c) in enumerate(clipped_message):
                 self.charbuffer[self.cursor_x + i, self.cursor_y] = ASCII.Ord[c]
                 self.fg_color_buffer[self.cursor_x + i, self.cursor_y] = fg
                 self.bg_color_buffer[self.cursor_x + i, self.cursor_y] = bg
@@ -217,13 +218,13 @@ class Crt:
         if back is not None:
             self.background = back
 
-    def sound(self, freq: int, duration: int):
+    def sound(self, freq: int, duration: float):
         self._audio.sound(self._audio.tone(freq, duration, self._audio.square_wave))
 
     def sounds(self, parts: SampleSet):
         self._audio.sound(self._audio.compose(parts, self._audio.square_wave))
 
-    def clrscr(self, color: Optional[Color]):
+    def clrscr(self, color: Optional[Color] = None):
         fg = [*self.foreground[0:3]]
         bg = [*self.background[0:3]] if color is None else [*color[0:3]]
         for x in range(self.current_window.left, self.current_window.left + self.current_window.width):

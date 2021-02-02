@@ -1,6 +1,6 @@
 from random import randrange
 
-import pygame.locals
+import pygame.constants
 
 from engine.colors import Colors
 from engine.ascii import ASCII
@@ -22,7 +22,7 @@ def Screen(game: Game, console: Crt):
     console.gotoxy(console.cursor_x - 1, console.cursor_y)
     ch = console.read()
     console.sounds(sounds.Color_Prompt())
-    if ch == pygame.locals.K_m:
+    if ch == pygame.constants.K_m:
         console.color_mode = ColorMode.BLACK_AND_WHITE
     else:
         console.color_mode = ColorMode.COLOR_PALLETTE
@@ -41,7 +41,7 @@ def Screen(game: Game, console: Crt):
     console.gotoxy(console.cursor_x - 1, console.cursor_y)
     ch = console.read()
     console.sounds(sounds.Speed_Prompt())
-    if ch == pygame.locals.K_f:
+    if ch == pygame.constants.K_f:
         game.FastPC = True
     else:
         game.FastPC = False
@@ -276,7 +276,7 @@ def Shoot_Left(x_way: int, y_way: int, Human: bool):
 def Tome_Message(level: Level, console: Crt):
     console.alert(YTOP + 1, ' You reach out to grab the object of your long quest... ', level.Bc, level.Bb)
     console.alert(YTOP + 1, ' the Magical Staff of Kroz. ', level.Bc, level.Bb)
-    console.alert(YTOP + 1, ' Your budy surges with electricity as you clutch it! ')
+    console.alert(YTOP + 1, ' Your budy surges with electricity as you clutch it! ', level.Bc, level.Bb)
 
 def Tome_Effects(playfield: Playfield, console: Crt):
     console.reset_colors()

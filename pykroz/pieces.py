@@ -882,7 +882,7 @@ def draw(what: What, visibility: VisibilityFlags) -> DrawResponse:
 
 def score_for(what: What, level: int) -> int:
     if what in WhatSets.monsters: # Monsters
-        return int(What)
+        return int(what)
     if what in (What.Breakable_Wall, What.Wall): # Block
         return -2
     if what == What.Whip:

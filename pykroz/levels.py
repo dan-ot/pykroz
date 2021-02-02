@@ -6,7 +6,7 @@ import json
 from enum import Flag, auto
 
 # Engine Libraries
-import pygame.locals
+import pygame.constants
 import pygame.key
 from pygame import Color
 
@@ -236,10 +236,6 @@ def Shareware(console: Crt, Wait: bool):
     console.clrscr()
 
 # TODO: Move to GameDisplay
-def New_Gem_Color(level: Level):
-    level.GemColor = Colors.RandomExcept([8])
-
-# TODO: Move to GameDisplay
 def Won(game: Game, player: PlayerState, level: Level, display: GameDisplay, console: Crt):
     display.new_border_color()
     console.clearkeys()
@@ -370,7 +366,6 @@ def Load_Literal_Level(literal_level: LiteralLevel, player: PlayerState, level: 
     level.GravCounter = 0
     level.GravOn = False
     playfield.parse(literal_level)
-    New_Gem_Color(level)
     level.slow_monsters = [(x, y) for (x, y, _) in playfield.coords_of(What.SlowMonster)]
     level.medium_monsters = [(x, y) for (x, y, _) in playfield.coords_of(What.MediumMonster)]
     level.fast_monsters = [(x, y) for (x, y, _) in playfield.coords_of(What.FastMonster)]
@@ -385,7 +380,6 @@ def Load_Random_Level(definition: RandomLevel, player: PlayerState, playfield: P
     level.GenNum = 0
     level.LavaFlow = False
     level.T[9] = -1
-    New_Gem_Color(level)
     playfield.reset()
     playfield[player.position] = What.Player
     playfield.generate(definition)
@@ -424,7 +418,7 @@ def Go(XWay: int, YWay: int, Human: bool, game: Game, playfield: Playfield, play
         console.sounds(sounds.FootStep())
     if console.keypressed() and Human:
         ch = console.read()
-        if ch == pygame.locals.K_ESCAPE:
+        if ch == pygame.constants.K_ESCAPE:
             console.read()
 
 def MoveRock(XWay: int, YWay: int):
@@ -446,7 +440,7 @@ def End_Routine(game: Game, player: PlayerState, level: Level, display: GameDisp
         # TODO: Writing the border here...
         console.print(15, 25, 'Oh no, something strange is happening!', Colors.Random(), Colors.Black)
     for i in range(2200, 20, -1):
-        console.sound(randrange(i)) # Also sounds.Victory_Strage() - one sound covers the whole sequence
+        console.sound(randrange(i), 3) # Also sounds.Victory_Strage() - one sound covers the whole sequence
     for x in range(650):
         console.sound(x * 3, 2) # sounds.Victory_ScramblePlayer()
         console.gotoxy(*player.position)

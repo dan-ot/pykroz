@@ -56,7 +56,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
             player.gems -= 3
             console.sounds(sounds.Step_On_Monster(3))
         if player.gems < 0:
-            Dead(True, game, player, level, console)
+            Dead(True, game, player, level, display, console)
         Go(x_way, y_way, Human, game, playfield, player, level, console)
         if console.keypressed():
             _ = console.read()
@@ -123,7 +123,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
 
         Next_Level(player, playfield, level)
 
-        console.sounds(sounds.FootStep)
+        console.sounds(sounds.FootStep())
         for x in range(1, 30):
             console.window(32 - x, 12 - x // 3, 35 + x, 14 + x // 3)
             console.clrscr(level.GemColor)
@@ -348,7 +348,7 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         console.sounds(sounds.Lava())
         if player.gems < 0:
             player.gems = 0
-            Dead(True, game, player, level, console)
+            Dead(True, game, player, level, display, console)
         console.clearkeys()
         if What.Lava not in game.FoundSet:
             game.FoundSet.add(What.Lava)
@@ -383,11 +383,11 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         console.sounds(sounds.Pit_Splat())
         console.clearkeys()
         console.alert(YBOT - 1, '* SPLAT!! *', level.Bc, level.Bb)
-        Dead(False, game, player, level, console)
+        Dead(False, game, player, level, display, console)
     elif onto == What.Tome: # Tome
         Tome_Message(level, console)
         for _ in range(1, 5):
-            Tome_Effects(level, console)
+            Tome_Effects(playfield, console)
         for x in range(1, 24):
             for y in range(5, 1, -1):
                 console.sounds([(x * 45 + y * 10, y * 3), (None, 40)]) # sounds.Victory_MacGuffin()

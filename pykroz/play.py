@@ -3,7 +3,7 @@ import json
 from random import choice, randrange
 from typing import cast
 
-import pygame.locals
+import pygame.constants
 
 from display.game_display import GameDisplay
 from playerstate import PlayerState
@@ -43,12 +43,12 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
             console.clearkeys()
             console.alert(YTOP + 1, ' Are you sure you want to quit (Y/N)? ', level.Bc, level.Bb)
             ch = console.read()
-            if ch == pygame.locals.K_y:
+            if ch == pygame.constants.K_y:
                 Sign_Off(console)
         elif command == Command.RESTORE:
             console.alert(YTOP + 1, ' Are you sure you want to RESTORE (Y/N)? ', level.Bc, level.Bb)
             ch = console.read()
-            if ch == pygame.locals.K_n:
+            if ch == pygame.constants.K_n:
                 return
             console.clearkeys()
             # TODO: Writing in the border here...
@@ -56,11 +56,11 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
             console.gotoxy(56, 25)
             ch = console.read()
             which_file = ''
-            if ch == pygame.locals.K_ESCAPE:
+            if ch == pygame.constants.K_ESCAPE:
                 return
-            elif ch == pygame.locals.K_b:
+            elif ch == pygame.constants.K_b:
                 which_file = 'B'
-            elif ch == pygame.locals.K_c:
+            elif ch == pygame.constants.K_c:
                 which_file = 'C'
             else:
                 which_file = 'A'
@@ -144,11 +144,11 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
             console.gotoxy(54, 25)
             ch = console.read()
             which_file = ''
-            if ch == pygame.locals.K_ESCAPE:
+            if ch == pygame.constants.K_ESCAPE:
                 return
-            elif ch == pygame.locals.K_b:
+            elif ch == pygame.constants.K_b:
                 which_file = 'B'
-            elif ch == pygame.locals.K_c:
+            elif ch == pygame.constants.K_c:
                 which_file = 'C'
             else:
                 which_file = 'A'
@@ -277,7 +277,7 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
 
 def Move_Slow(game: Game, playfield: Playfield, player: PlayerState, level: Level, display: GameDisplay, console: Crt):
     # Remove monsters the playfield doesn't recognize
-    level.slow_monsters = filter(lambda sm: playfield[sm] == What.SlowMonster)
+    level.slow_monsters = list(filter(lambda sm: playfield[sm] == What.SlowMonster, level.slow_monsters))
 
     # No-op if there are no monsters
     if len(level.slow_monsters) == 0:
@@ -363,7 +363,7 @@ def Move_Slow(game: Game, playfield: Playfield, player: PlayerState, level: Leve
         level.slow_monsters[i] = (mx, my)
 
 def Move_Medium(game: Game, playfield: Playfield, player: PlayerState, level: Level, display: GameDisplay, console: Crt):
-    level.medium_monsters = filter(lambda sm: playfield[sm] == What.MediumMonster)
+    level.medium_monsters = list(filter(lambda sm: playfield[sm] == What.MediumMonster, level.medium_monsters))
     if len(level.medium_monsters) == 0:
         return
     if level.T[6] > 0: # FastTime is on
@@ -374,7 +374,7 @@ def Move_Medium(game: Game, playfield: Playfield, player: PlayerState, level: Le
         else:
             level.medium_monster_timer = level.medium_monster_timer_base
 
-    for (i, monster_coord) in level.medium_monsters:
+    for (i, monster_coord) in enumerate(level.medium_monsters):
         playfield[monster_coord] = What.Nothing # remove the monster before we know whether it's move is valid...
         console.gotoxy(*monster_coord)
         console.write(' ')
@@ -417,7 +417,7 @@ def Move_Medium(game: Game, playfield: Playfield, player: PlayerState, level: Le
             player.score += 2
             console.sounds(sounds.Monster_Self_Destruction())
         elif occupant == What.Player: # The player!
-            console.sound(sounds.Monster2_On_Player())
+            console.sounds(sounds.Monster2_On_Player())
             player.gems -= 2
             if player.gems < 0:
                 Dead(True, game, player, level, display, console)
@@ -447,7 +447,7 @@ def Move_Medium(game: Game, playfield: Playfield, player: PlayerState, level: Le
         level.medium_monsters[i] = (mx, my)
 
 def Move_Fast(game: Game, playfield: Playfield, player: PlayerState, level: Level, display: GameDisplay, console: Crt):
-    level.fast_monsters = filter(lambda sm: playfield[sm] == What.FastMonster)
+    level.fast_monsters = list(filter(lambda sm: playfield[sm] == What.FastMonster, level.fast_monsters))
     if len(level.fast_monsters) == 0:
         return
     if level.T[6] > 0: # FastTime is on
@@ -457,7 +457,7 @@ def Move_Fast(game: Game, playfield: Playfield, player: PlayerState, level: Leve
             level.fast_monster_timer = level.fast_monster_timer_base * 5.0
         else:
             level.fast_monster_timer = level.fast_monster_timer_base
-    for (i, monster_coord) in level.fast_monsters:
+    for (i, monster_coord) in enumerate(level.fast_monsters):
         playfield[monster_coord] = What.Nothing # remove the monster before we know whether it's move is valid...
         console.gotoxy(*monster_coord)
         console.write(' ')
@@ -536,7 +536,7 @@ def Run(console: Crt):
     level = Level()
     playfield = Playfield(64, 23)
     player = PlayerState()
-    display = GameDisplay(playfield.bounds())
+    display = GameDisplay(playfield.bounds(), console)
     Screen(game, console)
     NewGame(game, playfield, player, level, display, console)
 
@@ -562,7 +562,7 @@ def NewGame(game: Game, playfield: Playfield, player: PlayerState, level: Level,
     for x in range(1, 800):
         console.gotoxy(*player.position)
         console.write(VisibleTiles.Player, Colors.Random(), Colors.RandomDark())
-        console.sound(x // 2) # sounds.NewGame()
+        console.sound(x // 2, 3) # sounds.NewGame()
     console.gotoxy(*player.position)
     console.write(VisibleTiles.Player, Colors.Yellow)
     console.clearkeys()

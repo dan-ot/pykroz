@@ -11,7 +11,7 @@ class PlayerState():
         self.teleports: int = 0
         self.keys: int = 0
 
-        self.position: Optional[Tuple[int, int]] = (0, 0)
+        self.position: Tuple[int, int] = (0, 0)
 
         self.invisibility_remaining: float = 0
 

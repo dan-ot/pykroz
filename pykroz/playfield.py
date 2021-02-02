@@ -1,5 +1,5 @@
-from collections.abc import Iterable, Sequence
-from typing import Tuple, Union
+from collections.abc import Iterable
+from typing import MutableMapping, Tuple, Union
 from random import choice
 
 from pygame import Rect
@@ -8,7 +8,7 @@ from pieces import What, parse
 from levels import LiteralLevel, RandomLevel
 
 
-class Playfield(Sequence):
+class Playfield(MutableMapping[Tuple[int, int], What]):
     def __init__(self, width: int, height: int):
         self.__width = width
         self.__height = height
@@ -27,7 +27,7 @@ class Playfield(Sequence):
 
         return self.__data[x * self.__width + y]
 
-    def __setitem__(self, key: Tuple[int, int], value: Union[What, int]) -> What:
+    def __setitem__(self, key: Tuple[int, int], value: Union[What]) -> None:
         if len(key) != 2:
             raise KeyError("Expected key of length 2 (x, y) but got: {0}".format(key))
         x, y = key
@@ -35,6 +35,9 @@ class Playfield(Sequence):
             raise KeyError("{0} is out of bounds({1}, {2} max)".format(key, self.__width, self.__height))
 
         self.__data[x * self.__width + y] = What(value)
+
+    def __delitem__(self, v: Tuple[int, int]) -> None:
+        self.__setitem__(v, What.Nothing)
 
     def bounds(self) -> Rect:
         return Rect(0, 0, self.__width, self.__height)

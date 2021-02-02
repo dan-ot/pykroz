@@ -16,8 +16,8 @@ class Audio:
             self.type = 'uint{0}'.format(bit_depth)
         else:
             self.type = 'int{0}'.format(abs(bit_depth))
-        self.channel = find_channel()
-        self.queue = deque()
+        self.channel = find_channel(False)
+        self.queue: deque[Sound] = deque()
         self.volume = (2 ** (abs(bit_depth) - 1)) * 0.8
 
     def square_wave(self, sample: Sample) -> Sequence[int]:
@@ -47,7 +47,7 @@ class Audio:
         np = numpy.array(in_stereo, dtype=self.type)
         return pygame.sndarray.make_sound(np)
 
-    def tone(self, freq: Union[int, None], duration_in_ms: int, wave_func) -> Sound:
+    def tone(self, freq: Union[int, None], duration_in_ms: float, wave_func) -> Sound:
         wav = wave_func((freq, duration_in_ms))
         return self.wave_to_sound(wav)
 
