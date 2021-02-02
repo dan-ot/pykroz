@@ -16,23 +16,24 @@ class GameDisplay():
     BLINK_RATE = 300.0
     COLOR_RATE = 60.0
 
-    def __init__(self, playfield_rect: Rect):
+    def __init__(self, playfield_rect: Rect, console: Crt):
         self.mpf = MainPlayfield(playfield_rect, Colors.Black, VisibilityFlags.SHOW_ALL)
         self.stats = StatsDisplay()
-        self.border = Border()
+        self.border = Border(playfield_rect.size)
+        self.console = console
 
     def tick(self, time: float):
         self.mpf.tick(time)
         self.stats.tick(time)
         self.border.tick(time)
 
-    def render(self, player: PlayerState, playfield: Playfield, console: Crt):
+    def render(self, player: PlayerState, playfield: Playfield):
         if self.stats.dirty:
-            self.stats.render(player, console)
+            self.stats.render(player, self.console)
         if self.mpf.dirty:
-            self.mpf.render(playfield, console)
+            self.mpf.render(playfield, self.console)
         if self.border.dirty:
-            self.border.render(self.mpf.rect.size, console)
+            self.border.render(self.console)
 
     def mark_player_dirty(self):
         self.stats.stats_dirty = True
@@ -42,8 +43,11 @@ class GameDisplay():
         self.border.new_level()
         self.stats.new_level()
 
-    def new_border(self):
+    def new_border_color(self):
         self.border.new_level()
+
+    def alert(self, text: str, bottom: bool = False):
+        pass
 
 class MainPlayfield():
     def __init__(self, rect: Rect, gem_color: Color, visibility: VisibilityFlags, floor_colors: Optional[Tuple[Color, Color]] = None):
@@ -93,7 +97,7 @@ class MainPlayfield():
                 chance = chance_of(playfield[x, y])
                 if chance is not None:
                     if randrange(chance) == 0:
-                        self.chanced.append(x, y)
+                        self.chanced.append((x, y))
 
 class StatsDisplay():
     def __init__(self):
@@ -155,44 +159,47 @@ class StatsDisplay():
         self.stats_dirty = True
 
 class Border():
-    def __init__(self):
+    def __init__(self, containing: Tuple[int, int]):
         self.foreground: Color = Colors.Black
         self.background: Color = Colors.Black
         self.top_text: HudText = HudText('', Animation.NONE)
         self.bottom_text: HudText = HudText('', Animation.NONE)
         self.dirty: bool = True
+        self.containing = containing
 
     def tick(self, time: float):
         self.dirty = self.top_text.tick(time) or self.dirty
         self.dirty = self.bottom_text.tick(time) or self.dirty
 
-    def render(self, containing_size: Tuple[int, int], console: Crt):
+    def render(self, console: Crt):
         if self.dirty:
-            (width, height) = containing_size
+            (width, height) = self.containing
             top_space = (width + 2 - len(self.top_text)) // 2
             bottom_space = (width + 2 - len(self.bottom_text)) // 2
-            for x in range(top_space):
-                console.print(x, 0, VisibleTiles.Breakable_Wall, self.foreground, self.background)
+            console.print(0, 0, "{:{fill}^{width}}".format('', fill = VisibleTiles.Breakable_Wall, width = top_space), self.foreground, self.background)
             console.print(top_space, 0, self.top_text.message,
                 self.top_text.foreground if self.top_text.foreground is not None else self.foreground, self.background)
-            for x in range(top_space):
-                console.print(x + top_space + len(self.top_text), 0, VisibleTiles.Breakable_Wall, self.foreground, self.background)
+            console.print(top_space + len(self.top_text), 0, "{:{fill}^{width}}".format('', fill = VisibleTiles.Breakable_Wall, width = top_space), self.foreground, self.background)
 
             for y in range(1, height + 1):
                 console.print(0, y, VisibleTiles.Breakable_Wall, self.foreground, self.background)
                 console.print(width + 2, y, VisibleTiles.Breakable_Wall, self.foreground, self.background)
 
-            for x in range(bottom_space):
-                console.print(x, height + 2, VisibleTiles.Breakable_Wall, self.foreground, self.background)
-            console.print(bottom_space, height + 2, self.bottom_text.message,
+            console.print(0, 0, "{:{fill}^{width}}".format('', fill = VisibleTiles.Breakable_Wall, width = bottom_space), self.foreground, self.background)
+            console.print(bottom_space, 0, self.bottom_text.message,
                 self.bottom_text.foreground if self.bottom_text.foreground is not None else self.foreground, self.background)
-            for x in range(bottom_space):
-                console.print(x + bottom_space + len(self.bottom_text), 0, VisibleTiles.Breakable_Wall, self.foreground, self.background)
+            console.print(bottom_space + len(self.bottom_text), 0, "{:{fill}^{width}}".format('', fill = VisibleTiles.Breakable_Wall, width = bottom_space), self.foreground, self.background)
 
     def new_level(self):
         self.foreground = Colors.RandomLight()
         self.background = Colors.RandomDark()
         self.dirty = True
+
+    def alert(self, message: str, top: bool = False):
+        if top:
+            self.top_text = HudText(message, Animation.RANDOM_COLOR, [Colors.White, Colors.Yellow])
+        else:
+            self.bottom_text = HudText(message, Animation.RANDOM_COLOR, [Colors.White, Colors.Yellow])
 
 class Animation(Enum):
     NONE = 0

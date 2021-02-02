@@ -150,13 +150,6 @@ class Game:
         self.FoundSet: set[What] = set()
 
 # Procedures
-
-# TODO: deprecated
-def Restore_Border(level: Level, console: Crt):
-    console.gotoxy(2, 25)
-    for _ in range(XBOT - 1, XTOP + 2):
-        console.write(VisibleTiles.Breakable_Wall, level.Bc, level.Bb)
-
 def Sign_Off(console: Crt):
     Shareware(console, Wait = False)
     console.clearkeys()
@@ -248,7 +241,7 @@ def New_Gem_Color(level: Level):
 
 # TODO: Move to GameDisplay
 def Won(game: Game, player: PlayerState, level: Level, display: GameDisplay, console: Crt):
-    display.new_border()
+    display.new_border_color()
     console.clearkeys()
     console.print(5, 1, 'YOUR QUEST FOR THE MAGICAL STAFF OF KROZ WAS SUCCESSFUL!!', Colors.White, level.Bb) # Flashing when possible
     High_Score(False, game, player, level, console)
@@ -366,7 +359,7 @@ def Dead(DeadDot: bool, game: Game, player: PlayerState, level: Level, display: 
         if DeadDot:
             console.write('*', Colors.Random(), Colors.Black)
         console.print(21, 25, 'Press any key to continue.')
-    display.new_border()
+    display.new_border_color()
     High_Score(True, game, player, level, console)
 
 def Load_Literal_Level(literal_level: LiteralLevel, player: PlayerState, level: Level, playfield: Playfield):
@@ -450,6 +443,7 @@ def End_Routine(game: Game, player: PlayerState, level: Level, display: GameDisp
         console.sound(randrange(3000) + x, 0.5) # sounds.Victory_Strange()
         console.gotoxy(*player.position)
         console.write(VisibleTiles.Player, Colors.Yellow, Colors.RandomDark())
+        # TODO: Writing the border here...
         console.print(15, 25, 'Oh no, something strange is happening!', Colors.Random(), Colors.Black)
     for i in range(2200, 20, -1):
         console.sound(randrange(i)) # Also sounds.Victory_Strage() - one sound covers the whole sequence
@@ -459,41 +453,40 @@ def End_Routine(game: Game, player: PlayerState, level: Level, display: GameDisp
         console.write(220 + randrange(4), Colors.Yellow, Colors.Black)
     console.gotoxy(*player.position)
     console.write(VisibleTiles.Stairs, Colors.Black, Colors.Green) # Flashing, when possible
-    Restore_Border(level, console)
     console.alert(YTOP + 1, 'You are magically transported from Kroz!', level.Bc, level.Bb)
     console.clearkeys()
     console.reset_colors()
+    # TODO: Writing in the border here...
     console.print(15, 25, 'Your gems are worth 100 points each...')
     for i in range(player.gems):
         player.score += 10
         display.mark_player_dirty()
         console.sounds(sounds.Points_For_Gems(i))
     console.read()
-    Restore_Border(level, console)
     console.clearkeys()
+    # TODO: Writing in the border here...
     console.print(15, 25, 'Your whips are worth 100 points each...')
     for i in range(player.whips):
         player.score += 10
         display.mark_player_dirty()
         console.sounds(sounds.Points_For_Whips(i))
     console.read()
-    Restore_Border(level, console)
     console.clearkeys()
+    # TODO: Writing in the border here...
     console.print(9, 25, 'Your Teleport Scrolls are woth 200 points each...')
     for i in range(player.teleports):
         player.score += 20
         display.mark_player_dirty()
         console.sounds(sounds.Points_For_Teleports(i))
     console.read()
-    Restore_Border(level, console)
     console.clearkeys()
+    # TODO: Writing in the border here...
     console.print(14, 25, 'Your Keys are worth 10,000 points each...')
     for i in range(player.keys):
         player.score += 1000
         display.mark_player_dirty()
         console.sounds(sounds.Points_For_Keys(i))
     console.read()
-    Restore_Border(level, console)
     console.clearkeys()
     for x in range(30):
         console.window(32 - x, 12 - x // 3, 35 + x, 14 + (x // 3))

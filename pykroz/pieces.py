@@ -8,7 +8,7 @@ from levels import VisibilityFlags
 from engine.ascii import ASCII
 from engine.colors import Colors
 
-class VisibleTiles(Enum):
+class VisibleTiles():
     Null       = ASCII.Char[0]
     Breakable_Wall      = ASCII.Char[178]
     Whip       = ASCII.Char[244]

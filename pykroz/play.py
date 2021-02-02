@@ -11,7 +11,7 @@ from pieces import What, WhatSets
 from commands import Command, command_from_key_code
 from engine.colors import Colors
 from engine.crt import Crt
-from levels import Dead, Game, Level, PMOVE, Restore_Border, SaveType, Sign_Off, TMAX, VisibleTiles, YTOP
+from levels import Dead, Game, Level, PMOVE, SaveType, Sign_Off, TMAX, VisibleTiles, YTOP
 from screens import Hit, Init_Screen, Screen
 from movement import Move, Next_Level
 from titles import Title
@@ -51,10 +51,10 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
             if ch == pygame.locals.K_n:
                 return
             console.clearkeys()
+            # TODO: Writing in the border here...
             console.print(8, 25, ' Pick which letter to RESTORE from: A, B or C?  A  ')
             console.gotoxy(56, 25)
             ch = console.read()
-            Restore_Border(level, console)
             which_file = ''
             if ch == pygame.locals.K_ESCAPE:
                 return
@@ -129,7 +129,6 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
                 console.gotoxy(*player.position)
                 console.write(VisibleTiles.Player, Colors.Yellow)
             else:
-                Restore_Border(level, console)
                 console.sounds(sounds.Load_Error())
                 console.alert(YTOP + 1, ' The SAVE file {0} was not found.'.format(which_file), level.Bc, level.Bb)
 
@@ -140,11 +139,11 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
             ch = console.read()
             console.reset_colors()
             console.clearkeys()
+            # TODO: Writing in the border here...
             console.print(11, 25, ' Pick which letter to SAVE to: A, B, or C?  A  ')
             console.gotoxy(54, 25)
             ch = console.read()
             which_file = ''
-            Restore_Border(level, console)
             if ch == pygame.locals.K_ESCAPE:
                 return
             elif ch == pygame.locals.K_b:
@@ -166,13 +165,14 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
             save_stuff.py = level.initial.py
             save_stuff.found_set = list(level.initial.found_set)
             save_stuff.mix_up = game.MixUp
+            # TODO: Writing in the border here...
             console.print(22, 25, '  Saving to file {0}...  '.format(which_file))
             file = Path('DUNGEON{0}.SAV'.format(which_file))
             file.touch()
             with open(file, 'w') as f:
                 json.dump(save_stuff, f)
+            # TODO: Pause so the player can read what was written
             console.delay(1000)
-            Restore_Border(level, console)
 
         elif command == Command.TELEPORT:
             if player.teleports < 1:
@@ -335,7 +335,7 @@ def Move_Slow(game: Game, playfield: Playfield, player: PlayerState, level: Leve
             console.sounds(sounds.Monster1_On_Player())
             player.gems -= 1
             if player.gems < 0:
-                Dead(True, game, player, level, console)
+                Dead(True, game, player, level, display, console)
 
             # Update Gems display?
             console.gotoxy(71, 8)
@@ -420,7 +420,7 @@ def Move_Medium(game: Game, playfield: Playfield, player: PlayerState, level: Le
             console.sound(sounds.Monster2_On_Player())
             player.gems -= 2
             if player.gems < 0:
-                Dead(True, game, player, level, console)
+                Dead(True, game, player, level, display, console)
 
             # Update Gems display?
             console.gotoxy(71, 8)
@@ -503,7 +503,7 @@ def Move_Fast(game: Game, playfield: Playfield, player: PlayerState, level: Leve
             console.sounds(sounds.Monster3_On_Player())
             player.gems -= 3
             if player.gems < 0:
-                Dead(True, game, player, level, console)
+                Dead(True, game, player, level, display, console)
 
             # Update Gems display?
             console.gotoxy(71, 8)
