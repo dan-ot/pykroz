@@ -48,7 +48,7 @@ class GameDisplay():
     def new_border_color(self):
         self.border.new_level()
 
-    def alert(self, text: str, bottom: bool = False):
+    def alert(self, text: str, bottom: bool = True):
         # TODO: In the future, this needs to take over the message pump. This should modally prevent other input.
         pass
 

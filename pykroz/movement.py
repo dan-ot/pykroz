@@ -1,4 +1,5 @@
 from random import choice, randrange
+from typing import Tuple
 
 from engine.colors import Colors
 from engine.crt import Crt
@@ -6,7 +7,7 @@ from display.game_display import GameDisplay
 from playerstate import PlayerState
 from playfield import Playfield
 from pieces import What, WhatSets, score_for
-from levels import LiteralLevel, Load_Literal_Level, Load_Random_Level, Dead, End_Routine, Game, Go, Level, RandomLevel, VisibleTiles, YBOT, YTOP
+from levels import Dead, End_Routine, Game, Go, Level, VisibleTiles, YBOT, YTOP
 from screens import Tome_Effects, Tome_Message
 from layouts import DungeonsLayouts
 import sounds
@@ -17,20 +18,35 @@ def Prayer():
 def Tablet_Message(level: int):
     pass
 
-def Next_Level(player: PlayerState, playfield: Playfield, level: Level):
+def Next_Level(player: PlayerState) -> Tuple[Playfield, Level]:
+    EXTRA_TIME = 8.0
     definition = DungeonsLayouts[player.level]
 
-    if isinstance(definition, LiteralLevel):
-        Load_Literal_Level(definition, player, level, playfield)
-    elif isinstance(definition, RandomLevel):
-        Load_Random_Level(definition, player, playfield, level)
+    playfield = Playfield.from_level_definition(definition, player)
+    level = Level()
+    level.slow_monsters = [(x, y) for (x, y, _) in playfield.coords_of(What.SlowMonster)]
+    level.medium_monsters = [(x, y) for (x, y, _) in playfield.coords_of(What.MediumMonster)]
+    level.fast_monsters = [(x, y) for (x, y, _) in playfield.coords_of(What.FastMonster)]
+    level.GenNum = playfield.count_of(What.Generator)
 
-def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, player: PlayerState, level: Level, display: GameDisplay, console: Crt):
-    EXTRA_TIME = 8.0
+    # First monster move is delayed a bit extra based on monster speed...
+    level.slow_monster_timer = EXTRA_TIME - level.slow_monster_timer_base
+    level.medium_monster_timer = EXTRA_TIME - level.medium_monster_timer_base
+    level.fast_monster_timer = EXTRA_TIME - level.fast_monster_timer_base
+
+    players = playfield.coords_of(What.Player)
+    if len(players) != 1:
+        raise ValueError("Inappropriate number of players: {0}, expected 1.".format(len(players)))
+    [(player_x, player_y, _)] = players
+    player.position = (player_x, player_y)
+
+    return (playfield, level)
+
+def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, player: PlayerState, level: Level, display: GameDisplay, console: Crt) -> Tuple[Playfield, Level]:
     future_player_position = player.future_pos(x_way, y_way)
     if level.Sideways and y_way == -1 and playfield.replacement != What.Rope and (not playfield[future_player_position] in WhatSets.becomes_replacement_with_sideways):
         game.OneMove = False
-        return
+        return (playfield, level)
     if not playfield.bounds().collidepoint(future_player_position):
         if Human:
             console.sounds(sounds.Static())
@@ -93,49 +109,23 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
             console.alert(YTOP + 1, 'Stairs take you to the next lower level.', level.Bc, level.Bb)
             console.clearkeys()
         console.sounds(sounds.FootStep())
-        level.slow_monster_timer = EXTRA_TIME - level.slow_monster_timer_base
-        level.medium_monster_timer = EXTRA_TIME - level.medium_monster_timer_base
-        level.fast_monster_timer = EXTRA_TIME - level.fast_monster_timer_base
-        level.T[4] = 0 # cancel SlowTime
-        level.T[5] = 0 # cancel Invisibility
-        level.T[6] = 0 # cancel SpeedTime
-        level.T[8] = 7
         game.FoundSet -= WhatSets.cleared_by_stairs
-        level.GenNum = 0
-        level.TreeRate = -1
-        level.LavaFlow = False
-        level.Evaporate = 0
-        level.MagicEWalls = False
-        level.HideLevel = False
-        level.HideOpenWall = False
-        level.HideRock = False
-        level.HideStairs = False
-        level.HideGems = False
-        level.HideMBlock = False
-        level.HideTrap = False
-        level.HideCreate = False
-        level.GravOn = False
-        level.GravRate = 0
-        level.GravCounter = 0
-        level.Bonus = 0
-        level.Sideways = False
-        playfield.replacement = What.Nothing
 
-        Next_Level(player, playfield, level)
+        newPlayfield, newLevel = Next_Level(player)
 
         console.sounds(sounds.FootStep())
         for x in range(1, 30):
             console.window(32 - x, 12 - x // 3, 35 + x, 14 + x // 3)
-            console.clrscr(level.GemColor)
+            console.clrscr(display.mpf.gem_color)
         for x in range(1, 30):
             console.window(32 - x, 12 - x // 3, 35 + x, 14 + x // 3)
-            console.clrscr(level.GemColor)
+            console.clrscr(display.mpf.gem_color)
             console.sound(x * 45, 3)
         console.window(2, 2, 65, 24)
-        console.clrscr(level.GemColor)
+        console.clrscr(display.mpf.gem_color)
         console.window(1, 1, 80, 25)
         console.sounds(sounds.FootStep())
-        display.new_level(playfield)
+        display.new_level(newPlayfield)
         console.sounds(sounds.FootStep())
         for x in range(1, 600):
             console.gotoxy(*player.position)
@@ -143,18 +133,19 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
             console.sound(x // 2, 1) # sounds.Enter_Level()
         console.gotoxy(*player.position)
         console.write(VisibleTiles.Player, Colors.Yellow)
-        level.initial.score = player.score
-        level.initial.gems = player.gems
-        level.initial.whips = player.whips
-        level.initial.teleports = player.teleports
-        level.initial.keys = player.keys
-        level.initial.whip_power = player.whip_power
-        level.initial.difficulty = game.Difficulty
-        level.initial.px = player.position[0]
-        level.initial.py = player.position[1]
-        level.initial.found_set = list(game.FoundSet)
+        newLevel.initial.score = player.score
+        newLevel.initial.gems = player.gems
+        newLevel.initial.whips = player.whips
+        newLevel.initial.teleports = player.teleports
+        newLevel.initial.keys = player.keys
+        newLevel.initial.whip_power = player.whip_power
+        newLevel.initial.difficulty = game.Difficulty
+        newLevel.initial.px = player.position[0]
+        newLevel.initial.py = player.position[1]
+        newLevel.initial.found_set = list(game.FoundSet)
         if player.level == 30:
-            console.alert(YTOP + 1, 'You have finally reached the last dungeon of Kroz!', level.Bc, level.Bb)
+            display.alert('You have finally reached the last dungeon of Kroz!')
+        return (playfield, level)
     elif onto == What.Chest: # Chest
         Go(x_way, y_way, Human, game, playfield, player, level, console)
         console.sounds(sounds.Open_Chest())
@@ -527,3 +518,4 @@ def Move(x_way: int, y_way: int, Human: bool, game: Game, playfield: Playfield, 
         if Human:
             console.sounds(sounds.BlockSound())
     game.OneMove = False
+    return (playfield, level)

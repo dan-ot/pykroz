@@ -1,4 +1,4 @@
-import pygame.locals
+import pygame.constants
 
 from engine.colors import Colors
 from engine.crt import Crt
@@ -78,7 +78,7 @@ def Title(game: Game, level: Level, console: Crt):
     console.sounds(sounds.Difficulty_Prompt())
     console.default_colors(back = Colors.Red)
     ch = 0
-    selections = set([pygame.locals.K_n, pygame.locals.K_SPACE, pygame.locals.K_e, pygame.locals.K_a, pygame.locals.K_x, pygame.locals.K_RETURN, pygame.locals.K_KP_ENTER])
+    selections = set([pygame.constants.K_n, pygame.constants.K_SPACE, pygame.constants.K_e, pygame.constants.K_a, pygame.constants.K_x, pygame.constants.K_RETURN, pygame.constants.K_KP_ENTER])
     while ch not in selections:
         while not console.keypressed():
             console.gotoxy(29, 2)
@@ -88,19 +88,19 @@ def Title(game: Game, level: Level, console: Crt):
         console.sounds(sounds.Difficulty_Key())
     console.sounds(sounds.Difficulty_Prompt())
     console.gotoxy(13, 22)
-    if ch in [pygame.locals.K_n, pygame.locals.K_SPACE, pygame.locals.K_KP_ENTER, pygame.locals.K_RETURN]:
+    if ch in [pygame.constants.K_n, pygame.constants.K_SPACE, pygame.constants.K_KP_ENTER, pygame.constants.K_RETURN]:
         game.Difficulty = 8
         console.gotoxy(37, 22)
         console.write('NOVICE', Colors.Black, Colors.Blue)
-    elif ch == pygame.locals.K_e:
+    elif ch == pygame.constants.K_e:
         game.Difficulty = 5
         console.gotoxy(34, 22)
         console.write('EXPERIENCED', Colors.Black, Colors.Blue)
-    elif ch == pygame.locals.K_a:
+    elif ch == pygame.constants.K_a:
         game.Difficulty = 2
         console.gotoxy(36, 22)
         console.write('ADVANCED', Colors.Black, Colors.Blue)
-    elif ch == pygame.locals.K_x:
+    elif ch == pygame.constants.K_x:
         game.Difficulty = 9
         console.gotoxy(34, 22)
         console.write('SECRET MODE', Colors.Black, Colors.Blue)
@@ -158,12 +158,12 @@ def Title(game: Game, level: Level, console: Crt):
         console.clearkeys()
         ch = console.read()
         console.clearkeys()
-        if ch == pygame.locals.K_r:
+        if ch == pygame.constants.K_r:
             game.MixUp = True
-        elif ch == pygame.locals.K_b:
+        elif ch == pygame.constants.K_b:
             console.sounds(sounds.Begin_Game())
             start_game = True
-        elif ch == pygame.locals.K_i:
+        elif ch == pygame.constants.K_i:
             console.clrscr()
             console.clearkeys()
             console.gotoxy(32, 2)
@@ -282,7 +282,7 @@ def Title(game: Game, level: Level, console: Crt):
             console.writeln('    that appear whenever you touch a new object, you can disable most of the')
             console.writeln('    messages by pressing the minus (-) key.  The plus key (+) resets messages.')
             console.alert(YTOP + 1, 'Press any key to continue.', level.Bc, level.Bb)
-        elif ch == pygame.locals.K_m:
+        elif ch == pygame.constants.K_m:
             console.clrscr()
             console.clearkeys()
             console.gotoxy(29, 2)
@@ -311,7 +311,7 @@ def Title(game: Game, level: Level, console: Crt):
             console.writeln('   Note:  The current Apogee Software address will ALWAYS BE VALID.  Foreign')
             console.writeln(' orders are always welcome, please send U.S. funds/money orders only.')
             console.alert(YTOP + 1, 'Press any key to continue.', level.Bc, level.Bb)
-        elif ch == pygame.locals.K_s:
+        elif ch == pygame.constants.K_s:
             console.clrscr()
             console.clearkeys()
             console.gotoxy(29, 2)
@@ -366,7 +366,7 @@ def Title(game: Game, level: Level, console: Crt):
             console.writeln(' After all, Kroz is like my second home now, one that I like to visit often...')
             console.writeln('                                                        -- Scott Miller')
             console.alert(YTOP + 1, 'Press any key to continue.', level.Bc, level.Bb)
-        elif ch == pygame.locals.K_o:
+        elif ch == pygame.constants.K_o:
             console.clrscr()
             console.clearkeys()
             console.gotoxy(28, 2)
@@ -393,7 +393,7 @@ def Title(game: Game, level: Level, console: Crt):
             console.writeln(' Plus, they only rely on keyboard control, and have slow-down routines that')
             console.writeln(' permit them to function correctly on any speed IBM PC compatible computer.')
             console.alert(YTOP + 1, 'Press any key to continue.', level.Bc, level.Bb)
-        elif ch == pygame.locals.K_a:
+        elif ch == pygame.constants.K_a:
             console.clrscr()
             console.clearkeys()
             console.gotoxy(32, 2)

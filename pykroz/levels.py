@@ -117,8 +117,8 @@ class Level:
         self.Bonus: int = 0
         self.visibility: VisibilityFlags = VisibilityFlags.SHOW_ALL
         self.MagicEWalls: bool = False
-        self.GenFactor: int = 0
-        self.BTime: int = 0
+        self.GenFactor: int = 17
+        self.BTime: int = 2
         self.initial: SaveType = SaveType()
 
 class LiteralLevel():
@@ -126,8 +126,10 @@ class LiteralLevel():
         self.lines = list(lines)
 
 class RandomLevel():
-    def __init__(self, what_counts: Sequence[Tuple[What, int]]):
+    def __init__(self, width: int, height: int, what_counts: Sequence[Tuple[What, int]]):
         self.what_counts = what_counts
+        self.width = width
+        self.height = height
 
 class Game:
     def __init__(self):
@@ -347,36 +349,6 @@ def Dead(DeadDot: bool, game: Game, player: PlayerState, level: Level, display: 
         console.print(21, 25, 'Press any key to continue.')
     display.new_border_color()
     High_Score(True, game, player, level, console)
-
-def Load_Literal_Level(literal_level: LiteralLevel, player: PlayerState, level: Level, playfield: Playfield):
-    level.GenNum = 0
-    level.T[9] = -1
-    level.LavaFlow = False
-    level.TreeRate = 0
-    level.GravCounter = 0
-    level.GravOn = False
-    playfield.parse(literal_level)
-    level.slow_monsters = [(x, y) for (x, y, _) in playfield.coords_of(What.SlowMonster)]
-    level.medium_monsters = [(x, y) for (x, y, _) in playfield.coords_of(What.MediumMonster)]
-    level.fast_monsters = [(x, y) for (x, y, _) in playfield.coords_of(What.FastMonster)]
-    level.GenNum = playfield.count_of(What.Generator)
-    players = playfield.coords_of(What.Player)
-    if len(players) != 1:
-        raise ValueError("Inappropriate number of players: {0}, expected 1.".format(len(players)))
-    [(player_x, player_y, _)] = players
-    player.position = (player_x, player_y)
-
-def Load_Random_Level(definition: RandomLevel, player: PlayerState, playfield: Playfield, level: Level):
-    level.GenNum = 0
-    level.LavaFlow = False
-    level.T[9] = -1
-    playfield.reset()
-    playfield[player.position] = What.Player
-    playfield.generate(definition)
-    level.slow_monsters = [(mx, my) for (mx, my, _) in playfield.coords_of(What.SlowMonster)]
-    level.medium_monsters = [(mx, my) for (mx, my, _) in playfield.coords_of(What.MediumMonster)]
-    level.fast_monsters = [(mx, my) for (mx, my, _) in playfield.coords_of(What.FastMonster)]
-    level.GenNum = playfield.count_of(What.Generator)
 
 def Go(XWay: int, YWay: int, Human: bool, game: Game, playfield: Playfield, player: PlayerState, level: Level, console: Crt):
     if level.Sideways and YWay == -1 and not game.OneMove and playfield.replacement != What.Rope:

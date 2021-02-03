@@ -1,4 +1,5 @@
 from collections.abc import Iterable
+from playerstate import PlayerState
 from typing import MutableMapping, Tuple, Union
 from random import choice
 
@@ -79,3 +80,23 @@ class Playfield(MutableMapping[Tuple[int, int], What]):
                 empties = self.coords_of(What.Nothing)
                 (x, y, _) = choice(empties)
                 self[x, y] = what
+
+    @staticmethod
+    def from_level_definition(level: Union[LiteralLevel, RandomLevel], player: PlayerState) -> 'Playfield':
+        if isinstance(level, RandomLevel):
+            pf = Playfield(level.width, level.height)
+            pf[player.position] = What.Player
+            for (what, count) in level.what_counts:
+                for _ in range(count):
+                    empties = pf.coords_of(What.Nothing)
+                    (x, y, _) = choice(empties)
+                    pf[x, y] = what
+        else:
+            pf = Playfield(len(level.lines[0]), len(level.lines))
+            for y, line in enumerate(level.lines):
+                if len(line) != pf.__width:
+                    raise ValueError(f"Line {y} length was {len(line)}, expected {pf.__width}")
+                for x, char in enumerate(line):
+                    what = parse(char)
+                    pf[x, y] = what
+        return pf

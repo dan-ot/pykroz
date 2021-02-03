@@ -47,9 +47,7 @@ def Screen(game: Game, console: Crt):
         game.FastPC = False
     console.clrscr()
 
-def Init_Screen(game: Game, player: PlayerState, playfield: Playfield, level: Level, console: Crt):
-    # TODO: The first set of moves on a level take more time - presumably to allow the player time to review the level
-    EXTRA_TIME = 8.0
+def Init_Screen(game: Game, player: PlayerState, console: Crt):
     game.Restart = False
     player.score = 0
     player.level = 1
@@ -70,40 +68,18 @@ def Init_Screen(game: Game, player: PlayerState, playfield: Playfield, level: Le
         player.gems = 15
     elif game.Difficulty == 2:
         player.gems = 10
-    level.visibility = VisibilityFlags.SHOW_ALL
-    playfield.replacement = What.Nothing
-    level.Bonus = 0
-    level.LavaFlow = False
-    level.LavaRate = 0
-    level.Evaporate = 0
-    level.MagicEWalls = False
-    level.GravOn = False
-    level.GravRate = 20
-    level.GravCounter = 0
-    level.TreeRate = -1
     if game.Difficulty == 2 or game.Difficulty == 9:
         game.FoundSet = set(What)
     else:
         game.FoundSet = set()
-    level.GenNum = 0
-    level.Sideways = False
     game.OneMove = False
-    level.GenFactor = 17 # 28 for FastPC?
     if game.MixUp:
         player.gems = 60
         player.whips = 30
         player.teleports = 15
         player.keys = 2
         game.FoundSet = WhatSets.auto_discover_on_mixup.copy()
-    player.position = (randrange(playfield.bounds().width), randrange(playfield.bounds().height))
-    level.BTime = 2 # 9 for FastPC?
-    level.SkipTime = 0
-    for x in range(TMAX):
-        level.T[x] = -1
-    level.slow_monster_timer = EXTRA_TIME - level.slow_monster_timer_base
-    level.medium_monster_timer = EXTRA_TIME - level.medium_monster_timer_base
-    level.fast_monster_timer = EXTRA_TIME - level.fast_monster_timer_base
-    level.T[8] = 6
+    player.position = (0, 0)
     # TODO: Handled by StatsDisplay natively.
     console.window(67, 1, 80, 25)
     console.default_colors(Colors.Yellow, Colors.Blue)

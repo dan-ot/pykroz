@@ -1,7 +1,7 @@
 from pathlib import Path
 import json
 from random import choice, randrange
-from typing import cast
+from typing import Tuple, cast
 
 import pygame.constants
 
@@ -11,17 +11,19 @@ from pieces import What, WhatSets
 from commands import Command, command_from_key_code
 from engine.colors import Colors
 from engine.crt import Crt
-from levels import Dead, Game, Level, PMOVE, SaveType, Sign_Off, TMAX, VisibilityFlags, VisibleTiles, YTOP
+from levels import Dead, Game, Level, PMOVE, SaveType, Sign_Off, TMAX, VisibleTiles, YTOP
 from screens import Hit, Init_Screen, Screen
 from movement import Move, Next_Level
 from titles import Title
 from playfield import Playfield
 import sounds
 
-def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Level, display: GameDisplay, console: Crt):
+def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Level, display: GameDisplay, console: Crt) -> Tuple[Playfield, Level]:
     # Handle internal messages
-    EXTRA_TIME = 8.0
-    command = command_from_key_code(console.readkey())
+    key = console.readkey()
+    if key is None:
+        return (playfield, level)
+    command = command_from_key_code(key)
     if command is not None:
         console.reset_colors()
         if command == Command.DISCOVERY_CLEAR:
@@ -49,7 +51,7 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
             console.alert(YTOP + 1, ' Are you sure you want to RESTORE (Y/N)? ', level.Bc, level.Bb)
             ch = console.read()
             if ch == pygame.constants.K_n:
-                return
+                return (playfield, level)
             console.clearkeys()
             # TODO: Writing in the border here...
             console.print(8, 25, ' Pick which letter to RESTORE from: A, B or C?  A  ')
@@ -57,7 +59,7 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
             ch = console.read()
             which_file = ''
             if ch == pygame.constants.K_ESCAPE:
-                return
+                return (playfield, level)
             elif ch == pygame.constants.K_b:
                 which_file = 'B'
             elif ch == pygame.constants.K_c:
@@ -80,47 +82,33 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
                     player.position = (save_stuff.px, save_stuff.py)
                     game.FoundSet = set(map(lambda t: What(t), save_stuff.found_set))
                     game.MixUp = save_stuff.mix_up
-                level.initial.score = player.score
-                level.initial.gems = player.gems
-                level.initial.whips = player.whips
-                level.initial.teleports = player.teleports
-                level.initial.keys = player.keys
-                level.initial.whip_power = player.whip_power
-                level.initial.difficulty = game.Difficulty
-                level.initial.px = player.position[0]
-                level.initial.py = player.position[1]
-                level.initial.found_set = list(game.FoundSet)
-                display.mark_player_dirty()
-                console.delay(1000)
-                level.Sideways = False
-                level.Evaporate = 0
-                level.GenNum = 0
-                level.visibility = VisibilityFlags.SHOW_ALL
-                level.Bonus = 0
-                level.GravOn = False
-                level.GravCounter = 0
-                level.TreeRate = -1
-                level.slow_monster_timer = EXTRA_TIME - level.slow_monster_timer_base
-                level.medium_monster_timer = EXTRA_TIME - level.medium_monster_timer_base
-                level.fast_monster_timer = EXTRA_TIME - level.fast_monster_timer_base
-                level.T[8] = 7
-                level.T[4] = 0
-                level.T[5] = 0
-                level.T[6] = 0
                 playfield.replacement = What.Nothing
 
-                Next_Level(player, playfield, level)
+                newPlayfield, newLevel = Next_Level(player)
+                newLevel.initial.score = player.score
+                newLevel.initial.gems = player.gems
+                newLevel.initial.whips = player.whips
+                newLevel.initial.teleports = player.teleports
+                newLevel.initial.keys = player.keys
+                newLevel.initial.whip_power = player.whip_power
+                newLevel.initial.difficulty = game.Difficulty
+                newLevel.initial.px = player.position[0]
+                newLevel.initial.py = player.position[1]
+                newLevel.initial.found_set = list(game.FoundSet)
+                display.mark_player_dirty()
+                console.delay(1000)
 
-                console.window(2, 2, playfield.bounds().width, playfield.bounds().height)
+                console.window(2, 2, newPlayfield.bounds().width, newPlayfield.bounds().height)
                 console.clrscr()
                 console.window(1, 1, 80, 25)
-                display.new_level(playfield)
+                display.new_level(newPlayfield)
                 for x in range (1, 600):
                     console.gotoxy(*player.position)
                     console.write(VisibleTiles.Player, Colors.Random(), Colors.RandomDark())
                     console.sound(x // 2, 0.3) # sounds.Load()
                 console.gotoxy(*player.position)
                 console.write(VisibleTiles.Player, Colors.Yellow)
+                return (newPlayfield, newLevel)
             else:
                 console.sounds(sounds.Load_Error())
                 console.alert(YTOP + 1, ' The SAVE file {0} was not found.'.format(which_file), level.Bc, level.Bb)
@@ -138,7 +126,7 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
             ch = console.read()
             which_file = ''
             if ch == pygame.constants.K_ESCAPE:
-                return
+                return (playfield, level)
             elif ch == pygame.constants.K_b:
                 which_file = 'B'
             elif ch == pygame.constants.K_c:
@@ -170,7 +158,7 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
         elif command == Command.TELEPORT:
             if player.teleports < 1:
                 console.sounds(sounds.NoneSound())
-                return
+                return (playfield, level)
             player.teleports -= 1
             display.mark_player_dirty()
             for x in range(1, 250):
@@ -217,7 +205,7 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
         elif command == Command.WHIP:
             if player.whips < 1:
                 console.sounds(sounds.NoneSound())
-                return
+                return (playfield, level)
             player.whips -= 1
             (px, py) = player.position
             bounds = playfield.bounds()
@@ -250,23 +238,25 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
             console.clearkeys()
 
         elif command == Command.MOVE_NORTH:
-            Move(0, -1, PMOVE, game, playfield, player, level, display, console)
+            return Move(0, -1, PMOVE, game, playfield, player, level, display, console)
         elif command == Command.MOVE_SOUTH:
-            Move(0, 1, PMOVE, game, playfield, player, level, display, console)
+            return Move(0, 1, PMOVE, game, playfield, player, level, display, console)
         elif command == Command.MOVE_EAST:
-            Move(1, 0, PMOVE, game, playfield, player, level, display, console)
+            return Move(1, 0, PMOVE, game, playfield, player, level, display, console)
         elif command == Command.MOVE_WEST:
-            Move(-1, 0, PMOVE, game, playfield, player, level, display, console)
+            return Move(-1, 0, PMOVE, game, playfield, player, level, display, console)
         elif command == Command.MOVE_NORTHWEST:
-            Move(-1, -1, PMOVE, game, playfield, player, level, display, console)
+            return Move(-1, -1, PMOVE, game, playfield, player, level, display, console)
         elif command == Command.MOVE_NORTHEAST:
-            Move(1, -1, PMOVE, game, playfield, player, level, display, console)
+            return Move(1, -1, PMOVE, game, playfield, player, level, display, console)
         elif command == Command.MOVE_SOUTHWEST:
-            Move(-1, 1, PMOVE, game, playfield, player, level, display, console)
+            return Move(-1, 1, PMOVE, game, playfield, player, level, display, console)
         elif command == Command.MOVE_SOUTHEAST:
-            Move(1, 1, PMOVE, game, playfield, player, level, display, console)
+            return Move(1, 1, PMOVE, game, playfield, player, level, display, console)
     else: # command is None
         console.sounds(sounds.Bad_Key())
+
+    return (playfield, level)
 
 def Move_Slow(game: Game, playfield: Playfield, player: PlayerState, level: Level, display: GameDisplay, console: Crt):
     # Remove monsters the playfield doesn't recognize
@@ -526,20 +516,19 @@ def Move_MBlock():
 
 def Run(console: Crt):
     game = Game()
-    level = Level()
     playfield = Playfield(64, 23)
     player = PlayerState()
     display = GameDisplay(playfield.bounds(), console)
     Screen(game, console)
-    NewGame(game, playfield, player, level, display, console)
+    NewGame(game, player, display, console)
 
-def NewGame(game: Game, playfield: Playfield, player: PlayerState, level: Level, display: GameDisplay, console: Crt):
+def NewGame(game: Game, player: PlayerState, display: GameDisplay, console: Crt):
     console.reset_colors()
-    Title(game, level, console)
-    Init_Screen(game, player, playfield, level, console)
+    # Title(game, level, console)
+    Init_Screen(game, player, console)
     player.level = 1
     display.mark_player_dirty()
-    Next_Level(player, playfield, level)
+    (playfield, level) = Next_Level(player)
 
     display.new_level(playfield)
     level.initial.score = player.score
@@ -561,6 +550,7 @@ def NewGame(game: Game, playfield: Playfield, player: PlayerState, level: Level,
     console.clearkeys()
     display.alert('Press any key to begin this level.', bottom = True)
     while not game.Restart:
+        # TODO: this needs to be frame-based, not addition-based. This is the core loop...
         Player_Move(game, playfield, player, level, display, console)
         if console.keypressed():
             level.SkipTime = 801
@@ -577,4 +567,4 @@ def NewGame(game: Game, playfield: Playfield, player: PlayerState, level: Level,
                     Move_Medium(game, playfield, player, level, display, console)
                 if level.fast_monster_timer <= 0:
                     Move_Fast(game, playfield, player, level, display, console)
-    NewGame(game, playfield, player, level, display, console)
+    NewGame(game, player, display, console)
