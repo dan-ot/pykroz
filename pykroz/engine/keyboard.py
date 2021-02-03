@@ -1,7 +1,7 @@
 from collections import deque
 from typing import Optional
 
-import pygame.locals
+import pygame.constants
 import pygame.key
 from pygame.event import Event
 
@@ -12,10 +12,10 @@ class Keyboard():
         pygame.key.set_repeat(0)
 
     def handle(self, event: Event):
-        if event.type == pygame.locals.KEYDOWN:
+        if event.type == pygame.constants.KEYDOWN:
             self.keyboard[event.key] = True
             self.keys.appendleft(event.key)
-        elif event.type == pygame.locals.KEYUP:
+        elif event.type == pygame.constants.KEYUP:
             self.keyboard[event.key] = False
 
     def get_key_from_queue(self) -> Optional[int]:

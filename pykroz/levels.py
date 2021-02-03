@@ -116,17 +116,7 @@ class Level:
         self.Sideways: bool = False
         self.Bonus: int = 0
         self.visibility: VisibilityFlags = VisibilityFlags.SHOW_ALL
-        # TODO: Deprecated by the self.visibility property
-        self.FloorPattern: bool = False
         self.MagicEWalls: bool = False
-        self.HideRock: bool = False
-        self.HideStairs: bool = False
-        self.HideLevel: bool = False
-        self.HideCreate: bool = False
-        self.HideOpenWall: bool = False
-        self.HideTrap: bool = False
-        self.HideGems: bool = False
-        self.HideMBlock: bool = False
         self.GenFactor: int = 0
         self.BTime: int = 0
         self.initial: SaveType = SaveType()
@@ -225,7 +215,7 @@ def Shareware(console: Crt, Wait: bool):
     console.write('Thank you and enjoy the game.  -- Scott Miller')
     if Wait:
         console.delay(0)
-    console.gotoxy(1, 25)
+    # TODO: prompt
     console.gotoxy(27, 25)
     console.write('Press any key to continue.', Colors.White, Colors.RandomDark()) # Flashing when possible
     console.clearkeys()

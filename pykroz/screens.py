@@ -7,7 +7,7 @@ from engine.ascii import ASCII
 from engine.crt import ColorMode, Crt
 from playerstate import PlayerState
 from pieces import What, WhatSets, score_for
-from levels import Game, Level, TMAX, VisibleTiles, YTOP
+from levels import Game, Level, TMAX, VisibilityFlags, VisibleTiles, YTOP
 from playfield import Playfield
 import sounds
 
@@ -70,7 +70,7 @@ def Init_Screen(game: Game, player: PlayerState, playfield: Playfield, level: Le
         player.gems = 15
     elif game.Difficulty == 2:
         player.gems = 10
-    level.FloorPattern = False
+    level.visibility = VisibilityFlags.SHOW_ALL
     playfield.replacement = What.Nothing
     level.Bonus = 0
     level.LavaFlow = False
@@ -276,7 +276,7 @@ def Shoot_Left(x_way: int, y_way: int, Human: bool):
 def Tome_Message(level: Level, console: Crt):
     console.alert(YTOP + 1, ' You reach out to grab the object of your long quest... ', level.Bc, level.Bb)
     console.alert(YTOP + 1, ' the Magical Staff of Kroz. ', level.Bc, level.Bb)
-    console.alert(YTOP + 1, ' Your budy surges with electricity as you clutch it! ', level.Bc, level.Bb)
+    console.alert(YTOP + 1, ' Your body surges with electricity as you clutch it! ', level.Bc, level.Bb)
 
 def Tome_Effects(playfield: Playfield, console: Crt):
     console.reset_colors()

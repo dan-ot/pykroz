@@ -11,7 +11,7 @@ from pieces import What, WhatSets
 from commands import Command, command_from_key_code
 from engine.colors import Colors
 from engine.crt import Crt
-from levels import Dead, Game, Level, PMOVE, SaveType, Sign_Off, TMAX, VisibleTiles, YTOP
+from levels import Dead, Game, Level, PMOVE, SaveType, Sign_Off, TMAX, VisibilityFlags, VisibleTiles, YTOP
 from screens import Hit, Init_Screen, Screen
 from movement import Move, Next_Level
 from titles import Title
@@ -95,14 +95,7 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
                 level.Sideways = False
                 level.Evaporate = 0
                 level.GenNum = 0
-                level.HideLevel = False
-                level.HideCreate = False
-                level.HideStairs = False
-                level.HideTrap = False
-                level.HideRock = False
-                level.HideGems = False
-                level.HideMBlock = False
-                level.HideOpenWall = False
+                level.visibility = VisibilityFlags.SHOW_ALL
                 level.Bonus = 0
                 level.GravOn = False
                 level.GravCounter = 0
@@ -566,7 +559,7 @@ def NewGame(game: Game, playfield: Playfield, player: PlayerState, level: Level,
     console.gotoxy(*player.position)
     console.write(VisibleTiles.Player, Colors.Yellow)
     console.clearkeys()
-    console.alert(YTOP + 1, 'Press any key to begin this level.', level.Bc, level.Bb)
+    display.alert('Press any key to begin this level.', bottom = True)
     while not game.Restart:
         Player_Move(game, playfield, player, level, display, console)
         if console.keypressed():

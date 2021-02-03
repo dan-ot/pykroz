@@ -23,9 +23,11 @@ class GameDisplay():
         self.console = console
 
     def tick(self, time: float):
+        # TODO: Does the message pump belong to whatever Display variant is in control? Hmmm...
         self.mpf.tick(time)
         self.stats.tick(time)
         self.border.tick(time)
+        self.console.tick()
 
     def render(self, player: PlayerState, playfield: Playfield):
         if self.stats.dirty:
@@ -47,6 +49,11 @@ class GameDisplay():
         self.border.new_level()
 
     def alert(self, text: str, bottom: bool = False):
+        # TODO: In the future, this needs to take over the message pump. This should modally prevent other input.
+        pass
+
+    def prompt(self, text: str, options: list[str], bottom: bool = True):
+        # TODO: In the future, this needs to take over the message pump. This should modally prevent other input.
         pass
 
 class MainPlayfield():

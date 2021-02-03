@@ -39,6 +39,9 @@ class Playfield(MutableMapping[Tuple[int, int], What]):
     def __delitem__(self, v: Tuple[int, int]) -> None:
         self.__setitem__(v, What.Nothing)
 
+    def __iter__(self):
+        return iter(self.__data)
+
     def bounds(self) -> Rect:
         return Rect(0, 0, self.__width, self.__height)
 
