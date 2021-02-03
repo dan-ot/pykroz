@@ -1,11 +1,12 @@
 from enum import Enum
-from typing import Optional, Tuple
+from typing import Optional, Sequence, Tuple
 from random import choice, randrange
 
 from pygame import Color, Rect
 
 from engine.colors import Colors
 from engine.crt import Crt
+from commands import Command
 from levels import VisibilityFlags
 from pieces import VisibleTiles, What, chance_of, draw
 from playerstate import PlayerState
@@ -50,10 +51,13 @@ class GameDisplay():
 
     def alert(self, text: str, bottom: bool = True):
         # TODO: In the future, this needs to take over the message pump. This should modally prevent other input.
+        # The purpose of this is to wait for any command, restore the border, and return modality to the caller.
         pass
 
-    def prompt(self, text: str, options: list[str], bottom: bool = True):
+    def prompt(self, text: str, options: Sequence[Command], bottom: bool = True):
         # TODO: In the future, this needs to take over the message pump. This should modally prevent other input.
+        # The purpose of this is to wait for one specific command among a set, and report to the requester which
+        # command was used.
         pass
 
 class MainPlayfield():
