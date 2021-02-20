@@ -4,16 +4,16 @@ from typing import Optional, Tuple
 import pygame.constants
 
 class Command(Enum):
-    DISCOVERY_FULL = 1
-    DISCOVERY_CLEAR = 2
-    CREATE_STAIRS = 3
-    GRANT_STUFF = 4
-    PAUSE = 80
-    QUIT = 81
-    RESTORE = 82
-    SAVE = 83
-    TELEPORT = 84
-    WHIP = 87
+    UTILITY1 = 1
+    UTILITY2 = 2
+    SPECIAL1 = 3
+    SPECIAL2 = 4
+    SELECT = 80
+    MENU = 81
+    BACK = 82
+    ACTIVATE = 83
+    DEFEND = 84
+    ATTACK = 87
     MOVE_NORTHWEST = 171
     MOVE_NORTH = 172
     MOVE_NORTHEAST = 173
@@ -25,25 +25,25 @@ class Command(Enum):
 
 def command_from_key_code(key: int) -> Optional[Command]:
     if key == pygame.constants.K_EQUALS or key == pygame.constants.K_KP_PLUS:
-        return Command.DISCOVERY_CLEAR
+        return Command.UTILITY2
     if key == pygame.constants.K_MINUS or key == pygame.constants.K_KP_MINUS:
-        return Command.DISCOVERY_FULL
+        return Command.UTILITY1
     if key == pygame.constants.K_9:
-        return Command.CREATE_STAIRS
+        return Command.SPECIAL1
     if key == pygame.constants.K_0:
-        return Command.GRANT_STUFF
+        return Command.SPECIAL2
     if key == pygame.constants.K_PAUSE or key == pygame.constants.K_p:
-        return Command.PAUSE
+        return Command.SELECT
     if key == pygame.constants.K_ESCAPE or key == pygame.constants.K_q:
-        return Command.QUIT
+        return Command.MENU
     if key == pygame.constants.K_r:
-        return Command.RESTORE
+        return Command.BACK
     if key == pygame.constants.K_s:
-        return Command.SAVE
+        return Command.ACTIVATE
     if key == pygame.constants.K_t:
-        return Command.TELEPORT
+        return Command.DEFEND
     if key == pygame.constants.K_w:
-        return Command.WHIP
+        return Command.ATTACK
     if key == pygame.constants.K_u or key == pygame.constants.K_KP7:
         return Command.MOVE_NORTHWEST
     if key == pygame.constants.K_UP or key == pygame.constants.K_i or key == pygame.constants.K_KP8:
@@ -65,27 +65,27 @@ def command_from_key_code(key: int) -> Optional[Command]:
 
 def command_from_button(button: int) -> Optional[Command]:
     if button == pygame.constants.CONTROLLER_BUTTON_A:
-        return Command.SAVE
+        return Command.ACTIVATE
     if button == pygame.constants.CONTROLLER_BUTTON_B:
-        return Command.RESTORE
+        return Command.BACK
     if button == pygame.constants.CONTROLLER_BUTTON_X:
-        return Command.WHIP
+        return Command.ATTACK
     if button == pygame.constants.CONTROLLER_BUTTON_Y:
-        return Command.TELEPORT
+        return Command.DEFEND
     if button == pygame.constants.CONTROLLER_BUTTON_BACK:
-        return Command.QUIT
+        return Command.MENU
     if button == pygame.constants.CONTROLLER_BUTTON_START:
-        return Command.PAUSE
+        return Command.SELECT
 
     if button == pygame.constants.CONTROLLER_BUTTON_LEFTSHOULDER:
-        return Command.DISCOVERY_CLEAR
+        return Command.UTILITY2
     if button == pygame.constants.CONTROLLER_BUTTON_RIGHTSHOULDER:
-        return Command.DISCOVERY_FULL
+        return Command.UTILITY1
 
     if button == pygame.constants.CONTROLLER_BUTTON_LEFTSTICK:
-        return Command.CREATE_STAIRS
+        return Command.SPECIAL1
     if button == pygame.constants.CONTROLLER_BUTTON_RIGHTSTICK:
-        return Command.GRANT_STUFF
+        return Command.SPECIAL2
 
     return None
 

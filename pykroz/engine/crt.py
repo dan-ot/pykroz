@@ -27,7 +27,7 @@ class ColorMode(Enum):
     BLACK_AND_WHITE = 2
 
 class Crt:
-    def __init__(self, widthInTiles: int, heightInTiles: int, fontFile: Union[str, None]):
+    def __init__(self, widthInTiles: int, heightInTiles: int, fontFile: Optional[str]):
         (frequency, bit_depth, _) = pygame.mixer.get_init()
         self._audio = Audio(frequency, bit_depth)
 

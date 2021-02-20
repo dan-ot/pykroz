@@ -26,28 +26,28 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
     command = command_from_key_code(key)
     if command is not None:
         console.reset_colors()
-        if command == Command.DISCOVERY_CLEAR:
+        if command == Command.UTILITY2:
             game.FoundSet = set()
             console.alert(YTOP + 1, 'Newly found object descriptions are reset.', level.Bc, level.Bb)
-        elif command == Command.DISCOVERY_FULL:
+        elif command == Command.UTILITY1:
             game.FoundSet = set(What)
             console.alert(YTOP + 1, 'References to new objects will not be displayed.', level.Bc, level.Bb)
-        elif command == Command.CREATE_STAIRS:
+        elif command == Command.SPECIAL1:
             (px, py) = player.position
             playfield[px + 1, py] = What.Stairs
             console.sounds(sounds.Generate_Stairs())
-        elif command == Command.PAUSE:
+        elif command == Command.SELECT:
             console.sounds(sounds.Pause())
             console.clearkeys()
             console.alert(YTOP + 1, ' Press any key to resume game. ', level.Bc, level.Bb)
-        elif command == Command.QUIT:
+        elif command == Command.MENU:
             console.sounds(sounds.Quit())
             console.clearkeys()
             console.alert(YTOP + 1, ' Are you sure you want to quit (Y/N)? ', level.Bc, level.Bb)
             ch = console.read()
             if ch == pygame.constants.K_y:
                 Sign_Off(console)
-        elif command == Command.RESTORE:
+        elif command == Command.BACK:
             console.alert(YTOP + 1, ' Are you sure you want to RESTORE (Y/N)? ', level.Bc, level.Bb)
             ch = console.read()
             if ch == pygame.constants.K_n:
@@ -115,7 +115,7 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
 
             console.alert(YTOP + 1, 'Press any key to begin this level.', level.Bc, level.Bb)
 
-        elif command == Command.SAVE:
+        elif command == Command.ACTIVATE:
             console.alert(YTOP + 1, ' Are you sure you want to SAVE (Y/N)? ', level.Bc, level.Bb)
             ch = console.read()
             console.reset_colors()
@@ -155,7 +155,7 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
             # TODO: Pause so the player can read what was written
             console.delay(1000)
 
-        elif command == Command.TELEPORT:
+        elif command == Command.DEFEND:
             if player.teleports < 1:
                 console.sounds(sounds.NoneSound())
                 return (playfield, level)
@@ -202,7 +202,7 @@ def Player_Move(game: Game, playfield: Playfield, player: PlayerState, level: Le
                 console.gotoxy(*player.position)
                 console.write(' ')
 
-        elif command == Command.WHIP:
+        elif command == Command.ATTACK:
             if player.whips < 1:
                 console.sounds(sounds.NoneSound())
                 return (playfield, level)
