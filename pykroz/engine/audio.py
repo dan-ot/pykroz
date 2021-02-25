@@ -72,7 +72,7 @@ class Audio:
     def tick(self):
         if not self.channel.get_busy():
             if len(self.queue) > 0:
-                sound = cast(Sound, self.queue.popleft())
+                sound = self.queue.popleft()
                 print('Playing {0} seconds'.format(sound.get_length()))
                 self.channel.play(sound)
                 sound.play()

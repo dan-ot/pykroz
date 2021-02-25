@@ -131,10 +131,16 @@ The Player Move state is very short-lived. It takes the Move off the Move Queue 
 * A mode change - for instance, the player pressed pause, or entered a long-running animation (teleport, tunnel), or died
 
 #### Monster Moves
-Each timer tick is an opportunity for a type of monster (Slow, Medium, or Fast) to queue up their moves. If the moster countdown reaches 0 for a monster type, every monster of that type queues up its moves in the Move Queue and the timer is reset.
+Each timer tick is an opportunity for a type of monster (Slow, Medium, or Fast) to queue up their moves. If the moster countdown reaches 0 for a monster type, every monster of that type queues up its moves in the Move Queue and the timer is reset. Each Monster Move applies to one monster, and has several possible results:
+* A No-op - for instance, the monster is up against terrain they cannot cross
+* A playfield state change - for instance, the monster took a step, or took a step onto something it's allowed to consume, like a whip or gem
+* A destructive state change - for instance, the monster took a step onto the player or a mutually-destructive space
+  * This may cause player state changes - player death, for instance - which in turn will cause game state changes
+
+Each Monster Move also has a random chance (depending on the monster which is moving) of consuming a Command Queue command, adding a new Player Move to the Move Queue. Naturally, this means the Idle state will transition to the Player Move state once it regains control.
 
 ### Animate
-The Animate state pauses the main gameplay in order to focuse on an important or dramatic event. This is usually a combination of visual changes (colors flashing or cycling, symbols being rendered or removed), sounds, and logic changes.
+The Animate state pauses the main gameplay in order to focuse on an important or dramatic event. This is usually a combination of visual changes (colors flashing or cycling, symbols being rendered or removed), sounds, and logic changes. Visual effects should continue to advance (such as monsters swapping 'poses' and stairs blinking) in addition to the animation being played, but no game logic should process.
 
 ### Prompt / Pause
 The Prompt state pauses the main gameplay in order to present an interaction with the player directly. This is either a 'Press any key' prompt explaining some new thing the player interacted with, or the Save and Restore flows that alter the state of the game.
