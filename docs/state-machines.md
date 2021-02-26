@@ -2,7 +2,7 @@
 ## Core State Machine
 The Single Responsibility of the Core State Machine is to keep the event pump alive (so the OS doesn't report the app unresponsive), handle high-level events (window resize, app exit), keep the render pump alive, and forward input events (keyboard, controller) to the current state.
 
-It will achieve these goals by containing the central game loop (`while true...`). It will capture keyboard, OS, and controller events - handling OS.QUIT and CONTROLLER.CONNECT/DISCONNECT locally, and forwarding the rest onto the current active state. It will call a `tick()` method on the active state, with time passed as an arugment, to power the logic side of things, and separately call a `render()` method on the active state, passing in the current displayable `Surface`. [^1]
+It will achieve these goals by containing the central game loop (`while true...`). It will capture keyboard, OS, and controller events - handling OS.QUIT and CONTROLLER.CONNECT/DISCONNECT locally, and forwarding the rest onto the current active state. It will call a `tick()` method on the active state, with time passed as an argument, to power the logic side of things, and separately call a `render()` method on the active state, passing in the current displayable `Surface`. [^1]
 
 [^1]: Do we need different loops/timings on `tick` and `render`, so we're not constraining logic updates to the framerate?
 

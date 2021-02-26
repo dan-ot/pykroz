@@ -64,27 +64,27 @@ def command_from_key_code(key: int) -> Optional[Command]:
     return None
 
 def command_from_button(button: int) -> Optional[Command]:
-    if button == pygame.constants.CONTROLLER_BUTTON_A:
+    if button == 0: #pygame.constants.CONTROLLER_BUTTON_A:
         return Command.ACTIVATE
-    if button == pygame.constants.CONTROLLER_BUTTON_B:
+    if button == 1: #pygame.constants.CONTROLLER_BUTTON_B:
         return Command.BACK
-    if button == pygame.constants.CONTROLLER_BUTTON_X:
+    if button == 2: #pygame.constants.CONTROLLER_BUTTON_X:
         return Command.ATTACK
-    if button == pygame.constants.CONTROLLER_BUTTON_Y:
+    if button == 3: #pygame.constants.CONTROLLER_BUTTON_Y:
         return Command.DEFEND
-    if button == pygame.constants.CONTROLLER_BUTTON_BACK:
+    if button == 6: # pygame.constants.CONTROLLER_BUTTON_BACK:
         return Command.MENU
-    if button == pygame.constants.CONTROLLER_BUTTON_START:
+    if button == 7: # pygame.constants.CONTROLLER_BUTTON_START:
         return Command.SELECT
 
-    if button == pygame.constants.CONTROLLER_BUTTON_LEFTSHOULDER:
-        return Command.UTILITY2
-    if button == pygame.constants.CONTROLLER_BUTTON_RIGHTSHOULDER:
+    if button == 4: # pygame.constants.CONTROLLER_BUTTON_RIGHTSHOULDER:
         return Command.UTILITY1
+    if button == 5: # pygame.constants.CONTROLLER_BUTTON_LEFTSHOULDER:
+        return Command.UTILITY2
 
-    if button == pygame.constants.CONTROLLER_BUTTON_LEFTSTICK:
+    if button == 8: # pygame.constants.CONTROLLER_BUTTON_LEFTSTICK:
         return Command.SPECIAL1
-    if button == pygame.constants.CONTROLLER_BUTTON_RIGHTSTICK:
+    if button == 9: # pygame.constants.CONTROLLER_BUTTON_RIGHTSTICK:
         return Command.SPECIAL2
 
     return None
