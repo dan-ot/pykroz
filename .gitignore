@@ -2,6 +2,8 @@
 GPATH
 GRTAGS
 GTAGS
+**/GTEMP.pas
 *.exe
 **/*.wav
 __pycache__
+**/.mypy_cache
